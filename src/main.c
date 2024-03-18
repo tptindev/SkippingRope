@@ -41,7 +41,7 @@ static int update(void* userdata)
 {
 	PlaydateAPI* pd = userdata;
 	
-	// pd->system->drawFPS(0,0);
+	pd->system->drawFPS(0,0);
 	return 1;
 }
 
