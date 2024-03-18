@@ -1,2 +1,4 @@
 *build
 *.pdx
+.sentry-native
+.vscode
