@@ -29,23 +29,31 @@ set(CMAKE_XCODE_GENERATE_SCHEME TRUE)
 set(PLAYDATE_GAME_NAME SkippingRole)
 set(PLAYDATE_GAME_DEVICE SkippingRole_DEVICE)
 
-project(${PLAYDATE_GAME_NAME} LANGUAGES C CXX ASM)
+project(${PLAYDATE_GAME_NAME} LANGUAGES C ASM)
 
-set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
+set(INCLUDE_DIR 
+	${CMAKE_SOURCE_DIR}/include/playbox2d
+	)
+
 set(LIB_DIR
-${CMAKE_SOURCE_DIR}/libs/box2d
+    ${CMAKE_SOURCE_DIR}/libs
 )
+
+file(GLOB IMAGES
+	"Source/images/*"
+)
+
+File(GLOB_RECURSE SOURCE_FILES "*.h" "*.c")
 
 include_directories(${INCLUDE_DIR})
 link_directories(${LIB_DIRS})
 
 if (TOOLCHAIN STREQUAL "armgcc")
-	add_executable(${PLAYDATE_GAME_DEVICE} src/main.c)
+	add_executable(${PLAYDATE_GAME_DEVICE} ${SOURCE_FILES})
 	else()
-	add_library(${PLAYDATE_GAME_NAME} SHARED src/main.c)
+	add_library(${PLAYDATE_GAME_NAME} SHARED ${SOURCE_FILES} ${IMAGES})
 endif()
 	
-
 
 include(${SDK}/C_API/buildsupport/playdate_game.cmake)
 
