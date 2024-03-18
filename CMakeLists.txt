@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 11)
 
 set(ENVSDK $ENV{PLAYDATE_SDK_PATH})
 
@@ -28,13 +29,23 @@ set(CMAKE_XCODE_GENERATE_SCHEME TRUE)
 set(PLAYDATE_GAME_NAME SkippingRole)
 set(PLAYDATE_GAME_DEVICE SkippingRole_DEVICE)
 
-project(${PLAYDATE_GAME_NAME} C ASM)
+project(${PLAYDATE_GAME_NAME} LANGUAGES C CXX ASM)
+
+set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
+set(LIB_DIR
+${CMAKE_SOURCE_DIR}/libs/box2d
+)
+
+include_directories(${INCLUDE_DIR})
+link_directories(${LIB_DIRS})
 
 if (TOOLCHAIN STREQUAL "armgcc")
 	add_executable(${PLAYDATE_GAME_DEVICE} src/main.c)
-else()
-	add_library(${PLAYDATE_GAME_NAME} SHARED src/main.c )
+	else()
+	add_library(${PLAYDATE_GAME_NAME} SHARED src/main.c)
 endif()
+	
+
 
 include(${SDK}/C_API/buildsupport/playdate_game.cmake)
 
