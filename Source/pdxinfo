@@ -1,0 +1,5 @@
+name=SkippingRope
+author=BeStudio
+description=A small demo of the C API
+bundleID=com.panic.skipping_rope
+imagePath=
