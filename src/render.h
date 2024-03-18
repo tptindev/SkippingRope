@@ -1,3 +1,4 @@
 #include "pd_api.h"
 
-extern int render_init(void* userdata);
+extern LCDBitmap* textures[10];
+extern void load_texture(void* userdata, const char* id, const char* path);

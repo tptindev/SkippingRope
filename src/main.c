@@ -32,7 +32,7 @@ int eventHandler(PlaydateAPI* pd, PDSystemEvent event, uint32_t arg)
 		if ( font == NULL )
 			pd->system->error("%s:%i Couldn't load font %s: %s", __FILE__, __LINE__, fontpath, err);
 
-		render_init((void*)pd);
+		load_texture(pd, "snow_image", "images/snow");
 
 		// Note: If you set an update callback in the kEventInit handler, the system assumes the game is pure C and doesn't run any Lua code in the game
 		pd->system->setUpdateCallback(update, pd);
@@ -46,6 +46,12 @@ static int update(void* userdata)
 	PlaydateAPI* pd = userdata;
 	
 	pd->system->drawFPS(0,0);
+	for (int i = 0; i < (int)(sizeof(textures) / sizeof(LCDBitmap*)); i++)
+	{
+		pd->system->logToConsole("Texture at %d with value: %p\n", i, textures[i]);
+		if (textures[i] == NULL) continue;
+		pd->graphics->drawBitmap(textures[i], pd->display->getWidth() / 2, pd->display->getHeight() / 2, kBitmapUnflipped);
+	}
 	return 1;
 }
 
