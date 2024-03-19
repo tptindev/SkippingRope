@@ -12,6 +12,9 @@
 #include "pd_api.h"
 #include "logic.h"
 #include "render.h"
+#include "playbox.h"
+#include "platform.h"
+
 
 static int update(void* userdata);
 static int buttonCbFunc(PDButtons button, int down, uint32_t when, void* userdata);
@@ -21,6 +24,7 @@ LCDFont* font = NULL;
 
 // variables 
 
+PlaydateAPI* pd = NULL;
 int w, h; // windows size
 unsigned int ticks = 0;
 unsigned int frame_speed = 100;
@@ -30,15 +34,18 @@ unsigned int frame_speed = 100;
 #ifdef _WINDLL
 __declspec(dllexport)
 #endif
-int eventHandler(PlaydateAPI* pd, PDSystemEvent event, uint32_t arg)
+int eventHandler(PlaydateAPI* playdate, PDSystemEvent event, uint32_t arg)
 {
-	w = pd->display->getWidth();
-	h = pd->display->getHeight();
-
 	(void)arg; // arg is currently only used for event = kEventKeyPressed
 
 	if ( event == kEventInit )
 	{
+		pd = playdate;
+		registerPlaybox();
+
+		w = pd->display->getWidth();
+		h = pd->display->getHeight();
+
 		const char* err;
 		font = pd->graphics->loadFont(fontpath, &err);
 		

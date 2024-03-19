@@ -2,9 +2,9 @@
 #include "maths.h"
 #include "platform.h"
 
-static const lua_reg worldClass[];
-static const lua_reg bodyClass[];
-static const lua_reg jointClass[];
+static const lua_reg worldClass[32];
+static const lua_reg bodyClass[32];
+static const lua_reg jointClass[32];
 
 #define CLASSNAME_WORLD "playbox.world"
 #define CLASSNAME_BODY "playbox.body"
