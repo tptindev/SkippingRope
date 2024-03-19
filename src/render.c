@@ -1,33 +1,33 @@
 #include "render.h"
 #include "hash.h"
+#include "pd_api/pd_api_sprite.h"
 
-LCDBitmap* textures[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
-unsigned int textures_size = sizeof(textures) / sizeof(LCDBitmap*); 
-LCDSprite* player_sprite = NULL;
-void load_texture(void* userdata, const char* id, const char* path)
+void load_textures(void* userdata, const char** paths, LCDBitmap** bitmaps, unsigned int capacity)
 {
 	if (userdata == NULL) return;
+	if (paths == NULL) return;
+
 	PlaydateAPI* pd = userdata;
-	LCDBitmap* bitmap = NULL;
-	unsigned int index = -1;
-	const char* outerr;
-	index = hash(id, textures_size);
-	if (textures[index] != NULL) return;
-	bitmap = pd->graphics->loadBitmap(path, &outerr);
-	textures[index] = bitmap;
-	pd->system->logToConsole("Load texture success with key: %d, value: %p\n", index, bitmap);
+	bitmaps = pd->system->realloc(bitmaps, (size_t)capacity * sizeof(LCDBitmap*));
+	pd->system->logToConsole("%p\n", bitmaps);
+	for (int i = 0; i < capacity; i++)
+	{
+		const char* outerr;
+		*(bitmaps + i) = pd->graphics->loadBitmap(*(paths + i), &outerr);
+		pd->system->logToConsole("At: %d -> %s, bitmap: %p, error: %s\n", i, *(paths + i), *(bitmaps + i), outerr);
+	}
 }
 
-LCDBitmap* texture(const char* id)
+void update_sprites(void* userdata, float x, float y, int16_t z_order, LCDBitmapFlip flip, LCDBitmap** bitmaps, unsigned int capacity)
 {
-	return textures[hash(id, textures_size)];
-}
-
-void update_sprite(void* userdata, const char* id, int x, int y, int z_order, int w, int h, int row, int col, int angle, LCDBitmapFlip flip)
-{
-	if (userdata == NULL) return;
 	PlaydateAPI* pd = userdata;
-	pd->sprite->moveTo(player_sprite, x - w, y - h);
-	pd->sprite->setZIndex(player_sprite, z_order);
-	pd->sprite->setCenter(player_sprite, 0, 0);
+	for (int i = 0; i < capacity; i++)
+	{
+		if ((bitmaps + i) == NULL) return;
+		LCDSprite* sprite = pd->sprite->newSprite();
+		pd->sprite->setImage(sprite , *(bitmaps + i), flip);
+		pd->sprite->moveTo(sprite, x, y);
+		pd->sprite->setZIndex(sprite, z_order);
+		pd->sprite->addSprite(sprite);
+	}
 }

@@ -1,9 +1,4 @@
 #include "pd_api.h"
 
-extern LCDBitmap* textures[10];
-extern unsigned int textures_size;
-extern LCDSprite* player_sprite;
-
-extern void load_texture(void* userdata, const char* id, const char* path);
-extern LCDBitmap* texture(const char* id);
-extern void update_sprite(void* userdata, const char* id, int x, int y, int z_order, int w, int h, int row, int col, int angle, LCDBitmapFlip flip);
+extern void load_textures(void* userdata, const char** paths, LCDBitmap** bitmaps, unsigned int capacity);
+extern void update_sprites(void* userdata, float x, float y, int16_t z_order, LCDBitmapFlip flip, LCDBitmap** bitmaps, unsigned int capacity);

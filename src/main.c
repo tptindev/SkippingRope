@@ -14,13 +14,13 @@
 #include "render.h"
 #include "playbox.h"
 #include "platform.h"
+#include "model.h"
+#include "assets.h"
 
+#define MAX_HUMAN 5
 
 static int update(void* userdata);
 static int buttonCbFunc(PDButtons button, int down, uint32_t when, void* userdata);
-
-const char* fontpath = "/System/Fonts/Asheville-Sans-14-Bold.pft";
-LCDFont* font = NULL;
 
 // variables 
 
@@ -28,7 +28,13 @@ PlaydateAPI* pd = NULL;
 int w, h; // windows size
 unsigned int ticks = 0;
 unsigned int frame_speed = 100;
+const char* fontpath = "/System/Fonts/Asheville-Sans-14-Bold.pft";
+LCDFont* font = NULL;
+Human* humans[MAX_HUMAN];
+Human human;
+Rope rope;
 
+const char* sprite_paths[5] = { "1", "2", "3", "4", "5" };
 // --------------------------------------
 
 #ifdef _WINDLL
@@ -49,26 +55,19 @@ int eventHandler(PlaydateAPI* playdate, PDSystemEvent event, uint32_t arg)
 		const char* err;
 		font = pd->graphics->loadFont(fontpath, &err);
 		
-		if ( font == NULL )
-			pd->system->error("%s:%i Couldn't load font %s: %s", __FILE__, __LINE__, fontpath, err);
-
-		load_texture(pd, "AB", "images/snow");
-		load_texture(pd, "player", "images/bunny");
-
-		player_sprite = pd->sprite->newSprite();
-		pd->sprite->addSprite(player_sprite);
-		LCDBitmap* player_img = texture("player");
-
-		if (player_img == NULL)
+		if (font == NULL)
 		{
-			pd->sprite->freeSprite(player_sprite);
-			return;
+			pd->system->error("%s:%i Couldn't load font %s: %s", __FILE__, __LINE__, fontpath, err);
 		}
-		pd->sprite->setImage(player_sprite, player_img, kBitmapUnflipped);
+
+		// load textures: start
+		load_textures(pd, sprite_paths, human.bitmaps, 5);
+		// load textures: end
 
 		// Note: If you set an update callback in the kEventInit handler, the system assumes the game is pure C and doesn't run any Lua code in the game
 		pd->system->setUpdateCallback(update, pd);
 		pd->system->setButtonCallback(buttonCbFunc, pd, 2);
+
 	}
 	
 	return 0;
@@ -79,12 +78,11 @@ static int update(void* userdata)
 	PlaydateAPI* pd = userdata;
 	ticks = pd->system->getCurrentTimeMilliseconds();
 
-	pd->system->drawFPS(0,0);
-
-	update_sprite(userdata, "player", w / 2, h / 2, 1, 48, 48, 0, (ticks / frame_speed) % 2, 0, kBitmapUnflipped);
+	update_sprites(userdata, 0, 0, 0, kBitmapUnflipped, human.bitmaps, 5);
 
 	pd->sprite->updateAndDrawSprites();
 
+	pd->system->drawFPS(0,0);
 	return 1;
 }
 

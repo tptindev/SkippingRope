@@ -6,8 +6,9 @@ unsigned int hash(const char* str, unsigned int capacity)
     for (int i = 0; i < len; i++)
     {
         result += str[i];
-        result = (result + str[i]) % capacity;
     }
+
+    result = result % capacity;
 
 	return result;
 }
