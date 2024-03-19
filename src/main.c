@@ -13,8 +13,6 @@
 #include "logic.h"
 #include "render.h"
 
-
-
 static int update(void* userdata);
 static int buttonCbFunc(PDButtons button, int down, uint32_t when, void* userdata);
 

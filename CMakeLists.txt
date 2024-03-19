@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 11)
 
 set(ENVSDK $ENV{PLAYDATE_SDK_PATH})
 
@@ -31,9 +30,9 @@ set(PLAYDATE_GAME_DEVICE SkippingRole_DEVICE)
 
 project(${PLAYDATE_GAME_NAME} LANGUAGES C ASM)
 
-set(INCLUDE_DIR 
+set(INCLUDE_DIR
 	${CMAKE_SOURCE_DIR}/include/playbox2d
-	)
+)
 
 set(LIB_DIR
     ${CMAKE_SOURCE_DIR}/libs
@@ -43,14 +42,14 @@ file(GLOB IMAGES
 	"Source/images/*"
 )
 
-File(GLOB_RECURSE SOURCE_FILES "*.h" "*.c")
+File(GLOB_RECURSE SOURCE_FILES "src/*.h" "src/*.c")
 
 include_directories(${INCLUDE_DIR})
 link_directories(${LIB_DIRS})
 
 if (TOOLCHAIN STREQUAL "armgcc")
-	add_executable(${PLAYDATE_GAME_DEVICE} ${SOURCE_FILES})
-	else()
+	add_executable(${PLAYDATE_GAME_DEVICE} ${SDK}/C_API/buildsupport/setup.c ${SOURCE_FILES})
+else()
 	add_library(${PLAYDATE_GAME_NAME} SHARED ${SOURCE_FILES} ${IMAGES})
 endif()
 	

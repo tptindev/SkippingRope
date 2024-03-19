@@ -30,6 +30,4 @@ void update_sprite(void* userdata, const char* id, int x, int y, int z_order, in
 	pd->sprite->moveTo(player_sprite, x - w, y - h);
 	pd->sprite->setZIndex(player_sprite, z_order);
 	pd->sprite->setCenter(player_sprite, 0, 0);
-	LCDRect rect = LCDMakeRect(w * col + x, h * row + y, w, h);
-	pd->sprite->setClipRect(player_sprite, rect);
 }
