@@ -1,7 +1,10 @@
 #include "pd_api.h"
 
 typedef struct human
-{
+{	
+	float x;
+	float y;
+	float z;
 	float speed;
 	float mass;
 	LCDBitmap** bitmaps;
