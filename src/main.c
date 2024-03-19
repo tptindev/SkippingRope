@@ -13,7 +13,13 @@
 #include "logic.h"
 #include "render.h"
 
+static int w, h; // windows size
+static unsigned int ticks = 0;
+static unsigned int frame_speed = 100;
+
 static int update(void* userdata);
+static int buttonCbFunc(PDButtons button, int down, uint32_t when, void* userdata);
+
 const char* fontpath = "/System/Fonts/Asheville-Sans-14-Bold.pft";
 LCDFont* font = NULL;
 
@@ -22,6 +28,9 @@ __declspec(dllexport)
 #endif
 int eventHandler(PlaydateAPI* pd, PDSystemEvent event, uint32_t arg)
 {
+	w = pd->display->getWidth();
+	h = pd->display->getHeight();
+
 	(void)arg; // arg is currently only used for event = kEventKeyPressed
 
 	if ( event == kEventInit )
@@ -33,11 +42,14 @@ int eventHandler(PlaydateAPI* pd, PDSystemEvent event, uint32_t arg)
 			pd->system->error("%s:%i Couldn't load font %s: %s", __FILE__, __LINE__, fontpath, err);
 
 		load_texture(pd, "AB", "images/snow");
-		load_texture(pd, "@C", "images/snow");
+		load_texture(pd, "player", "images/bunny");
 
+		player_sprite = pd->sprite->newSprite();
+		pd->sprite->addSprite(player_sprite);
 
 		// Note: If you set an update callback in the kEventInit handler, the system assumes the game is pure C and doesn't run any Lua code in the game
 		pd->system->setUpdateCallback(update, pd);
+		pd->system->setButtonCallback(buttonCbFunc, pd, 2);
 	}
 	
 	return 0;
@@ -46,13 +58,26 @@ int eventHandler(PlaydateAPI* pd, PDSystemEvent event, uint32_t arg)
 static int update(void* userdata)
 {
 	PlaydateAPI* pd = userdata;
-	
-	pd->system->drawFPS(0,0);
-	draw_sprite(userdata, "AB", 50, 50, 0, 0, 0, 0, kBitmapUnflipped);
-	draw_sprite(userdata, "@C", 100, 100, 0, 0, 0, 0, kBitmapUnflipped);
+	ticks = pd->system->getCurrentTimeMilliseconds();
 
-	pd->sprite->drawSprites();
+	pd->system->drawFPS(0,0);
+
+	update_sprite(userdata, "player", w / 2, h / 2, 1, 48, 48, 0, (ticks / frame_speed) % 2, 0, kBitmapUnflipped);
+
+	pd->sprite->updateAndDrawSprites();
 
 	return 1;
 }
 
+static int buttonCbFunc(PDButtons button, int down, uint32_t when, void* userdata)
+{
+	switch (button)
+	{
+	case kButtonUp:
+	{
+		break;
+	}
+	default:
+		break;
+	}
+}
