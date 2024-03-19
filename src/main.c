@@ -13,15 +13,21 @@
 #include "logic.h"
 #include "render.h"
 
-static int w, h; // windows size
-static unsigned int ticks = 0;
-static unsigned int frame_speed = 100;
+
 
 static int update(void* userdata);
 static int buttonCbFunc(PDButtons button, int down, uint32_t when, void* userdata);
 
 const char* fontpath = "/System/Fonts/Asheville-Sans-14-Bold.pft";
 LCDFont* font = NULL;
+
+// variables 
+
+int w, h; // windows size
+unsigned int ticks = 0;
+unsigned int frame_speed = 100;
+
+// --------------------------------------
 
 #ifdef _WINDLL
 __declspec(dllexport)
@@ -46,6 +52,14 @@ int eventHandler(PlaydateAPI* pd, PDSystemEvent event, uint32_t arg)
 
 		player_sprite = pd->sprite->newSprite();
 		pd->sprite->addSprite(player_sprite);
+		LCDBitmap* player_img = texture("player");
+
+		if (player_img == NULL)
+		{
+			pd->sprite->freeSprite(player_sprite);
+			return;
+		}
+		pd->sprite->setImage(player_sprite, player_img, kBitmapUnflipped);
 
 		// Note: If you set an update callback in the kEventInit handler, the system assumes the game is pure C and doesn't run any Lua code in the game
 		pd->system->setUpdateCallback(update, pd);
