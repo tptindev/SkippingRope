@@ -1,14 +1,15 @@
 #include "pd_api.h"
-
-typedef struct human
+typedef struct character
 {	
+	const char* name;
+	const char** paths;
+	LCDSprite** sprites;
 	float x;
 	float y;
-	float z;
+	int z;
 	float speed;
 	float mass;
-	LCDSprite** sprites;
-} Human;
+} Character;
 
 typedef struct rope
 {

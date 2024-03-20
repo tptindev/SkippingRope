@@ -12,7 +12,7 @@ void load_textures(void* userdata, const char** paths, LCDSprite** sprites, unsi
 
 	for (int i = 0; i < capacity; i++)
 	{
-		pd->system->logToConsole("Load image at path: '%s'", *(paths + i));
+		pd->system->logToConsole("Begin: Load image at path: '%s'", *(paths + i));
 		const char* outerr = NULL;
 		LCDBitmap* bitmap = pd->graphics->loadBitmap(*(paths + i), &outerr);
 		*(sprites + i) = pd->sprite->newSprite();
@@ -24,6 +24,9 @@ void load_textures(void* userdata, const char** paths, LCDSprite** sprites, unsi
 			pd->sprite->setImage(*(sprites + i), bitmap, kBitmapUnflipped);
 			pd->sprite->addSprite(*(sprites + i));
 		}
+
+		pd->system->logToConsole("End: Load image at path: '%s', bitmap: %p", *(paths + i), *(sprites + i));
+
 	}
 }
 

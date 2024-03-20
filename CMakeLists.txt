@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 11)
 
 set(ENVSDK $ENV{PLAYDATE_SDK_PATH})
 
@@ -29,7 +28,7 @@ set(CMAKE_XCODE_GENERATE_SCHEME TRUE)
 set(PLAYDATE_GAME_NAME SkippingRole)
 set(PLAYDATE_GAME_DEVICE SkippingRole_DEVICE)
 
-project(${PLAYDATE_GAME_NAME} LANGUAGES C CXX ASM)
+project(${PLAYDATE_GAME_NAME} LANGUAGES C ASM)
 
 set(INCLUDE_DIR
 	${CMAKE_SOURCE_DIR}/include/playbox2d
@@ -56,4 +55,3 @@ endif()
 	
 
 include(${SDK}/C_API/buildsupport/playdate_game.cmake)
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_11)
