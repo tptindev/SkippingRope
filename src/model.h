@@ -1,4 +1,8 @@
+#ifndef __MODEL_H__
+#define __MODEL_H__
+
 #include "pd_api.h"
+
 typedef struct character
 {	
 	const char* name;
@@ -18,3 +22,6 @@ typedef struct rope
 	int material;
 	unsigned int length;
 } Rope;
+
+extern Character bot;
+#endif // __MODEL_H__

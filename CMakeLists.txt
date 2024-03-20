@@ -42,7 +42,7 @@ file(GLOB IMAGES
 	"Source/images/*"
 )
 
-File(GLOB_RECURSE SOURCE_FILES "src/*.h" "src/*.c")
+File(GLOB_RECURSE SOURCE_FILES "src/*.h" "src/*.c" "*.lua")
 
 include_directories(${INCLUDE_DIR})
 link_directories(${LIB_DIRS})

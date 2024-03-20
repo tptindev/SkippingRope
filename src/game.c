@@ -1,11 +1,12 @@
 #include "game.h"
 #include "render.h"
 #include "model.h"
+#include "playbox.h"
 
-PlaydateAPI *api = NULL;
+PlaydateAPI *pd = NULL;
 
-static const char* sprite_paths[2] = { "images/bunny/1", "images/bunny/2" };
-static Character bot = {
+static const char* sprite_paths[2] = { "images/bunny/0", "images/bunny/1" };
+Character bot = {
     "basic",
     sprite_paths,
     NULL,
@@ -18,46 +19,33 @@ static Character bot = {
 
 void game_initialize(PlaydateAPI *pdAPI)
 {
-    api = pdAPI;
-
-    callback_register();
-    sprite_register();
-
+    pd = pdAPI;
+    pd->display->setRefreshRate(8.0f);
+    register_lua_functions();
+    register_sprites();
+    registerPlaybox();
 }
 
-void callback_register()
+void register_sprites()
 {
-    // Note: If you set an update callback in the kEventInit handler, the system assumes the game is pure C and doesn't run any Lua code in the game
-    api->system->setUpdateCallback(update, NULL);
-    api->system->setButtonCallback(buttonCbFunc, NULL, 2);
-}
-
-void sprite_register()
-{
-
     // load textures: start
-    load_textures(api, bot.paths, bot.sprites, sizeof(sprite_paths) / sizeof(char*));
+    load_textures(pd, bot.paths, bot.sprites, 2);
     // load textures: end
 }
 
-int update(void *userdata)
+void register_lua_functions()
 {
-    update_sprites(userdata, bot.sprites, 50, 50, 0, kBitmapUnflipped, sizeof(sprite_paths) / sizeof(char *));
-
-    api->sprite->drawSprites();
-
-    return 1;
-}
-
-int buttonCbFunc(PDButtons button, int down, uint32_t when, void *userdata)
-{
-    switch (button)
+    const char* outerr;
+    int status = pd->lua->addFunction(update, "playdate.system.c_update", &outerr);
+    if (status == 0)
     {
-    case kButtonUp:
-    {
-        break;
-    }
-    default:
-        break;
+        pd->system->logToConsole("%s:%i: addFunction failed, %s", __FILE__, __LINE__, outerr);
     }
 }
+
+void update(lua_State* state)
+{
+    update_sprites(pd, bot.sprites, 50, 50, 1, 2, kBitmapUnflipped);
+    pd->sprite->updateAndDrawSprites();
+}
+

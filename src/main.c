@@ -12,8 +12,6 @@
 #include "pd_api.h"
 #include "game.h"
 
-PlaydateAPI* pd = NULL; // from game.h
-
 #ifdef _WINDLL
 __declspec(dllexport)
 #endif
@@ -21,7 +19,7 @@ int eventHandler(PlaydateAPI* playdate, PDSystemEvent event, uint32_t arg)
 {
 	(void)arg; // arg is currently only used for event = kEventKeyPressed
 
-	if ( event == kEventInit )
+	if ( event == kEventInitLua )
 	{
 		game_initialize(playdate);
 	}

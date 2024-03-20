@@ -1,6 +1,5 @@
 #include "render.h"
 #include "hash.h"
-#include "pd_api/pd_api_sprite.h"
 
 void load_textures(void* userdata, const char** paths, LCDSprite** sprites, unsigned int capacity)
 {
@@ -21,8 +20,9 @@ void load_textures(void* userdata, const char** paths, LCDSprite** sprites, unsi
 		}
 		else
 		{
-			pd->sprite->setImage(*(sprites + i), bitmap, kBitmapUnflipped);
-			pd->sprite->addSprite(*(sprites + i));
+			LCDSprite* sprite = *(sprites + i);
+			pd->sprite->setImage(sprite, bitmap, kBitmapUnflipped);
+			pd->sprite->setCenter(sprite, 0, 0);
 		}
 
 		pd->system->logToConsole("End: Load image at path: '%s', bitmap: %p", *(paths + i), *(sprites + i));
@@ -30,19 +30,16 @@ void load_textures(void* userdata, const char** paths, LCDSprite** sprites, unsi
 	}
 }
 
-void update_sprites(void* userdata, LCDSprite** sprites, float x, float y, int16_t z_order, LCDBitmapFlip flip, unsigned int capacity)
+void update_sprites(void* userdata, LCDSprite** sprites, float x, float y, int16_t z_order, unsigned int capacity, LCDBitmapFlip flip)
 {
 	PlaydateAPI* pd = userdata;
 	if (sprites == NULL) return;
 	else
 	{
-		for (int i = 0; i < capacity; i++)
-		{
-			LCDSprite* sprite = *(sprites + i);
-			if (sprite == NULL) continue;
-			pd->sprite->moveTo(sprite, x, y);
-			pd->sprite->setZIndex(sprite, z_order);
-			pd->sprite->setCenter(sprite, 0,0);
-		}
+		LCDSprite* sprite = *(sprites);
+		if (sprite == NULL) return;
+		pd->sprite->moveTo(sprite, x, y);
+		pd->sprite->setZIndex(sprite, z_order);
+		pd->sprite->addSprite(sprite);
 	}
 }

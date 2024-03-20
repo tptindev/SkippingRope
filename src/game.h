@@ -1,8 +1,7 @@
 #include "pd_api.h"
+#include "model.h"
 
-extern PlaydateAPI *pd;
 void game_initialize(PlaydateAPI* pdAPI);
-void callback_register();
-void sprite_register();
-static int update(void* userdata);
-static int buttonCbFunc(PDButtons button, int down, uint32_t when, void* userdata);
+void register_sprites();
+void register_lua_functions();
+static void update(lua_State* state);
