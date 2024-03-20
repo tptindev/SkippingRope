@@ -8,6 +8,7 @@ typedef struct human
 	float speed;
 	float mass;
 	LCDBitmap** bitmaps;
+	LCDSprite** sprites;
 } Human;
 
 typedef struct rope

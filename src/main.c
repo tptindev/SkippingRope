@@ -34,7 +34,7 @@ Human* humans[MAX_HUMAN];
 Human human;
 Rope rope;
 
-const char* sprite_paths[5] = { "1", "2", "3", "4", "5" };
+const char* sprite_paths[2] = { "images/bunny/1", "images/bunny/2" };
 // --------------------------------------
 
 #ifdef _WINDLL
@@ -61,7 +61,7 @@ int eventHandler(PlaydateAPI* playdate, PDSystemEvent event, uint32_t arg)
 		}
 
 		// load textures: start
-		load_textures(pd, sprite_paths, human.bitmaps, 5);
+		load_textures(pd, sprite_paths, human.bitmaps, human.sprites, sizeof(sprite_paths));
 		// load textures: end
 
 		// Note: If you set an update callback in the kEventInit handler, the system assumes the game is pure C and doesn't run any Lua code in the game
@@ -78,9 +78,9 @@ static int update(void* userdata)
 	PlaydateAPI* pd = userdata;
 	ticks = pd->system->getCurrentTimeMilliseconds();
 
-	update_sprites(userdata, 0, 0, 0, kBitmapUnflipped, human.bitmaps, 5);
+	update_sprites(userdata, human.sprites, human.bitmaps, 50, 50, 0, kBitmapUnflipped, sizeof(sprite_paths));
 
-	pd->sprite->updateAndDrawSprites();
+	pd->sprite->drawSprites();
 
 	pd->system->drawFPS(0,0);
 	return 1;
