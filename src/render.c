@@ -13,14 +13,15 @@ void load_textures(void* userdata, const char** paths, LCDBitmap** bitmaps, LCDS
 
 	for (int i = 0; i < capacity; i++)
 	{
+		pd->system->logToConsole("Load image at path: '%s'", *(paths + i));
 		const char* outerr = NULL;
 		*(bitmaps + i) = pd->graphics->loadBitmap(*(paths + i), &outerr);
+		*(sprites + i) = pd->sprite->newSprite();
 		if (outerr != NULL) {
 			pd->system->logToConsole("Error loading image at path '%s': %s", *(paths + i), outerr);
 		}
 		else
 		{
-			*(sprites + i) = pd->sprite->newSprite();
 		}
 	}
 }
@@ -28,15 +29,14 @@ void load_textures(void* userdata, const char** paths, LCDBitmap** bitmaps, LCDS
 void update_sprites(void* userdata, LCDSprite** sprites, LCDBitmap** bitmaps, float x, float y, int16_t z_order, LCDBitmapFlip flip, unsigned int capacity)
 {
 	PlaydateAPI* pd = userdata;
-	for (int i = 0; i < capacity; i++)
+	if (bitmaps == NULL) return;
+	else if (sprites == NULL) return;
+	else
 	{
-		if ((bitmaps + i) == NULL) continue;
-		else if ((sprites + i) == NULL) continue;
-		else
+		for (int i = 0; i < capacity; i++)
 		{
 			LCDBitmap* bitmap = *(bitmaps + i);
 			LCDSprite* sprite = *(sprites + i);
-
 			if (bitmap == NULL || sprite == NULL) continue;
 
 			pd->sprite->setImage(sprite, *(bitmaps + i), flip);
