@@ -7,7 +7,6 @@ typedef struct human
 	float z;
 	float speed;
 	float mass;
-	LCDBitmap** bitmaps;
 	LCDSprite** sprites;
 } Human;
 

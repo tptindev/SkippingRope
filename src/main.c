@@ -61,7 +61,7 @@ int eventHandler(PlaydateAPI* playdate, PDSystemEvent event, uint32_t arg)
 		}
 
 		// load textures: start
-		load_textures(pd, sprite_paths, human.sprites, human.bitmaps, sizeof(sprite_paths)/sizeof(char*));
+		load_textures(pd, sprite_paths, human.sprites, sizeof(sprite_paths)/sizeof(char*));
 		// load textures: end
 
 		// Note: If you set an update callback in the kEventInit handler, the system assumes the game is pure C and doesn't run any Lua code in the game
@@ -78,11 +78,10 @@ static int update(void* userdata)
 	PlaydateAPI* pd = userdata;
 	ticks = pd->system->getCurrentTimeMilliseconds();
 
-	update_sprites(userdata, human.sprites, human.bitmaps, 50, 50, 0, kBitmapUnflipped, sizeof(sprite_paths) / sizeof(char*));
+	update_sprites(userdata, human.sprites, 50, 50, 0, kBitmapUnflipped, sizeof(sprite_paths) / sizeof(char*));
 
 	pd->sprite->drawSprites();
 
-	pd->system->drawFPS(0,0);
 	return 1;
 }
 
