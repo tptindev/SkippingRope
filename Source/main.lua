@@ -14,5 +14,6 @@ function playdate.update()
     else
         local dt <const> = 1.0 / display.getRefreshRate()
         native:game_update(dt)
+        native:game_draw()
     end
 end

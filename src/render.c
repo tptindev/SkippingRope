@@ -1,12 +1,12 @@
 #include "render.h"
 #include "hash.h"
 
-void load_textures(void* userdata, const char** paths, LCDSprite** sprites, unsigned int capacity)
+void load_textures(PlaydateAPI* pd, const char** paths, LCDSprite** sprites, unsigned int capacity)
 {
-	if (userdata == NULL) return;
+	if (pd == NULL) return;
 	if (paths == NULL) return;
+	if (sprites == NULL) return;
 
-	PlaydateAPI* pd = userdata;
 	for (int i = 0; i < capacity; i++)
 	{
 		const char* path = *(paths + i);
@@ -31,16 +31,18 @@ void load_textures(void* userdata, const char** paths, LCDSprite** sprites, unsi
 
 }
 
-void update_sprites(void* userdata, LCDSprite** sprites, float x, float y, int16_t z_order, unsigned int capacity, LCDBitmapFlip flip)
+void update_sprites(PlaydateAPI* pd, LCDSprite** sprites, float x, float y, int16_t z_order, unsigned int capacity, LCDBitmapFlip flip)
 {
-	PlaydateAPI* pd = userdata;
+	if (pd == NULL) return;
 	if (sprites == NULL) return;
 	else
 	{
-		LCDSprite* sprite = *(sprites);
-		if (sprite == NULL) return;
-		pd->sprite->moveTo(sprite, x, y);
-		pd->sprite->setZIndex(sprite, z_order);
-		pd->sprite->addSprite(sprite);
+		for (int i = 0; i < capacity; i++)
+		{
+			if (*(sprites + i) == NULL) continue;
+			LCDSprite* sprite = *(sprites + i);
+			pd->sprite->moveTo(sprite, x, y);
+			pd->sprite->setZIndex(sprite, z_order);
+		}
 	}
 }
