@@ -4,15 +4,11 @@
 #include "pd_api.h"
 
 typedef struct character
-{	
-	const char* name;
+{
+	const char* id;
 	const char** paths;
 	LCDSprite** sprites;
-	float x;
-	float y;
-	int z;
-	float speed;
-	float mass;
+	size_t capacity;
 } Character;
 
 typedef struct rope
@@ -23,5 +19,4 @@ typedef struct rope
 	unsigned int length;
 } Rope;
 
-extern Character bot;
 #endif // __MODEL_H__

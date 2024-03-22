@@ -10,7 +10,10 @@
 #include <stdlib.h>    
 
 #include "pd_api.h"
+#include "playbox.h"
 #include "game.h"
+
+PlaydateAPI *pd = NULL;
 
 #ifdef _WINDLL
 __declspec(dllexport)
@@ -21,7 +24,10 @@ int eventHandler(PlaydateAPI* playdate, PDSystemEvent event, uint32_t arg)
 
 	if ( event == kEventInitLua )
 	{
-		game_initialize(playdate);
+		pd = playdate;
+		registerPlaybox();
+		register_lua_functions(pd);
+		register_lua_classes(pd);
 	}
 	
 	return 0;
