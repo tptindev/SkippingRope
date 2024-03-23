@@ -71,7 +71,7 @@ function initialize()
     
     for i = 1, MAX_NODE - 2, 1 do
         print(i * 0.3 * 10)
-        local node = playbox.body.new(ROPE_NODE_WIDTH, ROPE_NODE_HEIGHT, 0)
+        local node = playbox.body.new(ROPE_NODE_WIDTH, ROPE_NODE_HEIGHT, 0.03)
         node:setCenter(JOINT_STEP * i, 0)
         node:setFriction(0.2)
         world:addBody(node)
@@ -96,16 +96,16 @@ function initialize()
         local x, y = rope_nodes[i]:getCenter();
         local joint = playbox.joint.new(rope_nodes[i], rope_nodes[i + 1], x, y)
         joint:setBiasFactor(0.3)
-        joint:setSoftness(0.6)
+        joint:setSoftness(0.0)
         world:addJoint(joint)
         rope_joints[#rope_joints + 1] = joint
     end
 
-    for i = MAX_NODE, (MAX_NODE / 2) + 2 , -1 do
+    for i = MAX_NODE, (MAX_NODE / 2) + 1 , -1 do
         local x, y = rope_nodes[i]:getCenter();
         local joint = playbox.joint.new(rope_nodes[i], rope_nodes[i - 1], x, y)
         joint:setBiasFactor(0.3)
-        joint:setSoftness(0.6)
+        joint:setSoftness(0.0)
         world:addJoint(joint)
         rope_joints[#rope_joints + 1] = joint
     end
