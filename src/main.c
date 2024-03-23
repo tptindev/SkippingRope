@@ -11,7 +11,6 @@
 
 #include "pd_api.h"
 #include "playbox.h"
-#include "game.h"
 
 PlaydateAPI *pd = NULL;
 
@@ -26,8 +25,6 @@ int eventHandler(PlaydateAPI* playdate, PDSystemEvent event, uint32_t arg)
 	{
 		pd = playdate;
 		registerPlaybox();
-		register_lua_functions(pd);
-		register_lua_classes(pd);
 	}
 	
 	return 0;

@@ -2,9 +2,9 @@
 #include "maths.h"
 #include "platform.h"
 
-static const lua_reg worldClass[32];
-static const lua_reg bodyClass[32];
-static const lua_reg jointClass[32];
+static const lua_reg worldClass[13];
+static const lua_reg bodyClass[19];
+static const lua_reg jointClass[6];
 
 #define CLASSNAME_WORLD "playbox.world"
 #define CLASSNAME_BODY "playbox.body"
@@ -208,7 +208,7 @@ int playbox_body_getPolygon(lua_State* L) {
   return 8;
 }
 
-static const lua_reg bodyClass[] = {
+static const lua_reg bodyClass[19] = {
 { "new", playbox_body_new },
 { "__gc", playbox_body_delete },
 { "addForce", playbox_body_addForce },
@@ -297,7 +297,7 @@ int playbox_joint_setBiasFactor(lua_State* L) {
   return 0;
 }
 
-static const lua_reg jointClass[] = {
+static const lua_reg jointClass[6] = {
 { "new", playbox_joint_new },
 { "__gc", playbox_joint_delete },
 { "getPoints", playbox_joint_getPoints },
@@ -406,7 +406,7 @@ int playbox_world_getNumberOfContacts(lua_State* L) {
   return 1;
 }
 
-static const lua_reg worldClass[] = {
+static const lua_reg worldClass[13] = {
 { "new", playbox_world_new },
 { "__gc", playbox_world_delete },
 { "addBody", playbox_world_addBody },
