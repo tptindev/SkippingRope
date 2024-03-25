@@ -30,7 +30,7 @@ void game_update(float deltatime)
 	if (b2World_IsValid(worldId))
 	{
 		float timeStep = 1.0f / FPS;
-		b2World_Step(worldId, timeStep, 1);
+		b2World_Step(worldId, timeStep, 10);
 	}
 }
 
@@ -39,8 +39,15 @@ void game_draw()
 	api->graphics->clear(kColorWhite);
 	api->graphics->setBackgroundColor(kColorBlack);
 
+	b2Vec2 pos = {0.0f, 0.0f};
+	b2ShapeId shapeId = b2_nullShapeId;
 	{
-        b2Vec2 pos = b2Body_GetPosition(boxId);
+		pos = b2Body_GetPosition(floorId);
+		shapeId = b2Body_GetFirstShape(floorId);
+		b2Polygon shape = b2Shape_GetPolygon(shapeId);
+		api->graphics->fillRect(pos.x, pos.y, 400, 40, kColorBlack);
+
+        pos = b2Body_GetPosition(boxId);
         api->graphics->fillRect(pos.x, pos.y, 50, 50, kColorBlack);
 	}
     api->system->drawFPS(0,0);
@@ -48,6 +55,7 @@ void game_draw()
 
 b2WorldId register_world(b2Vec2 gravity)
 {
+	api->system->logToConsole("Entry: %s", __FUNCTION__);
 	b2WorldDef worldDef = b2DefaultWorldDef();
 	worldDef.gravity = gravity;
 	return b2CreateWorld(&worldDef);
@@ -56,7 +64,7 @@ b2WorldId register_world(b2Vec2 gravity)
 void register_bodies(b2WorldId world)
 {
 	api->system->logToConsole("Entry: %s", __FUNCTION__);
-	//floorId = create_floor_obj(world);
+	floorId = create_floor_obj(world);
 	boxId = create_square_box_obj(world);
 }
 
