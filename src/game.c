@@ -1,5 +1,7 @@
 #include "game.h"
 #include "gameobj.h"
+#include "draw.h"
+#include "callbacks.h"
 
 static const float FPS = 30.0;
 static bool initialized = false;
@@ -22,6 +24,7 @@ void game_initialize(void* userdata)
 	if (b2World_IsValid(worldId))
 	{
 		register_bodies(worldId);
+		//b2World_SetPreSolveCallback(worldId, PreSolveFcn, NULL);
 	}
 }
 
@@ -44,8 +47,8 @@ void game_draw()
 	{
 		pos = b2Body_GetPosition(floorId);
 		shapeId = b2Body_GetFirstShape(floorId);
-		b2Polygon shape = b2Shape_GetPolygon(shapeId);
-		api->graphics->fillRect(pos.x, pos.y, 400, 40, kColorBlack);
+		b2Segment segment = b2Shape_GetSegment(shapeId);
+		drawLine(api, segment, 10, kColorBlack);
 
         pos = b2Body_GetPosition(boxId);
         api->graphics->fillRect(pos.x, pos.y, 50, 50, kColorBlack);
@@ -58,6 +61,8 @@ b2WorldId register_world(b2Vec2 gravity)
 	api->system->logToConsole("Entry: %s", __FUNCTION__);
 	b2WorldDef worldDef = b2DefaultWorldDef();
 	worldDef.gravity = gravity;
+	worldDef.enableSleep = true;
+	worldDef.enableContinous = true;
 	return b2CreateWorld(&worldDef);
 }
 
