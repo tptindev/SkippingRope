@@ -9,27 +9,30 @@ b2BodyId create_floor_obj(b2WorldId world)
 
 	b2ShapeDef shapeDef = b2DefaultShapeDef();
 	shapeDef.density = 0.0f;
-	shapeDef.friction = 0.3;
-	b2Segment segment = { {-400.0f, 230.0f}, {400.0f, 230.0f} };
+	shapeDef.friction = 1.0;
+	b2Segment segment = { {50.0f, 235.0f}, {350.0f, 235.0f} };
 	b2CreateSegmentShape(id, &shapeDef, &segment);
 	return id;
 }
 
 b2BodyId create_square_box_obj(b2WorldId world)
 {
+	b2Vec2 center = {25.0f, 25.0f};
+	b2Vec2 force = { 0.0f, 100.0f };
 	b2BodyDef bodyDef = b2DefaultBodyDef();
 	bodyDef.type = b2_dynamicBody;
 	bodyDef.position.x = 200.0f;
 	bodyDef.enableSleep = true;
+	bodyDef.isAwake = true;
 	b2BodyId id = b2CreateBody(world, &bodyDef);
 
-	b2Polygon box = b2MakeBox(25.0f, 50.0f);
+	b2Polygon box = b2MakeBox(50, 50);
 	b2ShapeDef shapeDef = b2DefaultShapeDef();
 	shapeDef.density = 1.0f;
-	shapeDef.friction = 0.3;
-
+	shapeDef.friction = 1.0;
+	shapeDef.enablePreSolveEvents = true;
 	b2CreatePolygonShape(id, &shapeDef, &box);
-	b2Body_SetGravityScale(id, 80);
+	b2Body_ApplyForceToCenter(id, force, true);
 	return id;
 }
 

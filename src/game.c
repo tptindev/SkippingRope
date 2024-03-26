@@ -10,8 +10,11 @@ static b2WorldId worldId;
 static b2BodyId floorId;
 static b2BodyId boxId;
 
+static float world_scale = 1.0f;
+
 b2WorldId register_world(b2Vec2 gravity);
 void register_bodies(b2WorldId world_id);
+void unregister_body(b2BodyId bodyId);
 
 void game_initialize(void* userdata)
 {
@@ -24,7 +27,7 @@ void game_initialize(void* userdata)
 	if (b2World_IsValid(worldId))
 	{
 		register_bodies(worldId);
-		//b2World_SetPreSolveCallback(worldId, PreSolveFcn, NULL);
+		b2World_SetPreSolveCallback(worldId, PreSolveFcn, NULL);
 	}
 }
 
@@ -48,9 +51,10 @@ void game_draw()
 		pos = b2Body_GetPosition(floorId);
 		shapeId = b2Body_GetFirstShape(floorId);
 		b2Segment segment = b2Shape_GetSegment(shapeId);
-		drawLine(api, segment, 10, kColorBlack);
+		drawLine(api, segment, 5, kColorBlack);
 
         pos = b2Body_GetPosition(boxId);
+		api->system->logToConsole("X: %f, Y: %f", pos.x, pos.y);
         api->graphics->fillRect(pos.x, pos.y, 50, 50, kColorBlack);
 	}
     api->system->drawFPS(0,0);
@@ -63,6 +67,8 @@ b2WorldId register_world(b2Vec2 gravity)
 	worldDef.gravity = gravity;
 	worldDef.enableSleep = true;
 	worldDef.enableContinous = true;
+	worldDef.bodyCapacity = 2;
+	worldDef.jointCapacity = 1;
 	return b2CreateWorld(&worldDef);
 }
 
@@ -71,5 +77,9 @@ void register_bodies(b2WorldId world)
 	api->system->logToConsole("Entry: %s", __FUNCTION__);
 	floorId = create_floor_obj(world);
 	boxId = create_square_box_obj(world);
+}
+
+void unregister_body(b2BodyId bodyId)
+{
 }
 
