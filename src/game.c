@@ -10,7 +10,7 @@ static b2WorldId worldId;
 static b2BodyId floorId;
 static b2BodyId boxId;
 
-static float world_scale = 1.0f;
+float world_scale = 80.0f;
 
 b2WorldId register_world(b2Vec2 gravity);
 void register_bodies(b2WorldId world_id);
@@ -51,13 +51,11 @@ void game_draw()
 		pos = b2Body_GetPosition(floorId);
 		shapeId = b2Body_GetFirstShape(floorId);
 		b2Segment segment = b2Shape_GetSegment(shapeId);
-		drawLine(api, segment, 5, kColorBlack);
+		drawLine(api, segment, 0.1, kColorBlack);
 
         pos = b2Body_GetPosition(boxId);
-		api->system->logToConsole("X: %f, Y: %f", pos.x, pos.y);
-        api->graphics->fillRect(pos.x, pos.y, 50, 50, kColorBlack);
+		drawRect(api, pos, 0.5, 0.5, kColorBlack);
 	}
-    api->system->drawFPS(0,0);
 }
 
 b2WorldId register_world(b2Vec2 gravity)
@@ -67,8 +65,6 @@ b2WorldId register_world(b2Vec2 gravity)
 	worldDef.gravity = gravity;
 	worldDef.enableSleep = true;
 	worldDef.enableContinous = true;
-	worldDef.bodyCapacity = 2;
-	worldDef.jointCapacity = 1;
 	return b2CreateWorld(&worldDef);
 }
 

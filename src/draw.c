@@ -1,6 +1,20 @@
 #include "draw.h"
 
-void drawLine(PlaydateAPI* api, b2Segment segment, int width, LCDColor color)
+void drawLine(PlaydateAPI* api, b2Segment segment, float width, LCDColor color)
 {
-	api->graphics->drawLine(segment.point1.x, segment.point1.y, segment.point2.x, segment.point2.y, width, color);
+	float x1 = segment.point1.x * world_scale;
+	float y1 = segment.point1.y * world_scale;
+	float x2 = segment.point2.x * world_scale;
+	float y2 = segment.point2.y * world_scale;
+	float w = width * world_scale;
+	api->graphics->drawLine(x1, y1, x2, y2, w, color);
+}
+
+void drawRect(PlaydateAPI* api, b2Vec2 position, float width, float height, LCDColor color)
+{
+	float x = position.x * world_scale;
+	float y = position.y * world_scale;
+	float w = width * world_scale;
+	float h = height * world_scale;
+	api->graphics->drawRect(x, y, w, h, color);
 }

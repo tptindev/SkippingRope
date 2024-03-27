@@ -4,6 +4,9 @@
 #include "pd_api.h"
 #include "box2d.h"
 
-void drawLine(PlaydateAPI*api, b2Segment segment, int width, LCDColor color);
+extern float world_scale;
+
+void drawLine(PlaydateAPI*api, b2Segment segment, float width, LCDColor color);
+void drawRect(PlaydateAPI* api, b2Vec2 position, float width, float height, LCDColor color);
 
 #endif // __DRAW_H__
