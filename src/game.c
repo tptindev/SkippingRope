@@ -1,7 +1,6 @@
 #include "game.h"
 #include "gameobj.h"
 #include "draw.h"
-#include "callbacks.h"
 
 static const float FPS = 30.0;
 static bool initialized = false;
@@ -16,18 +15,22 @@ b2WorldId register_world(b2Vec2 gravity);
 void register_bodies(b2WorldId world_id);
 void unregister_body(b2BodyId bodyId);
 
+static bool PreSolveCb(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold, void* context);
+static int ButtonEventCb(PDButtons button, int down, uint32_t when, void* userdata);
+
 void game_initialize(void* userdata)
 {
 	initialized = true;
 	api = userdata;
 	api->display->setRefreshRate(FPS);
+	api->system->setButtonCallback(ButtonEventCb, NULL, 5);
 
 	b2Vec2 gravity = { 0.0f, 9.81f };
 	worldId = register_world(gravity);
 	if (b2World_IsValid(worldId))
 	{
 		register_bodies(worldId);
-		b2World_SetPreSolveCallback(worldId, PreSolveFcn, NULL);
+		b2World_SetPreSolveCallback(worldId, PreSolveCb, NULL);
 	}
 }
 
@@ -51,7 +54,7 @@ void game_draw()
 		pos = b2Body_GetPosition(floorId);
 		shapeId = b2Body_GetFirstShape(floorId);
 		b2Segment segment = b2Shape_GetSegment(shapeId);
-		drawLine(api, segment, 0.1, kColorBlack);
+		drawLine(api, segment, 0.05, kColorBlack);
 
         pos = b2Body_GetPosition(boxId);
 		shapeId = b2Body_GetFirstShape(boxId);
@@ -81,3 +84,18 @@ void unregister_body(b2BodyId bodyId)
 {
 }
 
+static bool PreSolveCb(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold, void* context)
+{
+	return true;
+}
+
+static int ButtonEventCb(PDButtons button, int down, uint32_t when, void* userdata)
+{
+	if (button == kButtonUp && down == 1)
+	{
+		b2Vec2 force = { 0.0f, -200.0f };
+		b2Vec2 pos = b2Body_GetPosition(boxId);
+		b2Body_ApplyForce(boxId, force, pos, true);
+	}
+	return 0;
+}

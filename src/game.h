@@ -6,4 +6,6 @@
 void game_initialize(void* userdata);
 void game_update(float deltatime);
 void game_draw();
+
+
 #endif // __GAME_H__

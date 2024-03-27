@@ -10,7 +10,7 @@ b2BodyId create_floor_obj(b2WorldId world)
 	b2ShapeDef shapeDef = b2DefaultShapeDef();
 	shapeDef.density = 0.0f;
 	shapeDef.friction = 1.0;
-	b2Segment segment = { {0.0f, 2.7f}, {5.0f,2.7f} };
+	b2Segment segment = { {0.0f, 2.9f}, {5.0f,2.9f} };
 	b2CreateSegmentShape(id, &shapeDef, &segment);
 	return id;
 }
