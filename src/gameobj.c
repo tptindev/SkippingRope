@@ -19,7 +19,7 @@ b2BodyId create_square_box_obj(b2WorldId world)
 {
 	b2BodyDef bodyDef = b2DefaultBodyDef();
 	bodyDef.type = b2_dynamicBody;
-	bodyDef.position.x = 2.5f;
+	bodyDef.position.x = 2.25f;
 	bodyDef.enableSleep = true;
 	bodyDef.isAwake = true;
 	b2BodyId id = b2CreateBody(world, &bodyDef);
@@ -31,6 +31,11 @@ b2BodyId create_square_box_obj(b2WorldId world)
 	shapeDef.enablePreSolveEvents = true;
 	b2CreatePolygonShape(id, &shapeDef, &box);
 	return id;
+}
+
+b2BodyId* create_rope_obj(b2WorldId world)
+{
+	return NULL;
 }
 
 

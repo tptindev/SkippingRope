@@ -54,6 +54,8 @@ void game_draw()
 		drawLine(api, segment, 0.1, kColorBlack);
 
         pos = b2Body_GetPosition(boxId);
+		shapeId = b2Body_GetFirstShape(boxId);
+		b2Polygon polygon = b2Shape_GetPolygon(shapeId);
 		drawRect(api, pos, 0.5, 0.5, kColorBlack);
 	}
 }
