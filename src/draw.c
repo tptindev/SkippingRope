@@ -16,5 +16,5 @@ void drawRect(PlaydateAPI* api, b2Vec2 position, float width, float height, LCDC
 	float y = position.y * world_scale;
 	float w = width * world_scale;
 	float h = height * world_scale;
-	api->graphics->drawRect(x, y, w, h, color);
+	api->graphics->fillRect(x, y, w, h, color);
 }

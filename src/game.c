@@ -7,6 +7,7 @@ static bool initialized = false;
 static PlaydateAPI* api = NULL;
 static b2WorldId worldId;
 static b2BodyId floorId;
+static b2BodyId columns[2];
 static b2BodyId boxId;
 
 float world_scale = 80.0f;
@@ -39,7 +40,7 @@ void game_update(float deltatime)
 	if (b2World_IsValid(worldId))
 	{
 		float timeStep = 1.0f / FPS;
-		b2World_Step(worldId, timeStep, 10);
+		b2World_Step(worldId, timeStep, 25);
 	}
 }
 
@@ -50,16 +51,21 @@ void game_draw()
 
 	b2Vec2 pos = {0.0f, 0.0f};
 	b2ShapeId shapeId = b2_nullShapeId;
+	b2Segment segment;
 	{
 		pos = b2Body_GetPosition(floorId);
 		shapeId = b2Body_GetFirstShape(floorId);
-		b2Segment segment = b2Shape_GetSegment(shapeId);
-		drawLine(api, segment, 0.05, kColorBlack);
+		drawRect(api, pos, 30.0f, 0.1f, kColorBlack);
+
+		for (size_t i = 0; i < sizeof(columns) / sizeof(b2BodyId); i++)
+		{
+			pos = b2Body_GetPosition(columns[i]);
+			drawRect(api, pos, 0.04f, 2.9f, kColorBlack);
+		}
 
         pos = b2Body_GetPosition(boxId);
 		shapeId = b2Body_GetFirstShape(boxId);
-		b2Polygon polygon = b2Shape_GetPolygon(shapeId);
-		drawRect(api, pos, 0.5, 0.5, kColorBlack);
+		drawRect(api, pos, 0.2f, 0.2f, kColorBlack);
 	}
 }
 
@@ -77,6 +83,8 @@ void register_bodies(b2WorldId world)
 {
 	api->system->logToConsole("Entry: %s", __FUNCTION__);
 	floorId = create_floor_obj(world);
+	columns[0] = create_column_obj(world, 1.0f, 1.0f, 0.05, 2.0f);
+	columns[1] = create_column_obj(world, 4.0f, 1.0f, 0.05, 2.0f);
 	boxId = create_square_box_obj(world);
 }
 
@@ -91,11 +99,39 @@ static bool PreSolveCb(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manif
 
 static int ButtonEventCb(PDButtons button, int down, uint32_t when, void* userdata)
 {
-	if (button == kButtonUp && down == 1)
+	if (down == 0) return 0;
+	switch (button)
 	{
-		b2Vec2 force = { 0.0f, -200.0f };
+	case kButtonUp:
+	{
+		b2Vec2 force = { 0.0f, -10.0f };
 		b2Vec2 pos = b2Body_GetPosition(boxId);
 		b2Body_ApplyForce(boxId, force, pos, true);
+		break;
+	}
+	case kButtonDown:
+	{
+		b2Vec2 force = { 0.0f, 10.0f };
+		b2Vec2 pos = b2Body_GetPosition(boxId);
+		b2Body_ApplyForce(boxId, force, pos, true);
+		break;
+	}
+	case kButtonLeft:
+	{
+		b2Vec2 force = { -1.0f, 0.0f };
+		b2Vec2 pos = b2Body_GetPosition(boxId);
+		b2Body_ApplyForce(boxId, force, pos, true);
+		break;
+	}
+	case kButtonRight:
+	{
+		b2Vec2 force = { 1.0f, 0.0f };
+		b2Vec2 pos = b2Body_GetPosition(boxId);
+		b2Body_ApplyForce(boxId, force, pos, true);
+		break;
+	}
+	default:
+		break;
 	}
 	return 0;
 }
