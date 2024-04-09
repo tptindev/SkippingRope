@@ -10,11 +10,11 @@ void drawLine(PlaydateAPI* api, b2Segment segment, float width, LCDColor color)
 	api->graphics->drawLine(x1, y1, x2, y2, w, color);
 }
 
-void drawRect(PlaydateAPI* api, b2Vec2 position, float width, float height, LCDColor color)
+void drawRect(PlaydateAPI* api, b2Vec2 position, int width, int height, LCDColor color)
 {
 	float x = position.x * world_scale;
 	float y = position.y * world_scale;
-	float w = width * world_scale;
-	float h = height * world_scale;
-	api->graphics->fillRect(x, y, w, h, color);
+	float w = width;
+	float h = height;
+	api->graphics->drawRect(x, y, w, h, color);
 }

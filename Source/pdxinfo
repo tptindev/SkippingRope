@@ -1,5 +1,5 @@
-name=SkippingRope
+name=Defend
 author=BeStudio
-description=A small demo of the C API
-bundleID=com.panic.skipping_rope
+description=
+bundleID=com.panic.defend_the_center
 imagePath=

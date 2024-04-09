@@ -7,7 +7,6 @@ static bool initialized = false;
 static PlaydateAPI* api = NULL;
 static b2WorldId worldId;
 static b2BodyId floorId;
-static b2BodyId columns[2];
 static b2BodyId boxId;
 
 float world_scale = 80.0f;
@@ -51,21 +50,18 @@ void game_draw()
 
 	b2Vec2 pos = {0.0f, 0.0f};
 	b2ShapeId shapeId = b2_nullShapeId;
-	b2Segment segment;
+	int width = 0;
+	int height = 0;
 	{
 		pos = b2Body_GetPosition(floorId);
 		shapeId = b2Body_GetFirstShape(floorId);
-		drawRect(api, pos, 30.0f, 0.1f, kColorBlack);
-
-		for (size_t i = 0; i < sizeof(columns) / sizeof(b2BodyId); i++)
-		{
-			pos = b2Body_GetPosition(columns[i]);
-			drawRect(api, pos, 0.04f, 2.9f, kColorBlack);
-		}
+		get_shape_size(shapeId, &width, &height);
+		drawRect(api, pos, width, height, kColorBlack);
 
         pos = b2Body_GetPosition(boxId);
 		shapeId = b2Body_GetFirstShape(boxId);
-		drawRect(api, pos, 0.2f, 0.2f, kColorBlack);
+		get_shape_size(shapeId, &width, &height);
+		drawRect(api, pos, width, height, kColorBlack);
 	}
 }
 
@@ -83,8 +79,6 @@ void register_bodies(b2WorldId world)
 {
 	api->system->logToConsole("Entry: %s", __FUNCTION__);
 	floorId = create_floor_obj(world);
-	columns[0] = create_column_obj(world, 1.0f, 1.0f, 0.05, 2.0f);
-	columns[1] = create_column_obj(world, 4.0f, 1.0f, 0.05, 2.0f);
 	boxId = create_square_box_obj(world);
 }
 
