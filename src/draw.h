@@ -6,7 +6,6 @@
 
 extern float world_scale;
 
-void drawLine(PlaydateAPI*api, b2Segment segment, float width, LCDColor color);
-void drawRect(PlaydateAPI* api, b2Vec2 position, int width, int height, LCDColor color);
+void drawRect(PlaydateAPI* api, float x, float y, float width, float height, LCDColor color);
 
 #endif // __DRAW_H__
