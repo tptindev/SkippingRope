@@ -10,8 +10,8 @@ static bool initialized = false;
 static PlaydateAPI* api = NULL;
 static b2WorldId worldId;
 
-static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.35f, 0.35f }; // id, x, y, hw, hh
-static GameObject moon_obj = { B2_ZERO_INIT, 1.75f, 0.8f, 0.15f, 0.15f }; // id, x, y, hw, hh
+static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.35f, 0.35f }; // id, xcenter, ycenter, hw, hh
+static GameObject moon_obj = { B2_ZERO_INIT, 1.75f, 0.8f, 0.15f, 0.15f }; // id, xcenter, ycenter, hw, hh
 const double orbit_radius = 1.0f;
 
 b2WorldId register_world(b2Vec2 gravity);
