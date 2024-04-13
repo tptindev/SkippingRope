@@ -77,7 +77,7 @@ void game_update(float deltatime)
 					{
 						free(meteorite_list);
 					}
-					meteorite_list = api->system->realloc(NULL, sizeof(GameObject) * number_of_meteorites);
+					meteorite_list = malloc(sizeof(GameObject) * number_of_meteorites);
 				}
 
 				if (meteorite_list != NULL)
