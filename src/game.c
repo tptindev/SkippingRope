@@ -10,9 +10,9 @@ static bool initialized = false;
 static PlaydateAPI* api = NULL;
 static b2WorldId worldId;
 
-static GameObject earth_obj = { B2_ZERO_INIT, 2.15f, 1.15f, 0.35f, 0.35f }; // id, x, y, hw, hh
+static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.35f, 0.35f }; // id, x, y, hw, hh
 static GameObject moon_obj = { B2_ZERO_INIT, 1.75f, 0.8f, 0.15f, 0.15f }; // id, x, y, hw, hh
-double orbit_radius = 1.0f;
+const double orbit_radius = 1.0f;
 
 b2WorldId register_world(b2Vec2 gravity);
 void register_bodies(b2WorldId world_id);
@@ -51,12 +51,13 @@ void game_update(float deltatime)
 
 		{ // earth
 			earth_center = b2Body_GetPosition(earth_obj.id);
+
 		}
 
 		{ // moon
 			double angle_rad = api->system->getCrankAngle() * (3.14159265358979323846f / 180.0f);
-			moon_obj.x = (float)(orbit_radius * cos(angle_rad) + earth_center.x + earth_obj.half_width/2);
-			moon_obj.y = (float)(orbit_radius * sin(angle_rad) + earth_center.y + earth_obj.half_height/2);
+			moon_obj.x = (float)(orbit_radius * cos(angle_rad) + earth_center.x);
+			moon_obj.y = (float)(orbit_radius * sin(angle_rad) + earth_center.y);
 		}
 	}
 }
@@ -67,11 +68,11 @@ void game_draw()
 	api->graphics->setBackgroundColor(kColorBlack);
 
 	{ // earth
-		drawEllipse(api, earth_obj.x, earth_obj.y, earth_obj.half_width * 2, earth_obj.half_height * 2, 0, 0, kColorBlack);
+		drawEllipse(api, earth_obj.x - earth_obj.half_width, earth_obj.y - earth_obj.half_height, earth_obj.half_width * 2, earth_obj.half_height * 2, 0, 0, kColorBlack);
 	}
 
 	{ // moon
-		drawEllipse(api, moon_obj.x, moon_obj.y, moon_obj.half_width * 2, moon_obj.half_height * 2, 0, 0, kColorBlack);
+		drawEllipse(api, moon_obj.x - moon_obj.half_width, moon_obj.y - moon_obj.half_height, moon_obj.half_width * 2, moon_obj.half_height * 2, 0, 0, kColorBlack);
 	}
 }
 
