@@ -48,11 +48,14 @@ void game_update(float deltatime)
 		b2Vec2 local_point = { 0.0f, 0.0f };
 		b2Vec2 world_point = { 0.0f, 0.0f };
 
+		{ // earth
+
+		}
+
 		{ // moon
 			float angle_rad = (float)api->system->getCrankAngle() * (3.14f / 180.0f);
-			moon_obj.x = orbit_radius * cos(angle_rad);
-			moon_obj.y = orbit_radius * sin(angle_rad);
-
+			moon_obj.x = (orbit_radius * cos(angle_rad)) + earth_obj.x;
+			moon_obj.y = (orbit_radius * sin(angle_rad)) + earth_obj.y;
 		}
 	}
 }
