@@ -2,3 +2,4 @@
 *.pdx
 .sentry-native
 .vscode
+*.dll
