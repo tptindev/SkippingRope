@@ -38,7 +38,7 @@ set(LIB_DIR
     ${CMAKE_SOURCE_DIR}/libs
 )
 
-file(GLOB IMAGES
+file(GLOB RESOURCES
 	"Source/images/*"
 )
 
@@ -50,7 +50,7 @@ link_directories(${LIB_DIRS})
 if (TOOLCHAIN STREQUAL "armgcc")
 	add_executable(${PLAYDATE_GAME_DEVICE} ${SDK}/C_API/buildsupport/setup.c ${SOURCE_FILES})
 else()
-	add_library(${PLAYDATE_GAME_NAME} SHARED ${SOURCE_FILES} ${IMAGES})
+	add_library(${PLAYDATE_GAME_NAME} SHARED ${SOURCE_FILES} ${RESOURCES})
 	target_link_libraries(${PLAYDATE_GAME_NAME} PRIVATE "${LIB_DIR}/box2d.lib")
 endif()
 	
