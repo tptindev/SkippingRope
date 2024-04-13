@@ -12,7 +12,7 @@ static b2WorldId worldId;
 
 static GameObject earth_obj = { B2_ZERO_INIT, 2.15f, 1.15f, 0.35f, 0.35f }; // id, x, y, hw, hh
 static GameObject moon_obj = { B2_ZERO_INIT, 1.75f, 0.8f, 0.15f, 0.15f }; // id, x, y, hw, hh
-const orbit_radius = 1.0f;
+double orbit_radius = 1.0f;
 
 b2WorldId register_world(b2Vec2 gravity);
 void register_bodies(b2WorldId world_id);
@@ -47,15 +47,16 @@ void game_update(float deltatime)
 		b2Vec2 pos = { 0.0f, 0.0f };
 		b2Vec2 local_point = { 0.0f, 0.0f };
 		b2Vec2 world_point = { 0.0f, 0.0f };
+		b2Vec2 earth_center = { 0.0f, 0.0f };
 
 		{ // earth
-
+			earth_center = b2Body_GetPosition(earth_obj.id);
 		}
 
 		{ // moon
-			float angle_rad = (float)api->system->getCrankAngle() * (3.14f / 180.0f);
-			moon_obj.x = (orbit_radius * cos(angle_rad)) + earth_obj.x;
-			moon_obj.y = (orbit_radius * sin(angle_rad)) + earth_obj.y;
+			double angle_rad = api->system->getCrankAngle() * (3.14159265358979323846f / 180.0f);
+			moon_obj.x = (float)(orbit_radius * cos(angle_rad) + earth_center.x + earth_obj.half_width/2);
+			moon_obj.y = (float)(orbit_radius * sin(angle_rad) + earth_center.y + earth_obj.half_height/2);
 		}
 	}
 }
