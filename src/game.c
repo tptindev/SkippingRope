@@ -70,19 +70,16 @@ void game_update(float deltatime)
 		{ // meteorites
 			current_time = api->system->getCurrentTimeMilliseconds();
 			time_step = floor((current_time/1000) % 3);
+			if (time_step == 0) {
+				meteorite_list = api->system->realloc(meteorite_list, sizeof(GameObject) * number_of_meteorites);
+			}
 
-			{ // meteorites
-				if (time_step == 0) {
-					meteorite_list = api->system->realloc(meteorite_list, sizeof(GameObject) * number_of_meteorites);
-				}
-
-				if (meteorite_list != NULL)
+			if (meteorite_list != NULL)
+			{
+				for (int i = 0; i < number_of_meteorites; i++)
 				{
-					for (int i = 0; i < number_of_meteorites; i++)
-					{
 
-						meteorite_list[i] = (GameObject){ B2_ZERO_INIT, 0.0f, 0.0f, 0.0f, 0.0f };
-					}
+					meteorite_list[i] = (GameObject){ B2_ZERO_INIT, 0.0f, 0.0f, 0.0f, 0.0f };
 				}
 			}
 		}
