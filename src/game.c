@@ -13,7 +13,7 @@ static b2WorldId worldId;
 static int current_time = 0;
 static int number_of_meteorites = 3;
 static int time_step = 0;
-static GameObject* meteorite_list;
+static GameObject* meteorite_list = NULL;
 
 static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.35f, 0.35f }; // id, xcenter, ycenter, hw, hh
 static GameObject moon_obj = { B2_ZERO_INIT, 1.75f, 0.8f, 0.15f, 0.15f }; // id, xcenter, ycenter, hw, hh
@@ -73,11 +73,7 @@ void game_update(float deltatime)
 
 			{ // meteorites
 				if (time_step == 0) {
-					if (meteorite_list != NULL)
-					{
-						free(meteorite_list);
-					}
-					meteorite_list = malloc(sizeof(GameObject) * number_of_meteorites);
+					meteorite_list = api->system->realloc(meteorite_list, sizeof(GameObject) * number_of_meteorites);
 				}
 
 				if (meteorite_list != NULL)
