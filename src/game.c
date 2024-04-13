@@ -2,6 +2,7 @@
 #include "gameobj.h"
 #include "draw.h"
 #include <math.h>
+#include <stdlib.h>
 
 float world_scale = 80.0f;
 
@@ -9,6 +10,10 @@ static const float FPS = 30.0;
 static bool initialized = false;
 static PlaydateAPI* api = NULL;
 static b2WorldId worldId;
+static int current_time = 0;
+static int number_of_meteorites = 3;
+static int time_step = 0;
+static GameObject* meteorite_list;
 
 static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.35f, 0.35f }; // id, x, y, hw, hh
 static GameObject moon_obj = { B2_ZERO_INIT, 1.75f, 0.8f, 0.15f, 0.15f }; // id, x, y, hw, hh
@@ -20,6 +25,8 @@ void unregister_body(b2BodyId bodyId);
 
 static bool PreSolveCb(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold, void* context);
 static int ButtonEventCb(PDButtons button, int down, uint32_t when, void* userdata);
+
+
 
 void game_initialize(void* userdata)
 {
@@ -59,6 +66,30 @@ void game_update(float deltatime)
 			moon_obj.x = (float)(orbit_radius * cos(angle_rad) + earth_center.x);
 			moon_obj.y = (float)(orbit_radius * sin(angle_rad) + earth_center.y);
 		}
+
+		{ // meteorites
+			current_time = api->system->getCurrentTimeMilliseconds();
+			time_step = floor((current_time/1000) % 3);
+
+			{ // meteorites
+				if (time_step == 0) {
+					if (meteorite_list != NULL)
+					{
+						free(meteorite_list);
+					}
+					meteorite_list = api->system->realloc(NULL, sizeof(GameObject) * number_of_meteorites);
+				}
+
+				if (meteorite_list != NULL)
+				{
+					for (int i = 0; i < number_of_meteorites; i++)
+					{
+
+						meteorite_list[i] = (GameObject){ B2_ZERO_INIT, 0.0f, 0.0f, 0.0f, 0.0f };
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -74,6 +105,37 @@ void game_draw()
 	{ // moon
 		drawEllipse(api, moon_obj.x - moon_obj.half_width, moon_obj.y - moon_obj.half_height, moon_obj.half_width * 2, moon_obj.half_height * 2, 0, 0, kColorBlack);
 	}
+
+	//{ // meteorites
+	//	if (time_step == 3) {
+	//		for (int i = 0; i < number_of_meteorites; i++) {
+	//			int start_edge = rand() % 4;
+	//			b2Vec2 meteorite_pos = { 0.0f, 0.0f };
+	//			switch (start_edge)
+	//			{
+	//			case 0:
+	//				meteorite_pos.x = rand() % 6;
+	//				break;
+	//			case 1:
+	//				meteorite_pos.y = rand() % 3;
+	//				break;
+	//			case 2:
+	//				meteorite_pos.x = rand() % 5;
+	//				meteorite_pos.y = 3.0f;
+	//				break;
+	//			case 3:
+	//				meteorite_pos.x = 5.0f;
+	//				meteorite_pos.y = rand() % 3;
+	//				break;
+	//			default:
+	//				break;
+	//			}
+	//			drawEllipse(api, meteorite_pos.x, meteorite_pos.y, moon_obj.half_width, moon_obj.half_height, 0, 0, kColorBlack);
+	//		}
+	//	}
+	//	
+	//}
+
 }
 
 b2WorldId register_world(b2Vec2 gravity)
