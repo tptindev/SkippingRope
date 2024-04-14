@@ -18,3 +18,12 @@ void drawEllipse(PlaydateAPI* api, float x, float y, float width, float height, 
 		color
 	);
 }
+
+void drawFrame(PlaydateAPI* api, LCDBitmap* bitmap, float x, float y)
+{
+	api->graphics->drawBitmap(
+		bitmap,
+		(int)(x * world_scale),
+		(int)(y * world_scale), 
+		kBitmapUnflipped);
+}

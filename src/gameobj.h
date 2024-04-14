@@ -10,6 +10,8 @@ typedef struct game_obj
 	float y;
 	float half_width;
 	float half_height;
+	void* sprites;
+	unsigned int sprite_size;
 } GameObject;
 
 void get_shape_size(b2ShapeId shapeId, float* width, float* height);
