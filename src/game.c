@@ -69,7 +69,7 @@ void game_update(float deltatime)
 
 		{ // meteorites
 			current_time = api->system->getCurrentTimeMilliseconds();
-			time_step = floor((current_time/1000) % 3);
+			time_step = (current_time/1000) % 3;
 			if (time_step == 0) {
 				meteorite_list = api->system->realloc(meteorite_list, sizeof(GameObject) * number_of_meteorites);
 			}
@@ -92,7 +92,7 @@ void game_draw()
 	api->graphics->setBackgroundColor(kColorBlack);
 
 	{ // earth
-		drawFrame(api, earth_obj.sprites, earth_obj.x - earth_obj.half_width, earth_obj.y - earth_obj.half_height);
+		drawRotationFrame(api, earth_obj.sprites, earth_obj.x, earth_obj.y, (float)((api->system->getCurrentTimeMilliseconds() / 3) % 360));
 		//drawEllipse(api, earth_obj.x - earth_obj.half_width, earth_obj.y - earth_obj.half_height, earth_obj.half_width * 2, earth_obj.half_height * 2, 0, 0, kColorBlack);
 	}
 
@@ -158,8 +158,12 @@ void register_bodies(b2WorldId world)
 		int earth_height = 0;
 
 		const char* outerr = NULL;
-		earth_obj.sprites = api->system->realloc(NULL, sizeof(LCDBitmap*));
 		earth_obj.sprites = api->graphics->loadBitmap("images/earth.png", &outerr);
+		if (outerr)
+		{
+			api->system->error("[EARTH] bitmap %s", outerr);
+		}
+
 		api->graphics->getBitmapData(earth_obj.sprites, &earth_width, &earth_height, 0, NULL, NULL);
 
 		earth_obj.half_height = (float)(earth_height / 2) / 80.0f;
@@ -175,7 +179,7 @@ void register_bodies(b2WorldId world)
 		polygon = b2MakeRoundedBox(earth_obj.half_width, earth_obj.half_height, earth_obj.half_width); // h-w, h-h, r
 		shapeDef = b2DefaultShapeDef();
 		shapeDef.density = 1.0f;
-		shapeDef.friction = 0.3;
+		shapeDef.friction = 0.3f;
 		shapeDef.enablePreSolveEvents = true;
 		shapeId = b2CreatePolygonShape(earth_obj.id, &shapeDef, &polygon);
 
@@ -186,8 +190,12 @@ void register_bodies(b2WorldId world)
 		int earth_height = 0;
 
 		const char* outerr = NULL;
-		moon_obj.sprites = api->system->realloc(NULL, sizeof(LCDBitmap*));
 		moon_obj.sprites = api->graphics->loadBitmap("images/moon.png", &outerr);
+		if (outerr)
+		{
+			api->system->error("[MOON] bitmap %s", outerr);
+		}
+
 		api->graphics->getBitmapData(moon_obj.sprites, &earth_width, &earth_height, 0, NULL, NULL);
 
 		moon_obj.half_height = (float)(earth_height / 2) / 80.0f;
@@ -203,7 +211,7 @@ void register_bodies(b2WorldId world)
 		polygon = b2MakeRoundedBox(moon_obj.half_width, moon_obj.half_height, moon_obj.half_width); // h-w, h-h, r
 		shapeDef = b2DefaultShapeDef();
 		shapeDef.density = 1.0f;
-		shapeDef.friction = 0.3;
+		shapeDef.friction = 0.3f;
 		shapeDef.enablePreSolveEvents = true;
 		shapeId = b2CreatePolygonShape(moon_obj.id, &shapeDef, &polygon);
 	}
