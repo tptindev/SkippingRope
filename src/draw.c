@@ -22,14 +22,10 @@ void drawEllipse(PlaydateAPI* api, float x, float y, float width, float height, 
 void drawFrame(PlaydateAPI* api, LCDBitmap* bitmap, float x, float y)
 {
 	if (bitmap == NULL) return;
-	api->graphics->drawBitmap(
-		bitmap,
-		(int)(x * world_scale),
-		(int)(y * world_scale), 
-		kBitmapUnflipped);
+	drawRotationFrame(api, bitmap, x, y, true, 0);
 }
 
-void drawRotationFrame(PlaydateAPI* api, LCDBitmap* bitmap, float x, float y, float degree)
+void drawRotationFrame(PlaydateAPI* api, LCDBitmap* bitmap, float x, float y, bool is_center, float degree)
 {
 	if (bitmap == NULL) return;
 	api->graphics->drawRotatedBitmap(
@@ -37,8 +33,8 @@ void drawRotationFrame(PlaydateAPI* api, LCDBitmap* bitmap, float x, float y, fl
 		(int)(x * world_scale),
 		(int)(y * world_scale), 
 		degree, 
-		0.5f, 
-		0.5f, 
+		is_center? 0.5f:0.0f,
+		is_center? 0.5f:0.0f,
 		1.0f, 
 		1.0f);
 }

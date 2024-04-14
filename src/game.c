@@ -10,13 +10,13 @@ static const float FPS = 30.0;
 static bool initialized = false;
 static PlaydateAPI* api = NULL;
 static b2WorldId worldId;
-static int current_time = 0;
+static unsigned int current_time = 0;
 static int number_of_meteorites = 3;
 static int time_step = 0;
-static GameObject* meteorite_list = NULL;
+static GameObject* meteorites = NULL;
 
-static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.35f, 0.35f, NULL, 1 }; // id, xcenter, ycenter, hw, hh
-static GameObject moon_obj = { B2_ZERO_INIT, 1.75f, 0.8f, 0.15f, 0.15f, NULL, 1 }; // id, xcenter, ycenter, hw, hh
+static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.35f, 0.35f, NULL, 1 }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap
+static GameObject moon_obj = { B2_ZERO_INIT, 2.5f, 0.0f, 0.15f, 0.15f, NULL, 1 }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap
 const double orbit_radius = 1.0f;
 
 b2WorldId register_world(b2Vec2 gravity);
@@ -42,6 +42,7 @@ void game_initialize(void* userdata)
 		register_bodies(worldId);
 		b2World_SetPreSolveCallback(worldId, PreSolveCb, NULL);
 	}
+	meteorites = api->system->realloc(NULL, sizeof(GameObject));
 }
 
 void game_update(float deltatime)
@@ -49,7 +50,7 @@ void game_update(float deltatime)
 	if (b2World_IsValid(worldId))
 	{
 		float timeStep = 1.0f / FPS;
-		b2World_Step(worldId, timeStep, 25);
+		b2World_Step(worldId, timeStep, 10);
 
 		b2Vec2 pos = { 0.0f, 0.0f };
 		b2Vec2 local_point = { 0.0f, 0.0f };
@@ -58,31 +59,81 @@ void game_update(float deltatime)
 
 		{ // earth
 			earth_center = b2Body_GetPosition(earth_obj.id);
-
 		}
 
 		{ // moon
 			double angle_rad = api->system->getCrankAngle() * (3.14159265358979323846f / 180.0f);
 			moon_obj.x = (float)(orbit_radius * cos(angle_rad) + earth_center.x);
 			moon_obj.y = (float)(orbit_radius * sin(angle_rad) + earth_center.y);
+			b2Body_SetTransform(
+				moon_obj.id,
+				(b2Vec2) { moon_obj.x, moon_obj.y},
+				0
+			);
 		}
 
 		{ // meteorites
 			current_time = api->system->getCurrentTimeMilliseconds();
-			time_step = (current_time/1000) % 3;
+			time_step = ((int)current_time / 1000) % 3;
 			if (time_step == 0) {
-				meteorite_list = api->system->realloc(meteorite_list, sizeof(GameObject) * number_of_meteorites);
+				for (int i = 0; i < number_of_meteorites; i++)
+				{
+					// Random position for the meteorite
+					int start_edge = rand() % 4; // 4 max  of edge (0,1,2,3)
+					b2Vec2 pos = { 0.0f, 0.0f };
+					switch (start_edge)
+					{
+					case 0:
+						pos.x = (float)rand() / (float)(RAND_MAX / 5);
+						break;
+					case 1:
+						pos.y = (float)rand() / (float)(RAND_MAX / 3);
+						break;
+					case 2:
+						pos.x = (float)rand() / (float)(RAND_MAX / 5);
+						pos.y = 3.0f;
+						break;
+					case 3:
+						pos.x = 5.0f;
+						pos.y = (float)rand() / (float)(RAND_MAX / 3);
+						break;
+					default:
+						break;
+					}
+					// transition to earth center
+					meteorites[i] = (GameObject){ B2_ZERO_INIT, pos.x, pos.y, 0.15f, 0.15f, NULL, 1 };
+					b2BodyDef bodyDef = b2DefaultBodyDef();
+					bodyDef.type = b2_dynamicBody;
+					bodyDef.position.x = meteorites[i].x;
+					bodyDef.position.y = meteorites[i].y;
+					bodyDef.enableSleep = true;
+					meteorites[i].id = b2CreateBody(worldId, &bodyDef);
+
+					b2Circle circle = { (b2Vec2) { 0.0f, 0.0f }, meteorites[i].half_width };
+					b2ShapeDef shapeDef = b2DefaultShapeDef();
+					shapeDef.density = 1.0f;
+					shapeDef.friction = 0.3f;
+					shapeDef.restitution = 0.5f;
+					b2CreateCircleShape(meteorites[i].id, &shapeDef, &circle);
+				}
 			}
 
-			if (meteorite_list != NULL)
+			else if (meteorites != NULL)
 			{
 				for (int i = 0; i < number_of_meteorites; i++)
 				{
+					meteorites[i].x += (earth_obj.x - meteorites[i].x) * deltatime;
+					meteorites[i].y += (earth_obj.y - meteorites[i].y) * deltatime;
 
-					meteorite_list[i] = (GameObject){ B2_ZERO_INIT, 0.0f, 0.0f, 0.0f, 0.0f };
+					b2Body_SetTransform(
+						meteorites[i].id,
+						(b2Vec2) { meteorites[i].x, meteorites[i].y },
+						0
+					);
 				}
 			}
 		}
+	
 	}
 }
 
@@ -92,44 +143,38 @@ void game_draw()
 	api->graphics->setBackgroundColor(kColorBlack);
 
 	{ // earth
-		drawRotationFrame(api, earth_obj.sprites, earth_obj.x, earth_obj.y, (float)((api->system->getCurrentTimeMilliseconds() / 3) % 360));
-		//drawEllipse(api, earth_obj.x - earth_obj.half_width, earth_obj.y - earth_obj.half_height, earth_obj.half_width * 2, earth_obj.half_height * 2, 0, 0, kColorBlack);
+		drawRotationFrame(
+			api,
+			earth_obj.sprites,
+			earth_obj.x,
+			earth_obj.y,
+			true,
+			(float)((api->system->getCurrentTimeMilliseconds() / 3) % 360)
+		);
 	}
 
 	{ // moon
-		drawFrame(api, moon_obj.sprites, moon_obj.x - moon_obj.half_width, moon_obj.y - moon_obj.half_height);
-		//drawEllipse(api, moon_obj.x - moon_obj.half_width, moon_obj.y - moon_obj.half_height, moon_obj.half_width * 2, moon_obj.half_height * 2, 0, 0, kColorBlack);
+		drawFrame(
+			api,
+			moon_obj.sprites,
+			moon_obj.x,
+			moon_obj.y
+		);
 	}
 
-	//{ // meteorites
-	//	if (time_step == 3) {
-	//		for (int i = 0; i < number_of_meteorites; i++) {
-	//			int start_edge = rand() % 4;
-	//			b2Vec2 meteorite_pos = { 0.0f, 0.0f };
-	//			switch (start_edge)
-	//			{
-	//			case 0:
-	//				meteorite_pos.x = rand() % 6;
-	//				break;
-	//			case 1:
-	//				meteorite_pos.y = rand() % 3;
-	//				break;
-	//			case 2:
-	//				meteorite_pos.x = rand() % 5;
-	//				meteorite_pos.y = 3.0f;
-	//				break;
-	//			case 3:
-	//				meteorite_pos.x = 5.0f;
-	//				meteorite_pos.y = rand() % 3;
-	//				break;
-	//			default:
-	//				break;
-	//			}
-	//			drawEllipse(api, meteorite_pos.x, meteorite_pos.y, moon_obj.half_width, moon_obj.half_height, 0, 0, kColorBlack);
-	//		}
-	//	}
-	//	
-	//}
+	{ // meteorites
+		for (int i = 0; i < number_of_meteorites; i++) {
+			drawEllipse(
+				api,
+				meteorites[i].x,
+				meteorites[i].y,
+				meteorites[i].half_width,
+				meteorites[i].half_height,
+				0,
+				0,
+				kColorBlack);
+		}
+	}
 
 }
 
@@ -152,6 +197,7 @@ void register_bodies(b2WorldId world)
 	b2BodyDef bodyDef;
 	b2ShapeDef shapeDef;
 	b2Polygon polygon; 
+	b2Circle circle;
 
 	{ // earth
 		int earth_width = 0; 
@@ -169,6 +215,8 @@ void register_bodies(b2WorldId world)
 		earth_obj.half_height = (float)(earth_height / 2) / 80.0f;
 		earth_obj.half_width = (float)(earth_width / 2) / 80.0f;
 
+		api->system->logToConsole("Earth pos: %f, %f  size: %f, %f", earth_obj.x, earth_obj.y, earth_obj.half_height, earth_obj.half_width);
+
 		bodyDef = b2DefaultBodyDef();
 		bodyDef.type = b2_staticBody;
 		bodyDef.position.x = earth_obj.x;
@@ -176,12 +224,13 @@ void register_bodies(b2WorldId world)
 		bodyDef.enableSleep = true;
 		earth_obj.id = b2CreateBody(world, &bodyDef);
 
-		polygon = b2MakeRoundedBox(earth_obj.half_width, earth_obj.half_height, earth_obj.half_width); // h-w, h-h, r
+		circle.point = (b2Vec2){ 0.0f, 0.0f };
+		circle.radius = earth_obj.half_width;
+
 		shapeDef = b2DefaultShapeDef();
 		shapeDef.density = 1.0f;
 		shapeDef.friction = 0.3f;
-		shapeDef.enablePreSolveEvents = true;
-		shapeId = b2CreatePolygonShape(earth_obj.id, &shapeDef, &polygon);
+		shapeId = b2CreateCircleShape(earth_obj.id, &shapeDef, &circle);
 
 	}
 
@@ -201,19 +250,23 @@ void register_bodies(b2WorldId world)
 		moon_obj.half_height = (float)(earth_height / 2) / 80.0f;
 		moon_obj.half_width = (float)(earth_width / 2) / 80.0f;
 
+		api->system->logToConsole("Moon pos: %f, %f  size: %f, %f", moon_obj.x, moon_obj.y, moon_obj.half_height, moon_obj.half_width);
+
+
 		bodyDef = b2DefaultBodyDef();
-		bodyDef.type = b2_kinematicBody;
+		bodyDef.type = b2_dynamicBody;
 		bodyDef.position.x = moon_obj.x;
 		bodyDef.position.y = moon_obj.y;
 		bodyDef.enableSleep = true;
 		moon_obj.id = b2CreateBody(world, &bodyDef);
 
-		polygon = b2MakeRoundedBox(moon_obj.half_width, moon_obj.half_height, moon_obj.half_width); // h-w, h-h, r
+		circle.point = (b2Vec2){ 0.0f, 0.0f };
+		circle.radius = moon_obj.half_width;
+
 		shapeDef = b2DefaultShapeDef();
 		shapeDef.density = 1.0f;
 		shapeDef.friction = 0.3f;
-		shapeDef.enablePreSolveEvents = true;
-		shapeId = b2CreatePolygonShape(moon_obj.id, &shapeDef, &polygon);
+		shapeId = b2CreateCircleShape(moon_obj.id, &shapeDef, &circle);
 	}
 }
 
