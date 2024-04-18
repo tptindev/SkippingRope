@@ -1,23 +1,30 @@
 #include "game.h"
-#include "gameobj.h"
+#include "struct_defines.h"
 #include "draw.h"
 #include <math.h>
 #include <stdlib.h>
 
+const float FPS = 30.0;
 float world_scale = 80.0f;
+const unsigned int MAX_METEORITES = 32;
+const double orbit_radius = 0.5f;
 
-static const float FPS = 30.0;
 static bool initialized = false;
 static PlaydateAPI* api = NULL;
 static b2WorldId worldId;
-static unsigned int current_time = 0;
-static int number_of_meteorites = 3;
-static int time_step = 0;
-static GameObject* meteorites = NULL;
+static unsigned int current_level = 0; // index
+static LevelObject levels[5] =
+{
+	{"2021", NULL, 10},
+	{"2022", NULL, 30},
+	{"2023", NULL, 60},
+	{"2024", NULL, 90},
+	{"2025", NULL, 120},
+};
 
+static GameObject* meteorites = NULL;
 static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.35f, 0.35f, NULL, 1 }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap
 static GameObject moon_obj = { B2_ZERO_INIT, 2.5f, 0.0f, 0.15f, 0.15f, NULL, 1 }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap
-const double orbit_radius = 1.0f;
 
 b2WorldId register_world(b2Vec2 gravity);
 void register_bodies(b2WorldId world_id);
@@ -42,7 +49,9 @@ void game_initialize(void* userdata)
 		register_bodies(worldId);
 		b2World_SetPreSolveCallback(worldId, PreSolveCb, NULL);
 	}
-	meteorites = api->system->realloc(NULL, sizeof(GameObject));
+
+	// register blocks stores 32 GameObjects
+	meteorites = api->system->realloc(NULL, sizeof(GameObject) * MAX_METEORITES);
 }
 
 void game_update(float deltatime)
@@ -73,65 +82,6 @@ void game_update(float deltatime)
 		}
 
 		{ // meteorites
-			current_time = api->system->getCurrentTimeMilliseconds();
-			time_step = ((int)current_time / 1000) % 3;
-			if (time_step == 0) {
-				for (int i = 0; i < number_of_meteorites; i++)
-				{
-					// Random position for the meteorite
-					int start_edge = rand() % 4; // 4 max  of edge (0,1,2,3)
-					b2Vec2 pos = { 0.0f, 0.0f };
-					switch (start_edge)
-					{
-					case 0:
-						pos.x = (float)rand() / (float)(RAND_MAX / 5);
-						break;
-					case 1:
-						pos.y = (float)rand() / (float)(RAND_MAX / 3);
-						break;
-					case 2:
-						pos.x = (float)rand() / (float)(RAND_MAX / 5);
-						pos.y = 3.0f;
-						break;
-					case 3:
-						pos.x = 5.0f;
-						pos.y = (float)rand() / (float)(RAND_MAX / 3);
-						break;
-					default:
-						break;
-					}
-					// transition to earth center
-					meteorites[i] = (GameObject){ B2_ZERO_INIT, pos.x, pos.y, 0.15f, 0.15f, NULL, 1 };
-					b2BodyDef bodyDef = b2DefaultBodyDef();
-					bodyDef.type = b2_dynamicBody;
-					bodyDef.position.x = meteorites[i].x;
-					bodyDef.position.y = meteorites[i].y;
-					bodyDef.enableSleep = true;
-					meteorites[i].id = b2CreateBody(worldId, &bodyDef);
-
-					b2Circle circle = { (b2Vec2) { 0.0f, 0.0f }, meteorites[i].half_width };
-					b2ShapeDef shapeDef = b2DefaultShapeDef();
-					shapeDef.density = 1.0f;
-					shapeDef.friction = 0.3f;
-					shapeDef.restitution = 0.5f;
-					b2CreateCircleShape(meteorites[i].id, &shapeDef, &circle);
-				}
-			}
-
-			else if (meteorites != NULL)
-			{
-				for (int i = 0; i < number_of_meteorites; i++)
-				{
-					meteorites[i].x += (earth_obj.x - meteorites[i].x) * deltatime;
-					meteorites[i].y += (earth_obj.y - meteorites[i].y) * deltatime;
-
-					b2Body_SetTransform(
-						meteorites[i].id,
-						(b2Vec2) { meteorites[i].x, meteorites[i].y },
-						0
-					);
-				}
-			}
 		}
 	
 	}
@@ -163,17 +113,7 @@ void game_draw()
 	}
 
 	{ // meteorites
-		for (int i = 0; i < number_of_meteorites; i++) {
-			drawEllipse(
-				api,
-				meteorites[i].x,
-				meteorites[i].y,
-				meteorites[i].half_width,
-				meteorites[i].half_height,
-				0,
-				0,
-				kColorBlack);
-		}
+	
 	}
 
 }
@@ -282,35 +222,35 @@ static bool PreSolveCb(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manif
 static int ButtonEventCb(PDButtons button, int down, uint32_t when, void* userdata)
 {
 	if (down == 0) return 0;
-	//switch (button)
-	//{
-	//case kButtonUp:
-	//{
-	//	b2Vec2 force = { 0.0f, -10.0f };
-	//	b2Body_ApplyForce(box_obj.id, force, (b2Vec2){ box_obj.x, box_obj.y }, true);
-	//	break;
-	//}
-	//case kButtonDown:
-	//{
-	//	b2Vec2 force = { 0.0f, 10.0f };
-	//	b2Body_ApplyForce(box_obj.id, force, (b2Vec2) { box_obj.x, box_obj.y }, true);
-	//	break;
-	//}
-	//case kButtonLeft:
-	//{
-	//	b2Vec2 force = { -1.0f, 0.0f };
-	//	b2Body_ApplyForce(box_obj.id, force, (b2Vec2) { box_obj.x, box_obj.y }, true);
-	//	break;
-	//}
-	//case kButtonRight:
-	//{
-	//	b2Vec2 force = { 1.0f, 0.0f };
-	//	b2Body_ApplyForce(box_obj.id, force, (b2Vec2) { box_obj.x, box_obj.y }, true);
-	//	break;
-	//}
-	//default:
-	//	break;
-	//}
-	//
+	switch (button)
+	{
+	case kButtonUp:
+	{
+		b2Vec2 force = { 0.0f, -10.0f };
+		b2Body_ApplyForce(moon_obj.id, force, (b2Vec2){ moon_obj.x, moon_obj.y }, true);
+		break;
+	}
+	case kButtonDown:
+	{
+		b2Vec2 force = { 0.0f, 10.0f };
+		b2Body_ApplyForce(moon_obj.id, force, (b2Vec2) { moon_obj.x, moon_obj.y }, true);
+		break;
+	}
+	case kButtonLeft:
+	{
+		b2Vec2 force = { -1.0f, 0.0f };
+		b2Body_ApplyForce(moon_obj.id, force, (b2Vec2) { moon_obj.x, moon_obj.y }, true);
+		break;
+	}
+	case kButtonRight:
+	{
+		b2Vec2 force = { 1.0f, 0.0f };
+		b2Body_ApplyForce(moon_obj.id, force, (b2Vec2) { moon_obj.x, moon_obj.y }, true);
+		break;
+	}
+	default:
+		break;
+	}
+	
 	return 0;
 }

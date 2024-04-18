@@ -14,6 +14,11 @@ typedef struct game_obj
 	unsigned int sprite_size;
 } GameObject;
 
-void get_shape_size(b2ShapeId shapeId, float* width, float* height);
+typedef struct level_obj
+{
+	const char* title;
+	void* tilemap;
+	float speed;
+} LevelObject;
 
 #endif // __GAMEOBJ_H__

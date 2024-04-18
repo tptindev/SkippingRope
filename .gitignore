@@ -2,4 +2,4 @@
 *.pdx
 .sentry-native
 .vscode
-*.dll
+/Source/pdex.dll
