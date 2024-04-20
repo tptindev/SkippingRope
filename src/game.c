@@ -143,8 +143,12 @@ void game_update(float deltatime)
 	
 		if (api->system->getCrankAngle() != last_crank_angle)
 		{
+#if MOON_ON
 			api->system->logToConsole("Moon position: %f %f", moon_obj.x, moon_obj.y);
+#endif
+#if TESTING_ON
 			api->system->logToConsole("Box position: %f %f", box_obj.x, box_obj.y);
+#endif
 		}
 
 		last_crank_angle = api->system->getCrankAngle();
