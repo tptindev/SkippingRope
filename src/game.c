@@ -4,23 +4,45 @@
 #include <math.h>
 #include <stdlib.h>
 
+typedef enum e_direction
+{
+	TOP,
+	RIGHT,
+	BOTTOM,
+	LEFT
+} DIRECTION;
+
+typedef struct edge
+{
+	DIRECTION direction;
+	unsigned int size;
+} Edge;
+
 const float FPS = 30.0;
 float world_scale = 80.0f;
 const unsigned int MAX_METEORITES = 32;
 const double orbit_radius = 0.5f;
+const Edge edge[4] =
+{
+	{TOP, 5},
+	{RIGHT, 3},
+	{BOTTOM, 5},
+	{LEFT, 3}
+};
 
 static bool initialized = false;
 static PlaydateAPI* api = NULL;
 static b2WorldId worldId;
 static unsigned int current_level = 0; // index
-static LevelObject levels[5] =
+LevelObject levels[5] =
 {
-	{"2021", NULL, 10},
-	{"2022", NULL, 30},
-	{"2023", NULL, 60},
-	{"2024", NULL, 90},
-	{"2025", NULL, 120},
+	{"2021", NULL, 500},
+	{"2022", NULL, 400},
+	{"2023", NULL, 250},
+	{"2024", NULL, 200},
+	{"2025", NULL, 100},
 };
+
 
 static GameObject* meteorites = NULL;
 static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.35f, 0.35f, NULL, 1 }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap
@@ -30,8 +52,9 @@ b2WorldId register_world(b2Vec2 gravity);
 void register_bodies(b2WorldId world_id);
 void unregister_body(b2BodyId bodyId);
 
-static bool PreSolveCb(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold, void* context);
-static int ButtonEventCb(PDButtons button, int down, uint32_t when, void* userdata);
+static bool pre_solve_cb(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold, void* context);
+static int button_event_cb(PDButtons button, int down, uint32_t when, void* userdata);
+void generate_meteorite();
 
 
 
@@ -40,14 +63,14 @@ void game_initialize(void* userdata)
 	initialized = true;
 	api = userdata;
 	api->display->setRefreshRate(FPS);
-	api->system->setButtonCallback(ButtonEventCb, NULL, 5);
+	api->system->setButtonCallback(button_event_cb, NULL, 5);
 
 	b2Vec2 gravity = { 0.0f, 9.81f };
 	worldId = register_world(gravity);
 	if (b2World_IsValid(worldId))
 	{
 		register_bodies(worldId);
-		b2World_SetPreSolveCallback(worldId, PreSolveCb, NULL);
+		b2World_SetPreSolveCallback(worldId, pre_solve_cb, NULL);
 	}
 
 	// register blocks stores 32 GameObjects
@@ -77,7 +100,7 @@ void game_update(float deltatime)
 			b2Body_SetTransform(
 				moon_obj.id,
 				(b2Vec2) { moon_obj.x, moon_obj.y},
-				0
+				api->system->getCrankAngle()
 			);
 		}
 
@@ -104,11 +127,13 @@ void game_draw()
 	}
 
 	{ // moon
-		drawFrame(
+		drawRotationFrame(
 			api,
 			moon_obj.sprites,
 			moon_obj.x,
-			moon_obj.y
+			moon_obj.y,
+			true,
+			api->system->getCrankAngle()
 		);
 	}
 
@@ -214,12 +239,12 @@ void unregister_body(b2BodyId bodyId)
 {
 }
 
-static bool PreSolveCb(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold, void* context)
+static bool pre_solve_cb(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold, void* context)
 {
 	return true;
 }
 
-static int ButtonEventCb(PDButtons button, int down, uint32_t when, void* userdata)
+static int button_event_cb(PDButtons button, int down, uint32_t when, void* userdata)
 {
 	if (down == 0) return 0;
 	switch (button)
@@ -253,4 +278,8 @@ static int ButtonEventCb(PDButtons button, int down, uint32_t when, void* userda
 	}
 	
 	return 0;
+}
+
+void generate_meteorite()
+{
 }
