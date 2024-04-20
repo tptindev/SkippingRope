@@ -4,6 +4,10 @@
 #include <math.h>
 #include <stdlib.h>
 
+#define EARTH_ON 1
+#define MOON_ON 0
+#define TESTING_ON 1
+
 typedef enum e_direction
 {
 	TOP,
@@ -15,7 +19,8 @@ typedef enum e_direction
 typedef struct edge
 {
 	DIRECTION direction;
-	unsigned int size;
+	b2Vec2 from;
+	b2Vec2 to;
 } Edge;
 
 const float FPS = 30.0;
@@ -24,16 +29,18 @@ const unsigned int MAX_METEORITES = 32;
 const double orbit_radius = 0.5f;
 const Edge edge[4] =
 {
-	{TOP, 5},
-	{RIGHT, 3},
-	{BOTTOM, 5},
-	{LEFT, 3}
+	{TOP, {0,0}, {5,0}},
+	{RIGHT, {5, 0}, {5, 3}},
+	{BOTTOM, {0, 3}, {5, 3}},
+	{LEFT, {0, 0}, {0, 3}}
 };
 
 static bool initialized = false;
 static PlaydateAPI* api = NULL;
 static b2WorldId worldId;
-static unsigned int current_level = 0; // index
+static unsigned int current_level = 0; // 0: nothing
+static float last_crank_angle = 0.0f;
+static unsigned int user_point = 0;
 LevelObject levels[5] =
 {
 	{"2021", NULL, 500},
@@ -45,8 +52,9 @@ LevelObject levels[5] =
 
 
 static GameObject* meteorites = NULL;
-static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.35f, 0.35f, NULL, 1 }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap
-static GameObject moon_obj = { B2_ZERO_INIT, 2.5f, 0.0f, 0.15f, 0.15f, NULL, 1 }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap
+static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.0f, 0.0f, NULL, 1 }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap
+static GameObject moon_obj = { B2_ZERO_INIT, 2.5f, 0.0f, 0.0f, 0.0f, NULL, 1 }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap
+static GameObject box_obj = { B2_ZERO_INIT, 2.8f, 0.0f, 0.1f, 0.1f, NULL, 1 };
 
 b2WorldId register_world(b2Vec2 gravity);
 void register_bodies(b2WorldId world_id);
@@ -89,24 +97,57 @@ void game_update(float deltatime)
 		b2Vec2 world_point = { 0.0f, 0.0f };
 		b2Vec2 earth_center = { 0.0f, 0.0f };
 
+#if EARTH_ON
 		{ // earth
 			earth_center = b2Body_GetPosition(earth_obj.id);
+			b2Body_SetTransform(
+				earth_obj.id,
+				(b2Vec2) {
+				earth_obj.x, earth_obj.y
+			},
+				(float)((api->system->getCurrentTimeMilliseconds() / 3) % 360)
+			);
 		}
+#endif // EARTH_ON
 
+
+#if MOON_ON
 		{ // moon
 			double angle_rad = api->system->getCrankAngle() * (3.14159265358979323846f / 180.0f);
 			moon_obj.x = (float)(orbit_radius * cos(angle_rad) + earth_center.x);
 			moon_obj.y = (float)(orbit_radius * sin(angle_rad) + earth_center.y);
 			b2Body_SetTransform(
 				moon_obj.id,
-				(b2Vec2) { moon_obj.x, moon_obj.y},
-				api->system->getCrankAngle()
+				(b2Vec2) {
+				moon_obj.x, moon_obj.y
+			},
+				//api->system->getCrankAngle()
+				0
 			);
 		}
+#endif // MOON_ON
+
+
+#if TESTING_ON
+		{ // box for testing
+			pos = b2Body_GetPosition(box_obj.id);
+			box_obj.x = pos.x;
+			box_obj.y = pos.y;
+		}
+#endif // TESTING_ON
+
+
 
 		{ // meteorites
 		}
 	
+		if (api->system->getCrankAngle() != last_crank_angle)
+		{
+			api->system->logToConsole("Moon position: %f %f", moon_obj.x, moon_obj.y);
+			api->system->logToConsole("Box position: %f %f", box_obj.x, box_obj.y);
+		}
+
+		last_crank_angle = api->system->getCrankAngle();
 	}
 }
 
@@ -115,27 +156,43 @@ void game_draw()
 	api->graphics->clear(kColorWhite);
 	api->graphics->setBackgroundColor(kColorBlack);
 
+#if EARTH_ON
 	{ // earth
+		b2Transform earth_trans = b2Body_GetTransform(earth_obj.id);
 		drawRotationFrame(
 			api,
 			earth_obj.sprites,
-			earth_obj.x,
-			earth_obj.y,
+			earth_trans.p.x,
+			earth_trans.p.y,
 			true,
 			(float)((api->system->getCurrentTimeMilliseconds() / 3) % 360)
 		);
 	}
+#endif // EARTH_ON
 
+#if MOON_ON
 	{ // moon
+		b2Transform box_trans = b2Body_GetTransform(box_obj.id);
 		drawRotationFrame(
 			api,
 			moon_obj.sprites,
-			moon_obj.x,
-			moon_obj.y,
+			moon_trans.p.x,
+			moon_trans.p.y,
 			true,
 			api->system->getCrankAngle()
 		);
 	}
+#endif // MOON_ON
+
+
+#if TESTING_ON
+	{ // box for testing
+		b2Transform box_trans = b2Body_GetTransform(box_obj.id);
+		drawEllipse(api, box_trans.p.x, box_trans.p.y, box_obj.half_width * 2.0f, box_obj.half_height * 2.0f, 0, 0, kColorBlack);
+	}
+#endif // TESTING_ON
+
+
 
 	{ // meteorites
 	
@@ -163,11 +220,14 @@ void register_bodies(b2WorldId world)
 	b2ShapeDef shapeDef;
 	b2Polygon polygon; 
 	b2Circle circle;
+	int obj_width = 0;
+	int obj_height = 0;
 
+	(void)polygon;
+	(void)circle;
+
+#if EARTH_ON
 	{ // earth
-		int earth_width = 0; 
-		int earth_height = 0;
-
 		const char* outerr = NULL;
 		earth_obj.sprites = api->graphics->loadBitmap("images/earth.png", &outerr);
 		if (outerr)
@@ -175,10 +235,10 @@ void register_bodies(b2WorldId world)
 			api->system->error("[EARTH] bitmap %s", outerr);
 		}
 
-		api->graphics->getBitmapData(earth_obj.sprites, &earth_width, &earth_height, 0, NULL, NULL);
+		api->graphics->getBitmapData(earth_obj.sprites, &obj_width, &obj_height, 0, NULL, NULL);
 
-		earth_obj.half_height = (float)(earth_height / 2) / 80.0f;
-		earth_obj.half_width = (float)(earth_width / 2) / 80.0f;
+		earth_obj.half_height = (float)(4 + obj_height / 2) / 80.0f;
+		earth_obj.half_width = (float)(4 + obj_width / 2) / 80.0f;
 
 		api->system->logToConsole("Earth pos: %f, %f  size: %f, %f", earth_obj.x, earth_obj.y, earth_obj.half_height, earth_obj.half_width);
 
@@ -197,12 +257,11 @@ void register_bodies(b2WorldId world)
 		shapeDef.friction = 0.3f;
 		shapeId = b2CreateCircleShape(earth_obj.id, &shapeDef, &circle);
 
-	}
+}
+#endif // 1
 
+#if MOON_ON
 	{ // moon
-		int earth_width = 0;
-		int earth_height = 0;
-
 		const char* outerr = NULL;
 		moon_obj.sprites = api->graphics->loadBitmap("images/moon.png", &outerr);
 		if (outerr)
@@ -210,10 +269,10 @@ void register_bodies(b2WorldId world)
 			api->system->error("[MOON] bitmap %s", outerr);
 		}
 
-		api->graphics->getBitmapData(moon_obj.sprites, &earth_width, &earth_height, 0, NULL, NULL);
+		api->graphics->getBitmapData(moon_obj.sprites, &obj_width, &obj_height, 0, NULL, NULL);
 
-		moon_obj.half_height = (float)(earth_height / 2) / 80.0f;
-		moon_obj.half_width = (float)(earth_width / 2) / 80.0f;
+		moon_obj.half_height = (float)(8 + obj_height / 2) / 80.0f;
+		moon_obj.half_width = (float)(8 + obj_width / 2) / 80.0f;
 
 		api->system->logToConsole("Moon pos: %f, %f  size: %f, %f", moon_obj.x, moon_obj.y, moon_obj.half_height, moon_obj.half_width);
 
@@ -232,7 +291,29 @@ void register_bodies(b2WorldId world)
 		shapeDef.density = 1.0f;
 		shapeDef.friction = 0.3f;
 		shapeId = b2CreateCircleShape(moon_obj.id, &shapeDef, &circle);
+}
+#endif // 0
+	
+
+#if TESTING_ON
+	{ // box for testing
+		bodyDef = b2DefaultBodyDef();
+		bodyDef.type = b2_dynamicBody;
+		bodyDef.position.x = box_obj.x;
+		bodyDef.position.y = box_obj.y;
+		bodyDef.enableSleep = true;
+		box_obj.id = b2CreateBody(world, &bodyDef);
+
+		circle.point = (b2Vec2){ 0.0f, 0.0f };
+		circle.radius = box_obj.half_width;
+
+		shapeDef = b2DefaultShapeDef();
+		shapeDef.density = 1.0f;
+		shapeDef.friction = 0.3f;
+		shapeDef.restitution = 0.3f;
+		shapeId = b2CreateCircleShape(box_obj.id, &shapeDef, &circle);
 	}
+#endif // 1
 }
 
 void unregister_body(b2BodyId bodyId)
@@ -251,26 +332,18 @@ static int button_event_cb(PDButtons button, int down, uint32_t when, void* user
 	{
 	case kButtonUp:
 	{
-		b2Vec2 force = { 0.0f, -10.0f };
-		b2Body_ApplyForce(moon_obj.id, force, (b2Vec2){ moon_obj.x, moon_obj.y }, true);
 		break;
 	}
 	case kButtonDown:
 	{
-		b2Vec2 force = { 0.0f, 10.0f };
-		b2Body_ApplyForce(moon_obj.id, force, (b2Vec2) { moon_obj.x, moon_obj.y }, true);
 		break;
 	}
 	case kButtonLeft:
 	{
-		b2Vec2 force = { -1.0f, 0.0f };
-		b2Body_ApplyForce(moon_obj.id, force, (b2Vec2) { moon_obj.x, moon_obj.y }, true);
 		break;
 	}
 	case kButtonRight:
 	{
-		b2Vec2 force = { 1.0f, 0.0f };
-		b2Body_ApplyForce(moon_obj.id, force, (b2Vec2) { moon_obj.x, moon_obj.y }, true);
 		break;
 	}
 	default:
@@ -282,4 +355,11 @@ static int button_event_cb(PDButtons button, int down, uint32_t when, void* user
 
 void generate_meteorite()
 {
+	int edge_index = rand() % (int)(sizeof(edge) / sizeof(Edge));
+	DIRECTION direction = edge[edge_index].direction;
+	b2Vec2 from = edge[edge_index].from;
+	b2Vec2 to = edge[edge_index].to;
+	(void)direction;
+	(void)from;
+	(void)to;
 }
