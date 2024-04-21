@@ -162,7 +162,7 @@ void game_update(float deltatime)
 					const float radius = 0.0f;
 
 					b2BodyDef bodyDef = b2DefaultBodyDef();
-					bodyDef.type = b2_staticBody;
+					bodyDef.type = b2_dynamicBody;
 					bodyDef.position.x = meteorites[meteorites_created].x;
 					bodyDef.position.y = meteorites[meteorites_created].y;
 					bodyDef.enableSleep = true;
@@ -185,15 +185,15 @@ void game_update(float deltatime)
 				{
 					if (meteorites[i].live == false) continue;
 					b2Vec2 obj_pos = b2Body_GetPosition(meteorites[i].id);
-					meteorites[i].x += (earth_center.x - meteorites[i].x) * levels[current_level].speed * deltatime;
-					meteorites[i].y += (earth_center.y - meteorites[i].y) * levels[current_level].speed * deltatime;
-					//b2Body_SetTransform(
-					//	meteorites[i].id,
-					//	(b2Vec2) {
-					//		meteorites[i].x, meteorites[i].y
-					//	},
-					//	0
-					//);
+					meteorites[i].x += (earth_center.x - meteorites[i].x) * deltatime;
+					meteorites[i].y += (earth_center.y - meteorites[i].y) * deltatime;
+					b2Body_SetTransform(
+						meteorites[i].id,
+						(b2Vec2) {
+							meteorites[i].x, meteorites[i].y
+						},
+						0
+					);
 				}
 			}
 
@@ -272,8 +272,8 @@ void game_draw()
 			b2Transform meteorite_trans = b2Body_GetTransform(meteorites[i].id);
 			drawEllipse(
 				api,
-				meteorite_trans.p.x, 
-				meteorite_trans.p.y, 
+				meteorite_trans.p.x - meteorites[i].half_width,
+				meteorite_trans.p.y - meteorites[i].half_height,
 				meteorites[i].half_width * 2.0f,
 				meteorites[i].half_height * 2.0f, 
 				0, 
