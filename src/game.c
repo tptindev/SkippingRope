@@ -56,7 +56,7 @@ static unsigned int meteorites_created = 0;
 static GameObject* meteorites = NULL;
 static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.0f, 0.0f, NULL, 1, true }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live
 static GameObject moon_obj = { B2_ZERO_INIT, 2.5f, 0.0f, 0.0f, 0.0f, NULL, 1, true }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live
-static GameObject box_obj = { B2_ZERO_INIT, 2.8f, 0.0f, 0.1f, 0.1f, NULL, 0, true }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live
+static GameObject box_obj = { B2_ZERO_INIT, 2.5f, 0.0f, 0.1f, 0.1f, NULL, 0, true }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live
 
 b2WorldId register_world(b2Vec2 gravity);
 void register_bodies(b2WorldId world_id);
@@ -74,7 +74,7 @@ void game_initialize(void* userdata)
 	api->system->setButtonCallback(button_event_cb, NULL, 5);
 
 	before = clock();
-	b2Vec2 gravity = { 0.0f, 9.81f };
+	b2Vec2 gravity = { 0.0f, 0.0f };
 	worldId = register_world(gravity);
 	if (b2World_IsValid(worldId))
 	{
@@ -158,24 +158,6 @@ void game_update(float deltatime)
 					meteorites[meteorites_created].x = vec.x;
 					meteorites[meteorites_created].y = vec.y;
 					meteorites[meteorites_created].live = true;
-
-					const float radius = 0.0f;
-
-					b2BodyDef bodyDef = b2DefaultBodyDef();
-					bodyDef.type = b2_dynamicBody;
-					bodyDef.position.x = meteorites[meteorites_created].x;
-					bodyDef.position.y = meteorites[meteorites_created].y;
-					bodyDef.enableSleep = true;
-					meteorites[meteorites_created].id = b2CreateBody(worldId, &bodyDef);
-
-					b2Circle circle = { (b2Vec2) { 0.0f, 0.0f }, radius };
-
-					b2ShapeDef shapeDef = b2DefaultShapeDef();
-					shapeDef.density = 1.0f;
-					shapeDef.friction = 0.3f;
-					shapeDef.restitution = 0.3f;
-					b2CreateCircleShape(meteorites[meteorites_created].id, &shapeDef, &circle);
-
 					meteorites_created++;
 				}
 			}
@@ -330,7 +312,7 @@ void register_bodies(b2WorldId world)
 		bodyDef.type = b2_staticBody;
 		bodyDef.position.x = earth_obj.x;
 		bodyDef.position.y = earth_obj.y;
-		bodyDef.enableSleep = true;
+		bodyDef.enableSleep = false;
 		earth_obj.id = b2CreateBody(world, &bodyDef);
 
 		circle.point = (b2Vec2){ 0.0f, 0.0f };
@@ -341,7 +323,7 @@ void register_bodies(b2WorldId world)
 		shapeDef.friction = 0.3f;
 		shapeId = b2CreateCircleShape(earth_obj.id, &shapeDef, &circle);
 }
-#endif // 1
+#endif // EARTH_ON
 
 #if MOON_ON
 	{ // moon
@@ -375,7 +357,7 @@ void register_bodies(b2WorldId world)
 		shapeDef.friction = 0.3f;
 		shapeId = b2CreateCircleShape(moon_obj.id, &shapeDef, &circle);
 }
-#endif // 0
+#endif // MOON_ON
 	
 
 #if TESTING_ON
@@ -396,7 +378,7 @@ void register_bodies(b2WorldId world)
 		shapeDef.restitution = 0.3f;
 		shapeId = b2CreateCircleShape(box_obj.id, &shapeDef, &circle);
 	}
-#endif // 1
+#endif // TESTING_ON
 
 #if METEORITES_ON
 	{ // Meteorites
@@ -411,6 +393,25 @@ void register_bodies(b2WorldId world)
 			meteorites[i].sprites = NULL;
 			meteorites[i].sprite_size = 0;
 			meteorites[i].live = false;
+
+			const float radius = 0.15f;
+
+			b2BodyDef bodyDef = b2DefaultBodyDef();
+			bodyDef.type = b2_dynamicBody;
+			bodyDef.position.x = meteorites[i].x;
+			bodyDef.position.y = meteorites[i].y;
+			bodyDef.enableSleep = false;
+			meteorites[i].id = b2CreateBody(world, &bodyDef);
+
+			b2Circle circle = { (b2Vec2) { 0.0f, 0.0f }, radius };
+
+			b2ShapeDef shapeDef = b2DefaultShapeDef();
+			shapeDef.density = 1.0f;
+			shapeDef.friction = 0.3f;
+			shapeDef.restitution = 0.3f;
+			shapeDef.enableContactEvents = true;
+			shapeDef.enablePreSolveEvents = true;
+			b2CreateCircleShape(meteorites[i].id, &shapeDef, &circle);
 		}
 	}
 #endif // METEORITES_ON
@@ -423,6 +424,7 @@ void unregister_body(b2BodyId bodyId)
 
 static bool pre_solve_cb(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold, void* context)
 {
+	//api->system->logToConsole("XXXXXXXXXXXXX");
 	return true;
 }
 
