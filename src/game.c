@@ -13,10 +13,10 @@
 
 typedef enum e_direction
 {
-	TOP,
-	RIGHT,
-	BOTTOM,
-	LEFT
+	TOP		= 1,
+	RIGHT	= 1 << 1,	// 1 * (2 ^ 1)
+	BOTTOM	= 1 << 2,	// 1 * (2 ^ 2)
+	LEFT	= 1 << 3	// 1 * (2 ^ 3)
 } DIRECTION;
 
 typedef struct edge
@@ -52,11 +52,10 @@ LevelObject levels[3] =
 	{"2023", NULL, 250, 1}, // title, tilemap, speed, interval
 };
 
-
 static GameObject* meteorites = NULL;
 static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.0f, 0.0f, NULL, 1 }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap
 static GameObject moon_obj = { B2_ZERO_INIT, 2.5f, 0.0f, 0.0f, 0.0f, NULL, 1 }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap
-static GameObject box_obj = { B2_ZERO_INIT, 2.8f, 0.0f, 0.1f, 0.1f, NULL, 1 };
+static GameObject box_obj = { B2_ZERO_INIT, 2.8f, 0.0f, 0.1f, 0.1f, NULL, 0 };
 
 b2WorldId register_world(b2Vec2 gravity);
 void register_bodies(b2WorldId world_id);
@@ -84,6 +83,16 @@ void game_initialize(void* userdata)
 
 	// register blocks stores 32 GameObjects
 	meteorites = api->system->realloc(NULL, sizeof(GameObject) * MAX_METEORITES);
+	for (int i = 0; i < MAX_METEORITES; i++)
+	{
+		meteorites[i].id = b2_nullBodyId;
+		meteorites[i].x = 0.0f;
+		meteorites[i].y = 0.0f;
+		meteorites[i].half_width = 0.0f;
+		meteorites[i].half_height = 0.0f;
+		meteorites[i].sprites = NULL;
+		meteorites[i].sprite_size = 0;
+	}
 }
 
 void game_update(float deltatime)
@@ -105,9 +114,7 @@ void game_update(float deltatime)
 			earth_center = b2Body_GetPosition(earth_obj.id);
 			b2Body_SetTransform(
 				earth_obj.id,
-				(b2Vec2) {
-				earth_obj.x, earth_obj.y
-			},
+				(b2Vec2) { earth_obj.x, earth_obj.y },
 				(float)((api->system->getCurrentTimeMilliseconds() / 3) % 360)
 			);
 		}
@@ -154,7 +161,50 @@ void game_update(float deltatime)
 				vec.x = (int)vec.x * val;
 				vec.y = (int)vec.y * val;
 				api->system->logToConsole("Direction %d x: %f y: %f", (int)direction, vec.x, vec.y);
+
+				// create meteorite
+				{
+					meteorites[0].half_width = 0.15f;
+					meteorites[0].half_height = 0.15f;
+					meteorites[0].x = vec.x;
+					meteorites[0].y = vec.y;
+
+					b2BodyDef bodyDef = b2DefaultBodyDef();
+					bodyDef.type = b2_staticBody;
+					bodyDef.position.x = meteorites[0].x;
+					bodyDef.position.y = meteorites[0].y;
+					bodyDef.enableSleep = true;
+					meteorites[0].id = b2CreateBody(worldId, &bodyDef);
+
+					b2Circle circle = { (b2Vec2) { 0.0f, 0.0f }, meteorites[0].half_width };
+
+					b2ShapeDef shapeDef = b2DefaultShapeDef();
+					shapeDef.density = 1.0f;
+					shapeDef.friction = 0.3f;
+					b2CreateCircleShape(meteorites[0].id, &shapeDef, &circle);
+				}
 			}
+
+			{ // update meteorite logic
+				for (int i = 0; i < MAX_METEORITES; i++)
+				{
+					if (b2Body_IsValid(meteorites[i].id))
+					{
+						b2Vec2 obj_pos = b2Body_GetPosition(meteorites[i].id);
+						meteorites[i].x += (earth_center.x - meteorites[i].x) * levels[current_level].speed * deltatime;
+						meteorites[i].y += (earth_center.y - meteorites[i].y) * levels[current_level].speed * deltatime;
+
+						b2Body_SetTransform(
+							meteorites[i].id,
+							(b2Vec2) {
+								meteorites[i].x, meteorites[i].y
+							},
+							0
+						);
+					}
+				}
+			}
+
 		}
 #endif // METEORITES_ON
 
@@ -224,8 +274,14 @@ void game_draw()
 
 #if METEORITES_ON
 	{ // meteorites
-
-
+		for (int i = 0; i < MAX_METEORITES; i++)
+		{
+			if (b2Body_IsValid(meteorites[i].id))
+			{
+				b2Transform meteorite_trans = b2Body_GetTransform(meteorites[i].id);
+				drawEllipse(api, meteorite_trans.p.x, meteorite_trans.p.y, meteorites[i].half_width * 2.0f, meteorites[i].half_height * 2.0f, 0, 0, kColorBlack);
+			}
+		}
 	}
 #endif // METEORITES_ON
 }
