@@ -52,10 +52,11 @@ LevelObject levels[3] =
 	{"2023", NULL, 250, 1}, // title, tilemap, speed, interval
 };
 
+static unsigned int meteorites_created = 0;
 static GameObject* meteorites = NULL;
-static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.0f, 0.0f, NULL, 1 }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap
-static GameObject moon_obj = { B2_ZERO_INIT, 2.5f, 0.0f, 0.0f, 0.0f, NULL, 1 }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap
-static GameObject box_obj = { B2_ZERO_INIT, 2.8f, 0.0f, 0.1f, 0.1f, NULL, 0 };
+static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.0f, 0.0f, NULL, 1, true }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live
+static GameObject moon_obj = { B2_ZERO_INIT, 2.5f, 0.0f, 0.0f, 0.0f, NULL, 1, true }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live
+static GameObject box_obj = { B2_ZERO_INIT, 2.8f, 0.0f, 0.1f, 0.1f, NULL, 0, true }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live
 
 b2WorldId register_world(b2Vec2 gravity);
 void register_bodies(b2WorldId world_id);
@@ -79,19 +80,6 @@ void game_initialize(void* userdata)
 	{
 		register_bodies(worldId);
 		b2World_SetPreSolveCallback(worldId, pre_solve_cb, NULL);
-	}
-
-	// register blocks stores 32 GameObjects
-	meteorites = api->system->realloc(NULL, sizeof(GameObject) * MAX_METEORITES);
-	for (int i = 0; i < MAX_METEORITES; i++)
-	{
-		meteorites[i].id = b2_nullBodyId;
-		meteorites[i].x = 0.0f;
-		meteorites[i].y = 0.0f;
-		meteorites[i].half_width = 0.0f;
-		meteorites[i].half_height = 0.0f;
-		meteorites[i].sprites = NULL;
-		meteorites[i].sprite_size = 0;
 	}
 }
 
@@ -163,45 +151,49 @@ void game_update(float deltatime)
 				api->system->logToConsole("Direction %d x: %f y: %f", (int)direction, vec.x, vec.y);
 
 				// create meteorite
+				if (meteorites_created < MAX_METEORITES && meteorites[meteorites_created].live == false)
 				{
-					meteorites[0].half_width = 0.15f;
-					meteorites[0].half_height = 0.15f;
-					meteorites[0].x = vec.x;
-					meteorites[0].y = vec.y;
+					meteorites[meteorites_created].half_width = 0.15f;
+					meteorites[meteorites_created].half_height = 0.15f;
+					meteorites[meteorites_created].x = vec.x;
+					meteorites[meteorites_created].y = vec.y;
+					meteorites[meteorites_created].live = true;
+
+					const float radius = 0.0f;
 
 					b2BodyDef bodyDef = b2DefaultBodyDef();
 					bodyDef.type = b2_staticBody;
-					bodyDef.position.x = meteorites[0].x;
-					bodyDef.position.y = meteorites[0].y;
+					bodyDef.position.x = meteorites[meteorites_created].x;
+					bodyDef.position.y = meteorites[meteorites_created].y;
 					bodyDef.enableSleep = true;
-					meteorites[0].id = b2CreateBody(worldId, &bodyDef);
+					meteorites[meteorites_created].id = b2CreateBody(worldId, &bodyDef);
 
-					b2Circle circle = { (b2Vec2) { 0.0f, 0.0f }, meteorites[0].half_width };
+					b2Circle circle = { (b2Vec2) { 0.0f, 0.0f }, radius };
 
 					b2ShapeDef shapeDef = b2DefaultShapeDef();
 					shapeDef.density = 1.0f;
 					shapeDef.friction = 0.3f;
-					b2CreateCircleShape(meteorites[0].id, &shapeDef, &circle);
+					shapeDef.restitution = 0.3f;
+					b2CreateCircleShape(meteorites[meteorites_created].id, &shapeDef, &circle);
+
+					meteorites_created++;
 				}
 			}
 
 			{ // update meteorite logic
-				for (int i = 0; i < MAX_METEORITES; i++)
+				for (unsigned int i = 0; i < MAX_METEORITES; i++)
 				{
-					if (b2Body_IsValid(meteorites[i].id))
-					{
-						b2Vec2 obj_pos = b2Body_GetPosition(meteorites[i].id);
-						meteorites[i].x += (earth_center.x - meteorites[i].x) * levels[current_level].speed * deltatime;
-						meteorites[i].y += (earth_center.y - meteorites[i].y) * levels[current_level].speed * deltatime;
-
-						b2Body_SetTransform(
-							meteorites[i].id,
-							(b2Vec2) {
-								meteorites[i].x, meteorites[i].y
-							},
-							0
-						);
-					}
+					if (meteorites[i].live == false) continue;
+					b2Vec2 obj_pos = b2Body_GetPosition(meteorites[i].id);
+					meteorites[i].x += (earth_center.x - meteorites[i].x) * levels[current_level].speed * deltatime;
+					meteorites[i].y += (earth_center.y - meteorites[i].y) * levels[current_level].speed * deltatime;
+					//b2Body_SetTransform(
+					//	meteorites[i].id,
+					//	(b2Vec2) {
+					//		meteorites[i].x, meteorites[i].y
+					//	},
+					//	0
+					//);
 				}
 			}
 
@@ -274,13 +266,19 @@ void game_draw()
 
 #if METEORITES_ON
 	{ // meteorites
-		for (int i = 0; i < MAX_METEORITES; i++)
+		for (unsigned int i = 0; i < MAX_METEORITES; i++)
 		{
-			if (b2Body_IsValid(meteorites[i].id))
-			{
-				b2Transform meteorite_trans = b2Body_GetTransform(meteorites[i].id);
-				drawEllipse(api, meteorite_trans.p.x, meteorite_trans.p.y, meteorites[i].half_width * 2.0f, meteorites[i].half_height * 2.0f, 0, 0, kColorBlack);
-			}
+			if (meteorites[i].live == false) continue;
+			b2Transform meteorite_trans = b2Body_GetTransform(meteorites[i].id);
+			drawEllipse(
+				api,
+				meteorite_trans.p.x, 
+				meteorite_trans.p.y, 
+				meteorites[i].half_width * 2.0f,
+				meteorites[i].half_height * 2.0f, 
+				0, 
+				0, 
+				kColorBlack);
 		}
 	}
 #endif // METEORITES_ON
@@ -342,7 +340,6 @@ void register_bodies(b2WorldId world)
 		shapeDef.density = 1.0f;
 		shapeDef.friction = 0.3f;
 		shapeId = b2CreateCircleShape(earth_obj.id, &shapeDef, &circle);
-
 }
 #endif // 1
 
@@ -400,6 +397,24 @@ void register_bodies(b2WorldId world)
 		shapeId = b2CreateCircleShape(box_obj.id, &shapeDef, &circle);
 	}
 #endif // 1
+
+#if METEORITES_ON
+	{ // Meteorites
+		// register blocks stores 32 GameObjects
+		meteorites = api->system->realloc(NULL, sizeof(GameObject) * MAX_METEORITES);
+		for (unsigned int i = 0; i < MAX_METEORITES; i++)
+		{
+			meteorites[i].x = 0.0f;
+			meteorites[i].y = 0.0f;
+			meteorites[i].half_width = 0.0f;
+			meteorites[i].half_height = 0.0f;
+			meteorites[i].sprites = NULL;
+			meteorites[i].sprite_size = 0;
+			meteorites[i].live = false;
+		}
+	}
+#endif // METEORITES_ON
+
 }
 
 void unregister_body(b2BodyId bodyId)

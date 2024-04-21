@@ -12,6 +12,7 @@ typedef struct game_obj
 	float half_height;
 	void* sprites;
 	unsigned int sprite_size;
+	bool live;
 } GameObject;
 
 typedef struct level_obj
