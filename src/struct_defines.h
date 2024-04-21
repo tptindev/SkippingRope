@@ -19,6 +19,7 @@ typedef struct level_obj
 	const char* title;
 	void* tilemap;
 	float speed;
+	int interval; // second
 } LevelObject;
 
 #endif // __GAMEOBJ_H__

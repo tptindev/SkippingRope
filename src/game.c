@@ -3,10 +3,13 @@
 #include "draw.h"
 #include <math.h>
 #include <stdlib.h>
+#include <time.h>
+#include "tiny_math.h"
 
 #define EARTH_ON 1
 #define MOON_ON 0
-#define TESTING_ON 1
+#define TESTING_ON 0
+#define METEORITES_ON 1
 
 typedef enum e_direction
 {
@@ -38,16 +41,15 @@ const Edge edge[4] =
 static bool initialized = false;
 static PlaydateAPI* api = NULL;
 static b2WorldId worldId;
-static unsigned int current_level = 0; // 0: nothing
+static unsigned int current_level = 0; // 0: index
 static float last_crank_angle = 0.0f;
 static unsigned int user_point = 0;
-LevelObject levels[5] =
+static bool flag_auto_gen = true;
+LevelObject levels[3] =
 {
-	{"2021", NULL, 500},
-	{"2022", NULL, 400},
-	{"2023", NULL, 250},
-	{"2024", NULL, 200},
-	{"2025", NULL, 100},
+	{"2021", NULL, 500, 3}, // title, tilemap, speed, interval
+	{"2022", NULL, 400, 2}, // title, tilemap, speed, interval
+	{"2023", NULL, 250, 1}, // title, tilemap, speed, interval
 };
 
 
@@ -62,9 +64,7 @@ void unregister_body(b2BodyId bodyId);
 
 static bool pre_solve_cb(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold, void* context);
 static int button_event_cb(PDButtons button, int down, uint32_t when, void* userdata);
-void generate_meteorite();
-
-
+static clock_t before;
 
 void game_initialize(void* userdata)
 {
@@ -73,6 +73,7 @@ void game_initialize(void* userdata)
 	api->display->setRefreshRate(FPS);
 	api->system->setButtonCallback(button_event_cb, NULL, 5);
 
+	before = clock();
 	b2Vec2 gravity = { 0.0f, 9.81f };
 	worldId = register_world(gravity);
 	if (b2World_IsValid(worldId))
@@ -87,11 +88,13 @@ void game_initialize(void* userdata)
 
 void game_update(float deltatime)
 {
+	clock_t diff = clock() - before;
+	int sec = diff / CLOCKS_PER_SEC;
 	if (b2World_IsValid(worldId))
 	{
 		float timeStep = 1.0f / FPS;
 		b2World_Step(worldId, timeStep, 10);
-
+		LevelObject level = levels[current_level];
 		b2Vec2 pos = { 0.0f, 0.0f };
 		b2Vec2 local_point = { 0.0f, 0.0f };
 		b2Vec2 world_point = { 0.0f, 0.0f };
@@ -137,21 +140,43 @@ void game_update(float deltatime)
 #endif // TESTING_ON
 
 
-
-		{ // meteorites
+#if METEORITES_ON
+		{ // meteorites: Entry every 'levels[current_level].interval' miliseconds 
+			if (sec == 0 && flag_auto_gen)
+			{
+				flag_auto_gen = false;
+				int edge_index = rand() % (int)(sizeof(edge) / sizeof(Edge));
+				DIRECTION direction = edge[edge_index].direction;
+				b2Vec2 from = edge[edge_index].from;
+				b2Vec2 to = edge[edge_index].to;
+				b2Vec2 vec = normalize((b2Vec2) { to.x - from.x, to.y - from.y });
+				float val = (float)rand() / (float)(RAND_MAX / distance(from, to));
+				vec.x = (int)vec.x * val;
+				vec.y = (int)vec.y * val;
+				api->system->logToConsole("Direction %d x: %f y: %f", (int)direction, vec.x, vec.y);
+			}
 		}
-	
+#endif // METEORITES_ON
+
 		if (api->system->getCrankAngle() != last_crank_angle)
 		{
+
 #if MOON_ON
 			api->system->logToConsole("Moon position: %f %f", moon_obj.x, moon_obj.y);
 #endif
+
 #if TESTING_ON
 			api->system->logToConsole("Box position: %f %f", box_obj.x, box_obj.y);
 #endif
+
 		}
 
 		last_crank_angle = api->system->getCrankAngle();
+		if (sec > levels[current_level].interval)
+		{
+			before = clock();
+			flag_auto_gen = true;
+		}
 	}
 }
 
@@ -197,11 +222,12 @@ void game_draw()
 #endif // TESTING_ON
 
 
-
+#if METEORITES_ON
 	{ // meteorites
-	
-	}
 
+
+	}
+#endif // METEORITES_ON
 }
 
 b2WorldId register_world(b2Vec2 gravity)
@@ -355,15 +381,4 @@ static int button_event_cb(PDButtons button, int down, uint32_t when, void* user
 	}
 	
 	return 0;
-}
-
-void generate_meteorite()
-{
-	int edge_index = rand() % (int)(sizeof(edge) / sizeof(Edge));
-	DIRECTION direction = edge[edge_index].direction;
-	b2Vec2 from = edge[edge_index].from;
-	b2Vec2 to = edge[edge_index].to;
-	(void)direction;
-	(void)from;
-	(void)to;
 }
