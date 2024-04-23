@@ -255,7 +255,7 @@ void game_draw()
 
 #if MOON_ON
 	{ // moon
-		b2Transform box_trans = b2Body_GetTransform(box_obj.id);
+		b2Transform moon_trans = b2Body_GetTransform(moon_obj.id);
 		drawRotationFrame(
 			api,
 			moon_obj.sprites,
