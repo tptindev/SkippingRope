@@ -8,7 +8,7 @@
 
 #define MAX_METEORITES 32U
 
-
+#define GRAVITY 0
 #define EARTH_ON 1
 #define MOON_ON 0
 #define TESTING_ON 0
@@ -55,8 +55,8 @@ LevelObject levels[3] =
 };
 
 static GameObject meteorites[MAX_METEORITES];
-static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.0f, 0.0f, NULL, 1, true }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live
-static GameObject moon_obj = { B2_ZERO_INIT, 2.5f, 0.0f, 0.0f, 0.0f, NULL, 1, true }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live
+static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.0f, 0.0f, NULL, 0, true }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live
+static GameObject moon_obj = { B2_ZERO_INIT, 2.5f, 0.0f, 0.0f, 0.0f, NULL, 0, true }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live
 static GameObject box_obj = { B2_ZERO_INIT, 2.5f, 0.0f, 0.1f, 0.1f, NULL, 0, true }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live
 
 b2WorldId register_world(b2Vec2 gravity);
@@ -86,7 +86,7 @@ void game_initialize(void* userdata)
 
 	before = clock();
 
-	b2Vec2 gravity = { 0.0f, 0.0f };
+	b2Vec2 gravity = { 0.0f, (bool)GRAVITY? 9.8f:0.0f };
 	worldId = register_world(gravity);
 	if (b2World_IsValid(worldId))
 	{
@@ -141,6 +141,9 @@ void game_update(float deltatime)
 #if TESTING_ON
 		{ // box for testing
 			pos = b2Body_GetPosition(box_obj.id);
+			//box_obj.x += (earth_center.x - pos.x) * deltatime;
+			//box_obj.y += (earth_center.y - pos.y) * deltatime;
+			//b2Body_SetTransform(box_obj.id, (b2Vec2) { box_obj.x, box_obj.y }, 0);
 			box_obj.x = pos.x;
 			box_obj.y = pos.y;
 		}
@@ -173,8 +176,8 @@ void game_update(float deltatime)
 
 						b2BodyDef bodyDef = b2DefaultBodyDef();
 						bodyDef.type = b2_dynamicBody;
-						bodyDef.position = (b2Vec2){ meteorites[i].x, meteorites[i].y };
 						bodyDef.enableSleep = false;
+						bodyDef.position = (b2Vec2){ meteorites[i].x, meteorites[i].y };
 						meteorites[i].id = b2CreateBody(worldId, &bodyDef);
 
 						b2Circle circle = { (b2Vec2) { 0.0f, 0.0f }, 0.15 };
@@ -338,7 +341,7 @@ void register_bodies(b2WorldId world)
 		api->system->logToConsole("Earth pos: %f, %f  size: %f, %f", earth_obj.x, earth_obj.y, earth_obj.half_height, earth_obj.half_width);
 
 		bodyDef = b2DefaultBodyDef();
-		bodyDef.type = b2_staticBody;
+		bodyDef.type = b2_dynamicBody;
 		bodyDef.position.x = earth_obj.x;
 		bodyDef.position.y = earth_obj.y;
 		bodyDef.enableSleep = false;
@@ -395,7 +398,6 @@ void register_bodies(b2WorldId world)
 		bodyDef.type = b2_dynamicBody;
 		bodyDef.position.x = box_obj.x;
 		bodyDef.position.y = box_obj.y;
-		bodyDef.enableSleep = true;
 		box_obj.id = b2CreateBody(world, &bodyDef);
 
 		circle.point = (b2Vec2){ 0.0f, 0.0f };
@@ -434,6 +436,7 @@ void unregister_body(b2BodyId bodyId)
 
 static bool pre_solve_cb(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold, void* context)
 {
+	api->system->logToConsole("XXXXXXXXXXXXXXXXXXX");
 	return true;
 }
 
