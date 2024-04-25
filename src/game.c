@@ -16,10 +16,10 @@
 
 typedef enum e_direction
 {
-	TOP		= 1,
-	RIGHT	= 1 << 1,	// 1 * (2 ^ 1)
-	BOTTOM	= 1 << 2,	// 1 * (2 ^ 2)
-	LEFT	= 1 << 3	// 1 * (2 ^ 3)
+	TOP,
+	RIGHT,	// 1 * (2 ^ 1)
+	BOTTOM,	// 1 * (2 ^ 2)
+	LEFT	// 1 * (2 ^ 3)
 } DIRECTION;
 
 typedef struct edge
@@ -55,9 +55,9 @@ LevelObject levels[3] =
 };
 
 static GameObject meteorites[MAX_METEORITES];
-static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.0f, 0.0f, NULL, 0, true }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live
-static GameObject moon_obj = { B2_ZERO_INIT, 2.5f, 0.0f, 0.0f, 0.0f, NULL, 0, true }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live
-static GameObject box_obj = { B2_ZERO_INIT, 2.5f, 0.0f, 0.1f, 0.1f, NULL, 0, true }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live
+static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.0f, 0.0f, NULL, 0, true, false }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live, collided
+static GameObject moon_obj = { B2_ZERO_INIT, 2.5f, 0.0f, 0.0f, 0.0f, NULL, 0, true, false }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live, collided
+static GameObject box_obj = { B2_ZERO_INIT, 2.5f, 0.0f, 0.1f, 0.1f, NULL, 0, true, false }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live, collided
 
 b2WorldId register_world(b2Vec2 gravity);
 void register_bodies(b2WorldId worldId);
@@ -188,7 +188,10 @@ void game_update(float deltatime)
 						shapeDef.density = 1.0f;
 						shapeDef.friction = 0.3f;
 						shapeDef.restitution = 0.3f;
+						shapeDef.enablePreSolveEvents = true;
 						b2CreateCircleShape(meteorites[i].id, &shapeDef, &circle);
+
+						break;
 					}
 				}
 			}
@@ -201,13 +204,11 @@ void game_update(float deltatime)
 				b2Vec2 obj_pos = b2Body_GetPosition(meteorites[i].id);
 				meteorites[i].x += (earth_center.x - obj_pos.x) * deltatime;
 				meteorites[i].y += (earth_center.y - obj_pos.y) * deltatime;
-				b2Body_SetTransform(
-					meteorites[i].id,
-					(b2Vec2) {
-						meteorites[i].x, meteorites[i].y
-					},
-					0
-				);
+
+				if (!meteorites[i].collided)
+				{
+					b2Body_SetTransform( meteorites[i].id, (b2Vec2) { meteorites[i].x, meteorites[i].y }, 0 );
+				}
 			}
 		}
 #endif // METEORITES_ON
@@ -341,7 +342,7 @@ void register_bodies(b2WorldId world)
 		api->system->logToConsole("Earth pos: %f, %f  size: %f, %f", earth_obj.x, earth_obj.y, earth_obj.half_height, earth_obj.half_width);
 
 		bodyDef = b2DefaultBodyDef();
-		bodyDef.type = b2_dynamicBody;
+		bodyDef.type = b2_staticBody;
 		bodyDef.position.x = earth_obj.x;
 		bodyDef.position.y = earth_obj.y;
 		bodyDef.enableSleep = false;
@@ -436,7 +437,28 @@ void unregister_body(b2BodyId bodyId)
 
 static bool pre_solve_cb(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold, void* context)
 {
-	api->system->logToConsole("XXXXXXXXXXXXXXXXXXX");
+	b2ShapeId meteorite_shape_id = b2_nullShapeId;
+	for (unsigned int i = 0; i < MAX_METEORITES; i++)
+	{
+		if (body_null(meteorites[i].id)) continue;
+			
+		b2ShapeId earth_shape_id = b2Body_GetFirstShape(meteorites[i].id);
+		if (B2_ID_EQUALS(earth_shape_id, shapeIdA))
+		{
+			meteorite_shape_id = shapeIdB;
+		}
+		else if (B2_ID_EQUALS(earth_shape_id, shapeIdB))
+		{
+			meteorite_shape_id = shapeIdA;
+		}
+
+		if (!shape_null(meteorite_shape_id))
+		{
+			api->system->logToConsole("XXXXXXXXXXXXXXXXXXXXXXX");
+			meteorites[i].collided = true;
+			break;
+		}
+	}
 	return true;
 }
 

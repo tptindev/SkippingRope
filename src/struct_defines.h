@@ -13,6 +13,7 @@ typedef struct game_obj
 	void* sprites;
 	unsigned int sprite_size;
 	bool live;
+	bool collided;
 } GameObject;
 
 typedef struct level_obj
