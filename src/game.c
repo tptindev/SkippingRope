@@ -10,7 +10,7 @@
 
 #define GRAVITY 0
 #define EARTH_ON 1
-#define MOON_ON 0
+#define MOON_ON 1
 #define TESTING_ON 0
 #define METEORITES_ON 1
 
@@ -55,9 +55,9 @@ LevelObject levels[3] =
 };
 
 static GameObject meteorites[MAX_METEORITES];
-static GameObject earth_obj = { B2_ZERO_INIT, 2.5f, 1.5f, 0.0f, 0.0f, NULL, 0, true, false }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live, collided
-static GameObject moon_obj = { B2_ZERO_INIT, 2.5f, 0.0f, 0.0f, 0.0f, NULL, 0, true, false }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live, collided
-static GameObject box_obj = { B2_ZERO_INIT, 2.5f, 0.0f, 0.1f, 0.1f, NULL, 0, true, false }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live, collided
+static GameObject earth_obj = { B2_ZERO_INIT, B2_ZERO_INIT, 2.5f, 1.5f, 0.0f, 0.0f, NULL, 0, true, false }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live, collided
+static GameObject moon_obj = { B2_ZERO_INIT, B2_ZERO_INIT,2.5f, 0.0f, 0.0f, 0.0f, NULL, 0, true, false }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live, collided
+static GameObject box_obj = { B2_ZERO_INIT, B2_ZERO_INIT,2.5f, 0.0f, 0.1f, 0.1f, NULL, 0, true, false }; // id, xcenter, ycenter, hw, hh, bitmap, num of bitmap, live, collided
 
 b2WorldId register_world(b2Vec2 gravity);
 void register_bodies(b2WorldId worldId);
@@ -71,6 +71,11 @@ inline bool body_null(b2BodyId id)
 inline bool shape_null(b2ShapeId id)
 {
 	return (id.index == b2_nullShapeId.index && id.world == b2_nullShapeId.world && id.index == b2_nullShapeId.revision);
+}
+
+inline bool shape_equal(b2ShapeId A, b2ShapeId B)
+{
+	return (A.index == B.index && A.world == B.world && A.revision == B.revision);
 }
 
 static bool pre_solve_cb(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold, void* context);
@@ -174,23 +179,6 @@ void game_update(float deltatime)
 						meteorites[i].x = vec.x;
 						meteorites[i].y = vec.y;
 
-						b2BodyDef bodyDef = b2DefaultBodyDef();
-						bodyDef.type = b2_dynamicBody;
-						bodyDef.enableSleep = false;
-						bodyDef.position = (b2Vec2){ meteorites[i].x, meteorites[i].y };
-						meteorites[i].id = b2CreateBody(worldId, &bodyDef);
-
-						b2Circle circle = { (b2Vec2) { 0.0f, 0.0f }, 0.15 };
-
-						meteorites[i].half_height = meteorites[i].half_width = circle.radius;
-
-						b2ShapeDef shapeDef = b2DefaultShapeDef();
-						shapeDef.density = 1.0f;
-						shapeDef.friction = 0.3f;
-						shapeDef.restitution = 0.3f;
-						shapeDef.enablePreSolveEvents = true;
-						b2CreateCircleShape(meteorites[i].id, &shapeDef, &circle);
-
 						break;
 					}
 				}
@@ -204,6 +192,13 @@ void game_update(float deltatime)
 				b2Vec2 obj_pos = b2Body_GetPosition(meteorites[i].id);
 				meteorites[i].x += (earth_center.x - obj_pos.x) * deltatime;
 				meteorites[i].y += (earth_center.y - obj_pos.y) * deltatime;
+
+				if ((obj_pos.x < 0 || obj_pos.x > 5) || (obj_pos.y < 0 || obj_pos.y > 3))
+				{
+					api->system->logToConsole("Object: %d out of screen", meteorites[i].id.index);
+					meteorites[i].live = false;
+					continue;
+				}
 
 				if (!meteorites[i].collided)
 				{
@@ -354,7 +349,7 @@ void register_bodies(b2WorldId world)
 		shapeDef = b2DefaultShapeDef();
 		shapeDef.density = 1.0f;
 		shapeDef.friction = 0.3f;
-		shapeId = b2CreateCircleShape(earth_obj.id, &shapeDef, &circle);
+		earth_obj.shape = b2CreateCircleShape(earth_obj.id, &shapeDef, &circle);
 }
 #endif // EARTH_ON
 
@@ -388,7 +383,7 @@ void register_bodies(b2WorldId world)
 		shapeDef = b2DefaultShapeDef();
 		shapeDef.density = 1.0f;
 		shapeDef.friction = 0.3f;
-		shapeId = b2CreateCircleShape(moon_obj.id, &shapeDef, &circle);
+		moon_obj.shape = b2CreateCircleShape(moon_obj.id, &shapeDef, &circle);
 }
 #endif // MOON_ON
 	
@@ -408,7 +403,7 @@ void register_bodies(b2WorldId world)
 		shapeDef.density = 1.0f;
 		shapeDef.friction = 0.3f;
 		shapeDef.restitution = 0.3f;
-		shapeId = b2CreateCircleShape(box_obj.id, &shapeDef, &circle);
+		box_obj.shape = b2CreateCircleShape(box_obj.id, &shapeDef, &circle);
 	}
 #endif // TESTING_ON
 
@@ -418,6 +413,7 @@ void register_bodies(b2WorldId world)
 		for (unsigned int i = 0; i < MAX_METEORITES; i++)
 		{
 			meteorites[i].id = b2_nullBodyId;
+			meteorites[i].shape = b2_nullShapeId;
 			meteorites[i].x = 0;
 			meteorites[i].y = 0;
 			meteorites[i].sprites = NULL;
@@ -425,6 +421,24 @@ void register_bodies(b2WorldId world)
 			meteorites[i].half_width = 0;
 			meteorites[i].sprite_size = 0;
 			meteorites[i].live = false;
+
+			bodyDef = b2DefaultBodyDef();
+			bodyDef.type = b2_dynamicBody;
+			bodyDef.enableSleep = false;
+			bodyDef.position = (b2Vec2){ meteorites[i].x, meteorites[i].y };
+			meteorites[i].id = b2CreateBody(worldId, &bodyDef);
+
+			circle.point = (b2Vec2){ 0.0f, 0.0f };
+			circle.radius = 0.1;
+
+			meteorites[i].half_height = meteorites[i].half_width = circle.radius;
+
+			shapeDef = b2DefaultShapeDef();
+			shapeDef.density = 1.0f;
+			shapeDef.friction = 0.3f;
+			shapeDef.restitution = 0.3f;
+			shapeDef.enablePreSolveEvents = true;
+			meteorites[i].shape = b2CreateCircleShape(meteorites[i].id, &shapeDef, &circle);
 		}
 	}
 #endif
@@ -438,25 +452,24 @@ void unregister_body(b2BodyId bodyId)
 static bool pre_solve_cb(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold, void* context)
 {
 	b2ShapeId meteorite_shape_id = b2_nullShapeId;
+	if (B2_ID_EQUALS(earth_obj.shape, shapeIdA))
+	{
+		meteorite_shape_id = shapeIdB;
+	}
+	else if (B2_ID_EQUALS(earth_obj.shape, shapeIdB))
+	{
+		meteorite_shape_id = shapeIdA;
+	}
+	else
+	{
+		return true;
+	}
+
 	for (unsigned int i = 0; i < MAX_METEORITES; i++)
 	{
-		if (body_null(meteorites[i].id)) continue;
-			
-		b2ShapeId earth_shape_id = b2Body_GetFirstShape(meteorites[i].id);
-		if (B2_ID_EQUALS(earth_shape_id, shapeIdA))
+		if (shape_equal(meteorites[i].shape, meteorite_shape_id))
 		{
-			meteorite_shape_id = shapeIdB;
-		}
-		else if (B2_ID_EQUALS(earth_shape_id, shapeIdB))
-		{
-			meteorite_shape_id = shapeIdA;
-		}
-
-		if (!shape_null(meteorite_shape_id))
-		{
-			api->system->logToConsole("XXXXXXXXXXXXXXXXXXXXXXX");
 			meteorites[i].collided = true;
-			break;
 		}
 	}
 	return true;

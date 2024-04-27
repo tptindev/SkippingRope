@@ -6,6 +6,7 @@
 typedef struct game_obj
 {
 	b2BodyId id;
+	b2ShapeId shape;
 	float x;
 	float y;
 	float half_width;
