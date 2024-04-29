@@ -42,7 +42,7 @@ const Edge edge[4] =
 
 static bool initialized = false;
 static PlaydateAPI* api = NULL;
-static b2WorldId worldId;
+static b2WorldId worldId = B2_ZERO_INIT;
 static unsigned int current_level = 0; // 0: index
 static float last_crank_angle = 0.0f;
 static unsigned int user_point = 0;
@@ -96,7 +96,7 @@ void game_initialize(void* userdata)
 	if (b2World_IsValid(worldId))
 	{
 		register_bodies(worldId);
-		//b2World_SetPreSolveCallback(worldId, pre_solve_cb, NULL);
+		b2World_SetPreSolveCallback(worldId, pre_solve_cb, NULL);
 	}
 }
 
@@ -107,7 +107,7 @@ void game_update(float deltatime)
 	if (b2World_IsValid(worldId))
 	{
 		float timeStep = 1.0f / FPS;
-		b2World_Step(worldId, timeStep, 10);
+		b2World_Step(worldId, timeStep, 30);
 		LevelObject level = levels[current_level];
 		b2Vec2 pos = { 0.0f, 0.0f };
 		b2Vec2 local_point = { 0.0f, 0.0f };
@@ -178,6 +178,28 @@ void game_update(float deltatime)
 						meteorites[i].live = true;
 						meteorites[i].x = vec.x;
 						meteorites[i].y = vec.y;
+
+						b2BodyDef bodyDef = b2DefaultBodyDef();
+						bodyDef.type = b2_dynamicBody;
+						bodyDef.enableSleep = false;
+						bodyDef.position = (b2Vec2){ meteorites[i].x, meteorites[i].y };
+						meteorites[i].id = b2CreateBody(worldId, &bodyDef);
+
+						b2Circle circle;
+						circle.point = (b2Vec2){ 0.0f, 0.0f };
+						circle.radius = 0.1f;
+
+						meteorites[i].half_height = meteorites[i].half_width = circle.radius;
+
+						b2ShapeDef shapeDef = b2DefaultShapeDef();
+						shapeDef.density = 1.0f;
+						shapeDef.friction = 0.3f;
+						shapeDef.restitution = 0.3f;
+						shapeDef.enablePreSolveEvents = true;
+						meteorites[i].shape = b2CreateCircleShape(meteorites[i].id, &shapeDef, &circle);
+
+						b2World_SetPreSolveCallback(worldId, pre_solve_cb, &meteorites[i]);
+
 						break; // create meteorite every 'levels[current_level].interval' miliseconds 
 					}
 				}
@@ -196,6 +218,7 @@ void game_update(float deltatime)
 				{
 					api->system->logToConsole("Object: %d out of screen", meteorites[i].id.index);
 					meteorites[i].live = false;
+					b2DestroyBody(meteorites[i].id);
 					continue;
 				}
 
@@ -369,7 +392,7 @@ void register_bodies(b2WorldId world)
 
 
 		bodyDef = b2DefaultBodyDef();
-		bodyDef.type = b2_dynamicBody;
+		bodyDef.type = b2_kinematicBody;
 		bodyDef.position.x = moon_obj.x;
 		bodyDef.position.y = moon_obj.y;
 		bodyDef.enableSleep = true;
@@ -417,24 +440,6 @@ void register_bodies(b2WorldId world)
 			meteorites[i].sprites = NULL;
 			meteorites[i].sprite_size = 0;
 			meteorites[i].live = false;
-
-			bodyDef = b2DefaultBodyDef();
-			bodyDef.type = b2_dynamicBody;
-			bodyDef.enableSleep = false;
-			bodyDef.position = (b2Vec2){ meteorites[i].x, meteorites[i].y };
-			meteorites[i].id = b2CreateBody(worldId, &bodyDef);
-
-			circle.point = (b2Vec2){ 0.0f, 0.0f };
-			circle.radius = 0.1f;
-
-			meteorites[i].half_height = meteorites[i].half_width = circle.radius;
-
-			shapeDef = b2DefaultShapeDef();
-			shapeDef.density = 1.0f;
-			shapeDef.friction = 0.3f;
-			shapeDef.restitution = 0.3f;
-			shapeDef.enablePreSolveEvents = true;
-			meteorites[i].shape = b2CreateCircleShape(meteorites[i].id, &shapeDef, &circle);
 		}
 	}
 #endif
@@ -448,12 +453,14 @@ void unregister_body(b2BodyId bodyId)
 static bool pre_solve_cb(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold, void* context)
 {
 	b2ShapeId meteorite_shape_id = b2_nullShapeId;
-	if (B2_ID_EQUALS(earth_obj.shape, shapeIdA))
+	if (B2_ID_EQUALS(shapeIdA, earth_obj.shape))
 	{
+		api->system->logToConsole("XXXXXXXXXXXXXXX");
 		meteorite_shape_id = shapeIdB;
 	}
-	else if (B2_ID_EQUALS(earth_obj.shape, shapeIdB))
+	else if (B2_ID_EQUALS(shapeIdB, earth_obj.shape))
 	{
+		api->system->logToConsole("YYYYYYYYYYYYYY");
 		meteorite_shape_id = shapeIdA;
 	}
 	else
@@ -461,13 +468,13 @@ static bool pre_solve_cb(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* man
 		return true;
 	}
 
-	for (unsigned int i = 0; i < MAX_METEORITES; i++)
-	{
-		if (shape_equal(meteorites[i].shape, meteorite_shape_id))
-		{
-			meteorites[i].collided = true;
-		}
-	}
+	//for (unsigned int i = 0; i < MAX_METEORITES; i++)
+	//{
+	//	if (shape_equal(meteorites[i].shape, meteorite_shape_id))
+	//	{
+	//		meteorites[i].collided = true;
+	//	}
+	//}
 	return true;
 }
 
