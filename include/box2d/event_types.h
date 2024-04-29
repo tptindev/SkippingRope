@@ -31,8 +31,8 @@ typedef struct b2SensorEvents
 {
 	b2SensorBeginTouchEvent* beginEvents;
 	b2SensorEndTouchEvent* endEvents;
-	int beginCount;
-	int endCount;
+	int32_t beginCount;
+	int32_t endCount;
 } b2SensorEvents;
 
 /// A begin touch event is generated when two shapes begin touching. By convention the manifold
@@ -41,7 +41,6 @@ typedef struct b2ContactBeginTouchEvent
 {
 	b2ShapeId shapeIdA;
 	b2ShapeId shapeIdB;
-	b2Manifold manifold;
 } b2ContactBeginTouchEvent;
 
 /// An end touch event is generated when two shapes stop touching.
@@ -51,6 +50,21 @@ typedef struct b2ContactEndTouchEvent
 	b2ShapeId shapeIdB;
 } b2ContactEndTouchEvent;
 
+/// A hit touch event is generated when two shapes collide with a speed faster than the hit speed threshold.
+typedef struct b2ContactHitEvent
+{
+	b2ShapeId shapeIdA;
+	b2ShapeId shapeIdB;
+
+	// point where the shapes hit
+	b2Vec2 point;
+
+	// normal vector pointing from shape A to shape B
+	b2Vec2 normal;
+
+	float approachSpeed;
+} b2ContactHitEvent;
+
 /// Contact events are buffered in the Box2D world and are available
 ///	as event arrays after the time step is complete.
 ///	Note: these may become invalid if bodies and/or shapes are destroyed
@@ -58,8 +72,8 @@ typedef struct b2ContactEvents
 {
 	b2ContactBeginTouchEvent* beginEvents;
 	b2ContactEndTouchEvent* endEvents;
-	int beginCount;
-	int endCount;
+	int32_t beginCount;
+	int32_t endCount;
 } b2ContactEvents;
 
 /// The contact data for two shapes. By convention the manifold normal points
@@ -90,5 +104,5 @@ typedef struct b2BodyMoveEvent
 typedef struct b2BodyEvents
 {
 	b2BodyMoveEvent* moveEvents;
-	int moveCount;
+	int32_t moveCount;
 } b2BodyEvents;

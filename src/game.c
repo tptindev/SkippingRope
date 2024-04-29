@@ -65,17 +65,17 @@ void unregister_body(b2BodyId bodyId);
 
 inline bool body_null(b2BodyId id)
 {
-	return (id.index == b2_nullBodyId.index && id.world == b2_nullBodyId.world && id.index == b2_nullBodyId.revision);
+	return (id.index1 == b2_nullBodyId.index1 && id.world0 == b2_nullBodyId.world0 && id.index1 == b2_nullBodyId.revision);
 }
 
 inline bool shape_null(b2ShapeId id)
 {
-	return (id.index == b2_nullShapeId.index && id.world == b2_nullShapeId.world && id.index == b2_nullShapeId.revision);
+	return (id.index1 == b2_nullShapeId.index1 && id.world0 == b2_nullShapeId.world0 && id.index1 == b2_nullShapeId.revision);
 }
 
 inline bool shape_equal(b2ShapeId A, b2ShapeId B)
 {
-	return (A.index == B.index && A.world == B.world && A.revision == B.revision);
+	return (A.index1 == B.index1 && A.world0 == B.world0 && A.revision == B.revision);
 }
 
 static bool pre_solve_cb(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold, void* context);
@@ -175,6 +175,8 @@ void game_update(float deltatime)
 					if (meteorites[i].live == true) continue;
 					else
 					{
+						b2World_SetPreSolveCallback(worldId, pre_solve_cb, &meteorites[i]);
+
 						meteorites[i].live = true;
 						meteorites[i].x = vec.x;
 						meteorites[i].y = vec.y;
@@ -186,7 +188,7 @@ void game_update(float deltatime)
 						meteorites[i].id = b2CreateBody(worldId, &bodyDef);
 
 						b2Circle circle;
-						circle.point = (b2Vec2){ 0.0f, 0.0f };
+						circle.center = (b2Vec2){ 0.1f, 0.1f };
 						circle.radius = 0.1f;
 
 						meteorites[i].half_height = meteorites[i].half_width = circle.radius;
@@ -194,11 +196,15 @@ void game_update(float deltatime)
 						b2ShapeDef shapeDef = b2DefaultShapeDef();
 						shapeDef.density = 1.0f;
 						shapeDef.friction = 0.3f;
-						shapeDef.restitution = 0.3f;
+						shapeDef.restitution = 1.0f;
 						shapeDef.enablePreSolveEvents = true;
 						meteorites[i].shape = b2CreateCircleShape(meteorites[i].id, &shapeDef, &circle);
 
-						b2World_SetPreSolveCallback(worldId, pre_solve_cb, &meteorites[i]);
+						//api->system->logToConsole(
+						//	"ShapeID index: %d, revision: %d, world: %d", 
+						//	meteorites[i].shape.index1,
+						//	meteorites[i].shape.revision, 
+						//	meteorites[i].shape.world0);
 
 						break; // create meteorite every 'levels[current_level].interval' miliseconds 
 					}
@@ -216,7 +222,7 @@ void game_update(float deltatime)
 
 				if ((obj_pos.x < 0 || obj_pos.x > 5) || (obj_pos.y < 0 || obj_pos.y > 3))
 				{
-					api->system->logToConsole("Object: %d out of screen", meteorites[i].id.index);
+					api->system->logToConsole("Object: %d out of screen", meteorites[i].id.index1);
 					meteorites[i].live = false;
 					b2DestroyBody(meteorites[i].id);
 					continue;
@@ -322,7 +328,7 @@ b2WorldId register_world(b2Vec2 gravity)
 	worldDef.gravity = gravity;
 	worldDef.enableSleep = true;
 	worldDef.enableContinous = true;
-	api->system->logToConsole("World id(%d %d)", worldId.index, worldId.revision);
+	api->system->logToConsole("World id(%d %d)", worldId.index1, worldId.revision);
 	return b2CreateWorld(&worldDef);
 }
 
@@ -364,7 +370,7 @@ void register_bodies(b2WorldId world)
 		bodyDef.enableSleep = false;
 		earth_obj.id = b2CreateBody(world, &bodyDef);
 
-		circle.point = (b2Vec2){ 0.0f, 0.0f };
+		circle.center = (b2Vec2){ 0.1f, 0.1f };
 		circle.radius = earth_obj.half_width;
 
 		shapeDef = b2DefaultShapeDef();
@@ -398,7 +404,7 @@ void register_bodies(b2WorldId world)
 		bodyDef.enableSleep = true;
 		moon_obj.id = b2CreateBody(world, &bodyDef);
 
-		circle.point = (b2Vec2){ 0.0f, 0.0f };
+		circle.center = (b2Vec2){ 0.1f, 0.1f };
 		circle.radius = moon_obj.half_width;
 
 		shapeDef = b2DefaultShapeDef();
@@ -452,29 +458,19 @@ void unregister_body(b2BodyId bodyId)
 
 static bool pre_solve_cb(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold, void* context)
 {
-	b2ShapeId meteorite_shape_id = b2_nullShapeId;
-	if (B2_ID_EQUALS(shapeIdA, earth_obj.shape))
+	GameObject* obj = context;
+	if (B2_ID_EQUALS(shapeIdA, b2_nullShapeId) || B2_ID_EQUALS(shapeIdB, b2_nullShapeId)) {}
+	else if (obj != NULL)
 	{
-		api->system->logToConsole("XXXXXXXXXXXXXXX");
-		meteorite_shape_id = shapeIdB;
+		//api->system->logToConsole("A %d %d %d", shapeIdA.index1, shapeIdA.revision, shapeIdA.world0);
+		//api->system->logToConsole("B %d %d %d", shapeIdB.index1, shapeIdB.revision, shapeIdB.world0);
+		//api->system->logToConsole("Object %d %d %d", obj->shape.index1, obj->shape.revision, obj->shape.world0);
+		//api->system->logToConsole("--------------------");
+		if (B2_ID_EQUALS(shapeIdA, obj->shape) || B2_ID_EQUALS(shapeIdB, obj->shape))
+		{
+			obj->collided = true;
+		}
 	}
-	else if (B2_ID_EQUALS(shapeIdB, earth_obj.shape))
-	{
-		api->system->logToConsole("YYYYYYYYYYYYYY");
-		meteorite_shape_id = shapeIdA;
-	}
-	else
-	{
-		return true;
-	}
-
-	//for (unsigned int i = 0; i < MAX_METEORITES; i++)
-	//{
-	//	if (shape_equal(meteorites[i].shape, meteorite_shape_id))
-	//	{
-	//		meteorites[i].collided = true;
-	//	}
-	//}
 	return true;
 }
 
