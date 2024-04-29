@@ -96,7 +96,7 @@ void game_initialize(void* userdata)
 	if (b2World_IsValid(worldId))
 	{
 		register_bodies(worldId);
-		b2World_SetPreSolveCallback(worldId, pre_solve_cb, NULL);
+		//b2World_SetPreSolveCallback(worldId, pre_solve_cb, NULL);
 	}
 }
 
@@ -178,8 +178,7 @@ void game_update(float deltatime)
 						meteorites[i].live = true;
 						meteorites[i].x = vec.x;
 						meteorites[i].y = vec.y;
-
-						break;
+						break; // create meteorite every 'levels[current_level].interval' miliseconds 
 					}
 				}
 			}
@@ -200,7 +199,7 @@ void game_update(float deltatime)
 					continue;
 				}
 
-				if (!meteorites[i].collided)
+				if (meteorites[i].collided == false)
 				{
 					b2Body_SetTransform( meteorites[i].id, (b2Vec2) { meteorites[i].x, meteorites[i].y }, 0 );
 				}
@@ -222,7 +221,7 @@ void game_update(float deltatime)
 		}
 
 		last_crank_angle = api->system->getCrankAngle();
-		if (sec > levels[current_level].interval)
+		if (sec > level.interval)
 		{
 			before = clock();
 			flag_auto_gen = true;
@@ -309,7 +308,6 @@ void register_bodies(b2WorldId world)
 	api->system->logToConsole("Entry: %s", __FUNCTION__);
 
 	b2Vec2 pos = { 0.0f, 0.0f };
-	b2ShapeId shapeId = b2_nullShapeId;
 	b2BodyDef bodyDef;
 	b2ShapeDef shapeDef;
 	b2Polygon polygon; 
@@ -417,8 +415,6 @@ void register_bodies(b2WorldId world)
 			meteorites[i].x = 0;
 			meteorites[i].y = 0;
 			meteorites[i].sprites = NULL;
-			meteorites[i].half_height = 0;
-			meteorites[i].half_width = 0;
 			meteorites[i].sprite_size = 0;
 			meteorites[i].live = false;
 
@@ -429,7 +425,7 @@ void register_bodies(b2WorldId world)
 			meteorites[i].id = b2CreateBody(worldId, &bodyDef);
 
 			circle.point = (b2Vec2){ 0.0f, 0.0f };
-			circle.radius = 0.1;
+			circle.radius = 0.1f;
 
 			meteorites[i].half_height = meteorites[i].half_width = circle.radius;
 
