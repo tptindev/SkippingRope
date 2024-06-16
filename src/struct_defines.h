@@ -5,7 +5,7 @@
 
 typedef struct game_obj
 {
-	Body2D body;
+	Body2D* body;
 	void* sprites;
 	unsigned int sprite_size;
 	bool live;
