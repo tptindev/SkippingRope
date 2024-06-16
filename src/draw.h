@@ -2,7 +2,7 @@
 #define __DRAW_H__
 
 #include "pd_api.h"
-#include "box2d.h"
+#include <stdbool.h>
 
 extern float world_scale;
 

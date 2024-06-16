@@ -1,16 +1,11 @@
 #ifndef __GAMEOBJ_H__
 #define __GAMEOBJ_H__
 
-#include "box2d.h"
+#include "Physics2D/Body2D.h"
 
 typedef struct game_obj
 {
-	b2BodyId id;
-	b2ShapeId shape;
-	float x;
-	float y;
-	float half_width;
-	float half_height;
+	Body2D body;
 	void* sprites;
 	unsigned int sprite_size;
 	bool live;
