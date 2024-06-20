@@ -1,4 +1,5 @@
 #include "QuadTree.h"
+#include <stdlib.h>
 
 struct QuadTree *CreateQuadTreeNode(const struct QuadTree* parent, float width, float height,  int index)
 {

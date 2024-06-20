@@ -13,12 +13,11 @@ World2D *CreateWorld(float g, float w, float h)
         fprintf(stderr, "ERROR: Couldn't realloc memory! line: %d\n", __LINE__);
         return NULL;
     }
+    printf("Hello World!\n");
     world->gravity = g;
     world->w = w;
     world->h = h;
-    world->bodyBitset = (bool*)calloc(MAX_BODY, sizeof(bool));
 
-    printf("Hello World!\n");
     return world;
 }
 
@@ -26,7 +25,6 @@ void DestroyWorld(World2D *world)
 {
     if (world != NULL)
     {
-        free(world->bodyBitset);
         free(world);
         world = NULL;
     }

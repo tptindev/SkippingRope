@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.14)
 set(CMAKE_C_STANDARD 11)
+# set(CMAKE_C_COMPILER /usr/bin/gcc)
+# set(CMAKE_ASM_COMPILER /usr/bin/nasm)
+# set(CMAKE_MAKE_PROGRAM /usr/bin/cmake)
 
 set(ENVSDK $ENV{PLAYDATE_SDK_PATH})
 
