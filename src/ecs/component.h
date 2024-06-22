@@ -14,8 +14,14 @@ typedef struct {
 } Health;
 
 typedef struct {
+	const char* source;
+	float degree;
+} Sprite;
+
+typedef struct {
 	Position* position;
 	Health* health;
+	Sprite* sprite;
 } Components;
 
 #endif // __COMPONENT_H__

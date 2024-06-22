@@ -38,3 +38,14 @@ void AddHealthComponent(Entity* entity, float max, float current)
 		entity->component.health->current = current;
 	}
 }
+
+void AddSpriteComponent(Entity* entity, const char* source, float degree)
+{
+	entity->component.sprite = (Sprite*)malloc(sizeof(Sprite));
+	if (entity->component.sprite != NULL)
+	{
+		entity->component.sprite->source = source;
+		entity->component.sprite->degree = degree;
+	}
+}
+
