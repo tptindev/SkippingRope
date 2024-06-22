@@ -1,5 +1,6 @@
 #include "game.h"
 #include <stdio.h>
+#include "Physics2D/DataStructs/QuadTree.h"
 #include "Physics2D/World2D.h"
 #include "draw.h"
 #include "ecs/entity.h"
@@ -11,11 +12,13 @@ static PlaydateAPI* api = NULL;
 static World2D* world = NULL;
 static Entity* earth = NULL;
 static Entity* moon = NULL;
+static struct QuadTree* tree = NULL;
+
 void game_initialize(void* userdata)
 {	
 	api = userdata;
 	world = CreateWorld(9.8, 5.0f, 3.0f);
-
+	tree = CreateQuadTreeNode(NULL, world->w, world->h, 0);
 	{
 		earth = CreateEntity(world);
 		if (earth != NULL)
@@ -64,6 +67,8 @@ void game_draw()
 
 void game_destroy()
 {
+	QuadTreeClear(tree);
+	DestroyWorld(world);
 	FreeEntity(earth);
 	FreeEntity(moon);
 }

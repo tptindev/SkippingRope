@@ -4,37 +4,51 @@
 Polygon *CreatePolygon(Vec2 *vertices, size_t count)
 {
     Polygon *shape = (Polygon*)malloc(sizeof(Polygon));
-    shape->points = (Vec2*)malloc(count * sizeof(Vec2));
-    for (size_t i = 0; i < count; ++i) {
-        shape->points[i] = vertices[i];
+    if (shape != NULL)
+    {
+        shape->points = (Vec2*)malloc(count * sizeof(Vec2));
+        for (size_t i = 0; i < count; ++i) {
+            if (shape != NULL) {
+                shape->points[i] = vertices[i];
+            }
+        }
+        shape->count = count;
     }
-    shape->count = count;
     return shape;
 }
 
 Circle *CreateCircle(Vec2 center, float radius)
 {
     Circle *shape = (Circle*)malloc(sizeof(Circle));
-    shape->center = center;
-    shape->radius = radius;
+    if (shape != NULL)
+    {
+        shape->center = center;
+        shape->radius = radius;
+    }
     return shape;
 }
 
 Ellipse *CreateEllipse(Vec2 center, float a, float b)
 {
     Ellipse *shape = (Ellipse*)malloc(sizeof(Ellipse));
-    shape->center   = center;
-    shape->a        = a;
-    shape->b        = b;
+    if (shape != NULL)
+    {
+        shape->center = center;
+        shape->a = a;
+        shape->b = b;
+    }
     return shape;
 }
 
 Capsule *CreateCapsule(Vec2 center, float height, float radius)
 {
     Capsule *shape = (Capsule*)malloc(sizeof(Capsule));
-    shape->center  = center;
-    shape->height  = height;
-    shape->radius  = radius;
+    if (shape != NULL)
+    {
+        shape->center = center;
+        shape->height = height;
+        shape->radius = radius;
+    }
     return shape;
 }
 

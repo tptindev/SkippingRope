@@ -4,11 +4,8 @@
 void UpdatePosition(PlaydateAPI* api, Position* position, float dt)
 {
 	double angle_rad = api->system->getCrankAngle() * (3.14159265358979323846f / 180.0f);
-	if (angle_rad > 0)
-	{
-		position->x = (float)(0.5f * cos(angle_rad));
-		position->y = (float)(0.5f * sin(angle_rad));
-	}
+	position->x = (float)(0.9f * cos(angle_rad));
+	position->y = (float)(0.7f * sin(angle_rad));
 }
 
 void UpdateHealth(Health* health, float dt)

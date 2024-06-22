@@ -4,26 +4,28 @@
 struct QuadTree *CreateQuadTreeNode(const struct QuadTree* parent, float width, float height,  int index)
 {
     struct QuadTree* node = (struct QuadTree*)malloc(sizeof(struct QuadTree));
-    node->objects = CreateArray1D();
-    if (parent == NULL) // current node is root, have not parent (NULL)
+    if (node != NULL)
     {
-        node->rect.x = 0;
-        node->rect.y = 0;
-        node->rect.width = width;
-        node->rect.height = height;
+        node->objects = CreateArray1D();
+        if (parent == NULL) // current node is root, have not parent (NULL)
+        {
+            node->rect.x = 0;
+            node->rect.y = 0;
+            node->rect.width = width;
+            node->rect.height = height;
+        }
+        else
+        {
+            node->rect.x = parent->rect.x + (float)(index % 2) * width;
+            node->rect.y = parent->rect.y + (float)(index / 2) * height;
+            node->rect.width = width;
+            node->rect.height = height;
+        }
+        node->nodes[WestNorth] = NULL; // TOP-LEFT (1)
+        node->nodes[EastNorth] = NULL; // TOP-RIGHT (2)
+        node->nodes[WestSouth] = NULL; // BOTTOM-LEFT (3)
+        node->nodes[EastSouth] = NULL; // BOTTOM-RIGHT (4)
     }
-    else
-    {
-        node->rect.x            =  parent->rect.x + (float)(index % 2) * width;
-        node->rect.y            =  parent->rect.y + (float)(index / 2) * height;
-        node->rect.width        =  width;
-        node->rect.height       =  height;
-    }
-    node->nodes[WestNorth] = NULL; // TOP-LEFT (1)
-    node->nodes[EastNorth] = NULL; // TOP-RIGHT (2)
-    node->nodes[WestSouth] = NULL; // BOTTOM-LEFT (3)
-    node->nodes[EastSouth] = NULL; // BOTTOM-RIGHT (4)
-
     return node;
 }
 
