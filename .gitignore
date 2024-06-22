@@ -3,3 +3,4 @@
 .sentry-native
 .vscode
 **.dll
+**.swp

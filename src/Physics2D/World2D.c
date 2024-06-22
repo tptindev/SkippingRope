@@ -17,7 +17,8 @@ World2D *CreateWorld(float g, float w, float h)
     world->gravity = g;
     world->w = w;
     world->h = h;
-
+	world->objId.max = 32;
+	world->objId.last = 0;
     return world;
 }
 
@@ -30,25 +31,3 @@ void DestroyWorld(World2D *world)
     }
 }
 
-void Update(World2D *world, float deltatime, int totalIterations)
-{
-    (void)world;
-    (void)deltatime;
-    (void)totalIterations;
-    for (int i = 0; i < totalIterations; ++i) {
-        BroadPhase(world);
-        NarrowPhase(world);
-    }
-}
-
-void BroadPhase(World2D* world)
-{
-    for (unsigned char i = 0; i < (world->h * world->w); ++i) {
-
-    }
-}
-
-void NarrowPhase(World2D* world)
-{
-
-}

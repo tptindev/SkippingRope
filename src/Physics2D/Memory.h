@@ -3,13 +3,13 @@
 
 #include <stdlib.h>
 
-struct MemoryManager
-{
-    size_t allocated;
-};
+/* struct MemoryManager */
+/* { */
+/*     size_t allocated; */
+/* }; */
 
-void MemoryManagerTracking(struct MemoryManager *manager, size_t newAlloc)
-{
-    manager->allocated += newAlloc;
-}
+/* void MemoryManagerTracking(struct MemoryManager *manager, size_t newAlloc) */
+/* { */
+/*     manager->allocated += newAlloc; */
+/* } */
 #endif // MEMORY_H

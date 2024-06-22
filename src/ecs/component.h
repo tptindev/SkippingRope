@@ -15,5 +15,8 @@ struct Health {
 	float max_health;
 };
 
+struct Sprite {
+
+};
 
 #endif // __COMPONENT_H__
