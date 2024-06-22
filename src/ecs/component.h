@@ -3,20 +3,19 @@
 
 #include <stddef.h>
 
-struct Position {
-	unsigned int entity_id;
+typedef struct {
 	float x;
 	float y;
-};
+} Position;
 
-struct Health {
-	unsigned int entity_id;
-	float current_health;
-	float max_health;
-};
+typedef struct {
+	float current;
+	float max;
+} Health;
 
-struct Sprite {
-
-};
+typedef struct {
+	Position* position;
+	Health* health;
+} Components;
 
 #endif // __COMPONENT_H__
