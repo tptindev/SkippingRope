@@ -44,11 +44,16 @@ typedef struct {
 } Regidbody;
 
 typedef struct {
+	Shape2D shape;
+} BoxCollider;
+
+typedef struct {
 	Regidbody* body;
 	Transform* transform;
 	Health* health;
 	Sprite* sprite;
 	KeyInput* input;
+	BoxCollider* collider;
 } Components;
 
 #endif // __COMPONENT_H__

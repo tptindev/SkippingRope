@@ -14,68 +14,82 @@ Entity* CreateEntity(World2D* world)
 
 void FreeEntity(Entity* entity)
 {
-	if (entity->component.transform) free(entity->component.transform);
-	if (entity->component.health) free(entity->component.health);
-	if (entity->component.body) free(entity->component.body);
-	if (entity->component.sprite) free(entity->component.sprite);
-	if (entity->component.input) free(entity->component.input);
+	if (entity->components.transform) free(entity->components.transform);
+	if (entity->components.health) free(entity->components.health);
+	if (entity->components.body) free(entity->components.body);
+	if (entity->components.sprite) free(entity->components.sprite);
+	if (entity->components.input) free(entity->components.input);
+	if (entity->components.collider) free(entity->components.collider);
 	free(entity);
+}
+
+void AddCircleColliderComponent(Entity* entity, struct QuadTree* node, Vec2 center, float radius)
+{
+	entity->components.collider = (BoxCollider*)malloc(sizeof(BoxCollider));
+	if (entity->components.collider != NULL)
+	{
+		Circle* circle = CreateCircle(center, radius);
+		entity->components.collider->shape.type = CIRCLE;
+		entity->components.collider->shape.define = circle;
+		GetCircleBoundary(&entity->components.collider->shape.box, circle);
+		QuadtreeInsert(node, entity, &entity->components.collider->shape.box);
+	}
 }
 
 void AddTransformComponent(Entity* entity, float x, float y, float angle, float scale)
 {
-	entity->component.transform = (Transform*)malloc(sizeof(Transform));
-	if (entity->component.transform != NULL)
+	entity->components.transform = (Transform*)malloc(sizeof(Transform));
+	if (entity->components.transform != NULL)
 	{
-		entity->component.transform->x = x;
-		entity->component.transform->y = y;
-		entity->component.transform->angle = angle;
-		entity->component.transform->scale = scale;
+		entity->components.transform->x = x;
+		entity->components.transform->y = y;
+		entity->components.transform->angle = angle;
+		entity->components.transform->scale = scale;
 	}
 }
 
 void AddHealthComponent(Entity* entity, float max, float current)
 {
-	entity->component.health = (Health*)malloc(sizeof(Health));
-	if (entity->component.health != NULL)
+	entity->components.health = (Health*)malloc(sizeof(Health));
+	if (entity->components.health != NULL)
 	{
-		entity->component.health->max = max;
-		entity->component.health->current = current;
+		entity->components.health->max = max;
+		entity->components.health->current = current;
 	}
 }
 
 void AddRegidbodyComponent(Entity* entity, BodyType type, float mass, float gravity_scale)
 {
-	entity->component.body = (Regidbody*)malloc(sizeof(Regidbody));
-	if (entity->component.body != NULL)
+	entity->components.body = (Regidbody*)malloc(sizeof(Regidbody));
+	if (entity->components.body != NULL)
 	{
-		entity->component.body->type = type;
-		entity->component.body->mass = mass;
-		entity->component.body->gravity_scale = gravity_scale;
+		entity->components.body->type = type;
+		entity->components.body->mass = mass;
+		entity->components.body->gravity_scale = gravity_scale;
 	}
 }
 
 void AddKeyInputComponent(Entity* entity, bool left, bool right, bool up, bool down, bool a, bool b, bool crank)
 {
-	entity->component.input = (KeyInput*)malloc(sizeof(KeyInput));
-	if (entity->component.input != NULL)
+	entity->components.input = (KeyInput*)malloc(sizeof(KeyInput));
+	if (entity->components.input != NULL)
 	{
-		entity->component.input->left = left;
-		entity->component.input->right = right;
-		entity->component.input->up = up;
-		entity->component.input->down = down;
-		entity->component.input->a = a;
-		entity->component.input->b = b;
-		entity->component.input->crank = crank;
+		entity->components.input->left = left;
+		entity->components.input->right = right;
+		entity->components.input->up = up;
+		entity->components.input->down = down;
+		entity->components.input->a = a;
+		entity->components.input->b = b;
+		entity->components.input->crank = crank;
 	}
 }
 
 void AddSpriteComponent(Entity* entity, const char* source)
 {
-	entity->component.sprite = (Sprite*)malloc(sizeof(Sprite));
-	if (entity->component.sprite != NULL)
+	entity->components.sprite = (Sprite*)malloc(sizeof(Sprite));
+	if (entity->components.sprite != NULL)
 	{
-		entity->component.sprite->source = source;
+		entity->components.sprite->source = source;
 	}
 }
 

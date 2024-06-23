@@ -27,6 +27,7 @@ void game_initialize(void* userdata)
 			AddTransformComponent(earth, 2.5f, 1.5f, 0, 1);
 			AddHealthComponent(earth, 100, 100);
 			AddSpriteComponent(earth, "images/earth.png");
+			AddCircleColliderComponent(earth, tree, (Vec2) { 0.0f, 0.0f }, 1.5f);
 		}
 	}
 
@@ -39,17 +40,19 @@ void game_initialize(void* userdata)
 			AddHealthComponent(moon, 100, 100);
 			AddSpriteComponent(moon, "images/moon.png");
 			AddKeyInputComponent(moon, false, false, false, false, false, false, true);
+			AddCircleColliderComponent(moon, tree, (Vec2) { 0.0f, 0.0f }, 0.5f);
 		}
 	}
-
+	
+	QuadTreePrint(tree);
 }
 
 void game_update(float dt)
 {
 	{ // moon
-		UpdatePosition(api, moon->component.transform, moon->component.input, dt);
-		moon->component.transform->x += earth->component.transform->x;
-		moon->component.transform->y += earth->component.transform->y;
+		UpdatePosition(api, moon->components.transform, moon->components.input, dt);
+		moon->components.transform->x += earth->components.transform->x;
+		moon->components.transform->y += earth->components.transform->y;
 	}
 }
 
@@ -59,11 +62,11 @@ void game_draw()
 	api->graphics->setBackgroundColor(kColorBlack);
 
 	{ // earth
-		UpdateSprite(api, earth->component.sprite, earth->component.transform);
+		UpdateSprite(api, earth->components.sprite, earth->components.transform);
 	}
 
 	{ // moon
-		UpdateSprite(api, moon->component.sprite, moon->component.transform);
+		UpdateSprite(api, moon->components.sprite, moon->components.transform);
 	}
 }
 
