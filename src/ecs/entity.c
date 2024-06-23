@@ -25,14 +25,21 @@ void FreeEntity(Entity* entity)
 
 void AddCircleColliderComponent(Entity* entity, struct QuadTree* node, Vec2 center, float radius)
 {
-	entity->components.collider = (BoxCollider*)malloc(sizeof(BoxCollider));
-	if (entity->components.collider != NULL)
+	if (entity->components.transform != NULL)
 	{
-		Circle* circle = CreateCircle(center, radius);
-		entity->components.collider->shape.type = CIRCLE;
-		entity->components.collider->shape.define = circle;
-		GetCircleBoundary(&entity->components.collider->shape.box, circle);
-		QuadtreeInsert(node, entity, &entity->components.collider->shape.box);
+		entity->components.collider = (BoxCollider*)malloc(sizeof(BoxCollider));
+		if (entity->components.collider != NULL)
+		{
+			Circle* circle = CreateCircle(center, radius);
+			entity->components.collider->shape.type = CIRCLE;
+			entity->components.collider->shape.define = circle;
+
+			GetCircleBoundary(&entity->components.collider->shape.box, circle);
+			entity->components.collider->shape.box.x += entity->components.transform->x;
+			entity->components.collider->shape.box.y += entity->components.transform->y;
+
+			QuadtreeInsert(node, entity, &entity->components.collider->shape.box);
+		}
 	}
 }
 

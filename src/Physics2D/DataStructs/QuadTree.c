@@ -1,5 +1,6 @@
 #include "QuadTree.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 struct QuadTree *CreateQuadTreeNode(const struct QuadTree* parent, float width, float height,  int index)
 {
@@ -97,6 +98,9 @@ void QuadTreePrint(struct QuadTree *node)
     {
         QuadTreePrint(node->nodes[i]);
     }
+    char buffer[250];
+    sprintf(buffer, "Node %p, (%f %f %f %f), count: %llu\n", node, node->rect.x, node->rect.y, node->rect.width, node->rect.height, node->objects->size);
+    printf(buffer);
 }
 
 void QuadTreeSearch(struct QuadTree* node, Array1D *outs, const Rect2D *objBoundary)

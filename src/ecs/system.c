@@ -1,5 +1,7 @@
 #include "system.h"
 #include "../draw.h"
+#include "../Physics2D/Collision.h"
+#include "entity.h"
 
 void UpdatePosition(PlaydateAPI* api, Transform* trans, KeyInput* keyinput, float dt)
 {
@@ -14,7 +16,33 @@ void UpdatePosition(PlaydateAPI* api, Transform* trans, KeyInput* keyinput, floa
 	}
 }
 
-void UpdateHealth(Health* health, float dt)
+void UpdateCollision(PlaydateAPI* api, BoxCollider* collider, struct QuadTree* origin)
+{
+	Array1D* nodes = CreateArray1D();
+	QuadTreeSearch(origin, nodes, &collider->shape.box);
+	for (int i = 0; i < nodes->size; i++)
+	{
+		struct QuadTree* _node = (struct QuadTree*)Array1DItemAtIndex(nodes, i);
+		Array1D* _objs = _node->objects;
+		for (int j = 0; j < _node->objects->size; ++j) {
+			for (int k = j; k < _node->objects->size; k++) {
+				Entity* obj1 = (Entity*)Array1DItemAtIndex(_objs, j);
+				Entity* obj2 = (Entity*)Array1DItemAtIndex(_objs, k);
+				
+				Circle* c1 = (Circle*)obj1->components.collider->shape.define;
+				Circle* c2 = (Circle*)obj2->components.collider->shape.define;
+
+				bool collided = IsCollisionCircle(c1, c2);
+				if (collided)
+				{
+					api->system->logToConsole("%f %f %f - %f %f %f",c1->center.x, c2->center.y, c1->radius, c2->center.x, c2->center.y, c2->radius);
+				}
+			}
+		}
+	}
+}
+
+void UpdateHealth(PlaydateAPI* api, Health* health, float dt)
 {
 }
 

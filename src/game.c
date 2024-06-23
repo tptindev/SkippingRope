@@ -43,8 +43,6 @@ void game_initialize(void* userdata)
 			AddCircleColliderComponent(moon, tree, (Vec2) { 0.0f, 0.0f }, 0.5f);
 		}
 	}
-	
-	QuadTreePrint(tree);
 }
 
 void game_update(float dt)
@@ -53,6 +51,8 @@ void game_update(float dt)
 		UpdatePosition(api, moon->components.transform, moon->components.input, dt);
 		moon->components.transform->x += earth->components.transform->x;
 		moon->components.transform->y += earth->components.transform->y;
+
+		UpdateCollision(api, moon->components.collider, tree);
 	}
 }
 
