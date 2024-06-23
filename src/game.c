@@ -19,35 +19,37 @@ void game_initialize(void* userdata)
 	api = userdata;
 	world = CreateWorld(9.8, 5.0f, 3.0f);
 	tree = CreateQuadTreeNode(NULL, world->w, world->h, 0);
-	{
+	{ // earth
 		earth = CreateEntity(world);
 		if (earth != NULL)
 		{
-			AddPositionComponent(earth, 2.5f, 1.5f);
+			AddRegidbodyComponent(earth, e_static, 1000, 1);
+			AddTransformComponent(earth, 2.5f, 1.5f, 0, 1);
 			AddHealthComponent(earth, 100, 100);
-			AddSpriteComponent(earth, "images/earth.png", 0);
+			AddSpriteComponent(earth, "images/earth.png");
 		}
 	}
 
-	{
+	{ // moon
 		moon = CreateEntity(world);
 		if (moon != NULL)
 		{
-			AddPositionComponent(moon, 1.5f, 1.5f);
+			AddRegidbodyComponent(moon, e_kinematic, 150, 1);
+			AddTransformComponent(moon, 1.5f, 1.5f, 0, 1);
 			AddHealthComponent(moon, 100, 100);
-			AddSpriteComponent(moon, "images/moon.png", 0);
-
+			AddSpriteComponent(moon, "images/moon.png");
+			AddKeyInputComponent(moon, false, false, false, false, false, false, true);
 		}
 	}
 
 }
 
-void game_update(float deltatime)
+void game_update(float dt)
 {
-	{
-		UpdatePosition(api, moon->component.position, deltatime);
-		moon->component.position->x += earth->component.position->x;
-		moon->component.position->y += earth->component.position->y;
+	{ // moon
+		UpdatePosition(api, moon->component.transform, moon->component.input, dt);
+		moon->component.transform->x += earth->component.transform->x;
+		moon->component.transform->y += earth->component.transform->y;
 	}
 }
 
@@ -56,12 +58,12 @@ void game_draw()
 	api->graphics->clear(kColorWhite);
 	api->graphics->setBackgroundColor(kColorBlack);
 
-	{
-		UpdateSprite(api, earth->component.sprite, earth->component.position);
+	{ // earth
+		UpdateSprite(api, earth->component.sprite, earth->component.transform);
 	}
 
-	{
-		UpdateSprite(api, moon->component.sprite, moon->component.position);
+	{ // moon
+		UpdateSprite(api, moon->component.sprite, moon->component.transform);
 	}
 }
 

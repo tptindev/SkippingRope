@@ -4,8 +4,8 @@
 #include "component.h"
 #include "pd_api.h"
 
-void UpdatePosition(PlaydateAPI* api, Position* position, float dt);
+void UpdatePosition(PlaydateAPI* api, Transform* transform, KeyInput* keyinput, float dt);
 void UpdateHealth(Health* health, float dt);
-
+void UpdateSprite(PlaydateAPI* api, Sprite* sprite, Transform* trans);
 
 #endif // __SYSTEM_H__

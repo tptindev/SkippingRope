@@ -14,18 +14,23 @@ Entity* CreateEntity(World2D* world)
 
 void FreeEntity(Entity* entity)
 {
-	if (entity->component.position) free(entity->component.position);
+	if (entity->component.transform) free(entity->component.transform);
 	if (entity->component.health) free(entity->component.health);
+	if (entity->component.body) free(entity->component.body);
+	if (entity->component.sprite) free(entity->component.sprite);
+	if (entity->component.input) free(entity->component.input);
 	free(entity);
 }
 
-void AddPositionComponent(Entity* entity, float x, float y)
+void AddTransformComponent(Entity* entity, float x, float y, float angle, float scale)
 {
-	entity->component.position = (Position*)malloc(sizeof(Position));
-	if (entity->component.position != NULL)
+	entity->component.transform = (Transform*)malloc(sizeof(Transform));
+	if (entity->component.transform != NULL)
 	{
-		entity->component.position->x = x;
-		entity->component.position->y = y;
+		entity->component.transform->x = x;
+		entity->component.transform->y = y;
+		entity->component.transform->angle = angle;
+		entity->component.transform->scale = scale;
 	}
 }
 
@@ -39,13 +44,38 @@ void AddHealthComponent(Entity* entity, float max, float current)
 	}
 }
 
-void AddSpriteComponent(Entity* entity, const char* source, float degree)
+void AddRegidbodyComponent(Entity* entity, BodyType type, float mass, float gravity_scale)
+{
+	entity->component.body = (Regidbody*)malloc(sizeof(Regidbody));
+	if (entity->component.body != NULL)
+	{
+		entity->component.body->type = type;
+		entity->component.body->mass = mass;
+		entity->component.body->gravity_scale = gravity_scale;
+	}
+}
+
+void AddKeyInputComponent(Entity* entity, bool left, bool right, bool up, bool down, bool a, bool b, bool crank)
+{
+	entity->component.input = (KeyInput*)malloc(sizeof(KeyInput));
+	if (entity->component.input != NULL)
+	{
+		entity->component.input->left = left;
+		entity->component.input->right = right;
+		entity->component.input->up = up;
+		entity->component.input->down = down;
+		entity->component.input->a = a;
+		entity->component.input->b = b;
+		entity->component.input->crank = crank;
+	}
+}
+
+void AddSpriteComponent(Entity* entity, const char* source)
 {
 	entity->component.sprite = (Sprite*)malloc(sizeof(Sprite));
 	if (entity->component.sprite != NULL)
 	{
 		entity->component.sprite->source = source;
-		entity->component.sprite->degree = degree;
 	}
 }
 
