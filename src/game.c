@@ -27,7 +27,7 @@ void game_initialize(void* userdata)
 			AddTransformComponent(earth, 2.5f, 1.5f, 0, 1);
 			AddHealthComponent(earth, 100, 100);
 			AddSpriteComponent(earth, "images/earth.png");
-			AddCircleColliderComponent(earth, tree, (Vec2) { 0.0f, 0.0f }, 1.5f);
+			AddCircleColliderComponent(earth, tree, (Vec2) { 0.0f, 0.0f }, 0.5f);
 		}
 	}
 
@@ -36,11 +36,11 @@ void game_initialize(void* userdata)
 		if (moon != NULL)
 		{
 			AddRegidbodyComponent(moon, e_kinematic, 150, 1);
-			AddTransformComponent(moon, 1.5f, 1.5f, 0, 1);
+			AddTransformComponent(moon, 2.5f, 1.5f, 0, 1);
 			AddHealthComponent(moon, 100, 100);
 			AddSpriteComponent(moon, "images/moon.png");
 			AddKeyInputComponent(moon, false, false, false, false, false, false, true);
-			AddCircleColliderComponent(moon, tree, (Vec2) { 0.0f, 0.0f }, 0.5f);
+			AddCircleColliderComponent(moon, tree, (Vec2) { 0.0f, 0.0f }, 0.2f);
 		}
 	}
 }
@@ -62,10 +62,14 @@ void game_draw()
 	api->graphics->setBackgroundColor(kColorBlack);
 
 	{ // earth
+		Circle* c = earth->components.collider->shape.define;
+		api->graphics->drawEllipse((int)(c->center.x * 80.0f), (int)(c->center.y * 80.0f), c->radius * 80.0f, c->radius * 80.0f, 2, 0, 0, kColorBlack);
 		UpdateSprite(api, earth->components.sprite, earth->components.transform);
 	}
 
 	{ // moon
+		Circle* c = moon->components.collider->shape.define;
+		api->graphics->drawEllipse((int)(c->center.x * 80.0f), (int)(c->center.y * 80.0f), c->radius * 80.0f, c->radius * 80.0f, 2, 0, 0, kColorBlack);
 		UpdateSprite(api, moon->components.sprite, moon->components.transform);
 	}
 }

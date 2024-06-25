@@ -37,6 +37,8 @@ void AddCircleColliderComponent(Entity* entity, struct QuadTree* node, Vec2 cent
 			GetCircleBoundary(&entity->components.collider->shape.box, circle);
 			entity->components.collider->shape.box.x += entity->components.transform->x;
 			entity->components.collider->shape.box.y += entity->components.transform->y;
+			circle->center.x = entity->components.transform->x + entity->components.collider->shape.box.width/2.0f;
+			circle->center.y = entity->components.transform->y + entity->components.collider->shape.box.width/2.0f;
 
 			QuadtreeInsert(node, entity, &entity->components.collider->shape.box);
 		}

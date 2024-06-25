@@ -24,8 +24,8 @@ void UpdateCollision(PlaydateAPI* api, BoxCollider* collider, struct QuadTree* o
 	{
 		struct QuadTree* _node = (struct QuadTree*)Array1DItemAtIndex(nodes, i);
 		Array1D* _objs = _node->objects;
-		for (int j = 0; j < _node->objects->size; ++j) {
-			for (int k = j; k < _node->objects->size; k++) {
+		for (int j = 0; j < _node->objects->size - 1; ++j) {
+			for (int k = 1; k < _node->objects->size; k++) {
 				Entity* obj1 = (Entity*)Array1DItemAtIndex(_objs, j);
 				Entity* obj2 = (Entity*)Array1DItemAtIndex(_objs, k);
 				
@@ -35,7 +35,7 @@ void UpdateCollision(PlaydateAPI* api, BoxCollider* collider, struct QuadTree* o
 				bool collided = IsCollisionCircle(c1, c2);
 				if (collided)
 				{
-					api->system->logToConsole("%f %f %f - %f %f %f",c1->center.x, c2->center.y, c1->radius, c2->center.x, c2->center.y, c2->radius);
+					api->system->logToConsole("%f %f %f - %f %f %f",c1->center.x, c1->center.y, c1->radius, c2->center.x, c2->center.y, c2->radius);
 				}
 			}
 		}

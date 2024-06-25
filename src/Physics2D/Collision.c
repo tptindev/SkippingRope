@@ -4,6 +4,6 @@
 
 bool IsCollisionCircle(Circle* a, Circle* b)
 {
-    return (Vec2Distance(a->center, b->center) <= (a->radius + b->radius));
+    return !(Vec2Distance(a->center, b->center) > (a->radius + b->radius));
 }
 
