@@ -2,6 +2,7 @@
 #define __COMPONENT_H__
 
 #include <stddef.h>
+#include "../Physics2D/Math/Vector2D.h"
 #include "../Physics2D/Math/Shape2D.h"
 
 typedef enum
@@ -12,20 +13,10 @@ typedef enum
 } BodyType;
 
 typedef struct {
-	float x;
-	float y;
-	float angle;
-	float scale;
+	Vec2 position;
+	Vec2 rotation;
+	Vec2 scale;
 } Transform;
-
-typedef struct {
-	float current;
-	float max;
-} Health;
-
-typedef struct {
-	const char* source;
-} Sprite;
 
 typedef struct {
 	bool left;
@@ -48,10 +39,7 @@ typedef struct {
 } BoxCollider;
 
 typedef struct {
-	Regidbody* body;
 	Transform* transform;
-	Health* health;
-	Sprite* sprite;
 	KeyInput* input;
 	BoxCollider* collider;
 } Components;

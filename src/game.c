@@ -1,8 +1,7 @@
 #include "game.h"
-#include <stdio.h>
+#include "pd_api.h"
 #include "Physics2D/DataStructs/QuadTree.h"
 #include "Physics2D/World2D.h"
-#include "draw.h"
 #include "ecs/entity.h"
 #include "ecs/component.h"
 #include "ecs/system.h"
@@ -20,27 +19,16 @@ void game_initialize(void* userdata)
 	world = CreateWorld(9.8, 5.0f, 3.0f);
 	tree = CreateQuadTreeNode(NULL, world->w, world->h, 0);
 	{ // earth
-		earth = CreateEntity(world);
+		earth = CreateEntity(world, (Vec2){ 2.5f, 1.5f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
 		if (earth != NULL)
 		{
-			AddRegidbodyComponent(earth, e_static, 1000, 1);
-			AddTransformComponent(earth, 2.5f, 1.5f, 0, 1);
-			AddHealthComponent(earth, 100, 100);
-			AddSpriteComponent(earth, "images/earth.png");
-			AddCircleColliderComponent(earth, tree, (Vec2) { 0.0f, 0.0f }, 0.5f);
 		}
 	}
 
 	{ // moon
-		moon = CreateEntity(world);
+		moon = CreateEntity(world, (Vec2){ 2.2f, 1.2f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
 		if (moon != NULL)
 		{
-			AddRegidbodyComponent(moon, e_kinematic, 150, 1);
-			AddTransformComponent(moon, 2.5f, 1.5f, 0, 1);
-			AddHealthComponent(moon, 100, 100);
-			AddSpriteComponent(moon, "images/moon.png");
-			AddKeyInputComponent(moon, false, false, false, false, false, false, true);
-			AddCircleColliderComponent(moon, tree, (Vec2) { 0.0f, 0.0f }, 0.2f);
 		}
 	}
 }
@@ -48,11 +36,6 @@ void game_initialize(void* userdata)
 void game_update(float dt)
 {
 	{ // moon
-		UpdatePosition(api, moon->components.transform, moon->components.input, dt);
-		moon->components.transform->x += earth->components.transform->x;
-		moon->components.transform->y += earth->components.transform->y;
-
-		UpdateCollision(api, moon->components.collider, tree);
 	}
 }
 
@@ -62,15 +45,13 @@ void game_draw()
 	api->graphics->setBackgroundColor(kColorBlack);
 
 	{ // earth
-		Circle* c = earth->components.collider->shape.define;
-		api->graphics->drawEllipse((int)(c->center.x * 80.0f), (int)(c->center.y * 80.0f), c->radius * 80.0f, c->radius * 80.0f, 2, 0, 0, kColorBlack);
-		UpdateSprite(api, earth->components.sprite, earth->components.transform);
+		Vec2 *position = &earth->components.transform->position;
+		api->graphics->drawEllipse(position->x, position->y, 24, 24, 2, 0.0f, 0.0f, kColorBlack);
 	}
 
 	{ // moon
-		Circle* c = moon->components.collider->shape.define;
-		api->graphics->drawEllipse((int)(c->center.x * 80.0f), (int)(c->center.y * 80.0f), c->radius * 80.0f, c->radius * 80.0f, 2, 0, 0, kColorBlack);
-		UpdateSprite(api, moon->components.sprite, moon->components.transform);
+		Vec2 *position = &moon->components.transform->position;
+		api->graphics->drawEllipse(position->x, position->y, 8, 8, 2, 0.0f, 0.0f, kColorBlack);
 	}
 }
 
