@@ -68,14 +68,14 @@ int QuadTreehash(struct QuadTree *node, float x, float y)
     return ((hashY * columns) + hashX);
 }
 
-void QuadTreeClear(struct QuadTree *node)
+void FreeQuadTree(struct QuadTree *node)
 {
     if (node != NULL)
     {
         // Clear all nodes
         for (int i = WestNorth; i < NodeLimit; i++)
         {
-            QuadTreeClear(node->nodes[i]);
+            FreeQuadTree(node->nodes[i]);
         }
         Array1DClear(node->objects);
         free(node);

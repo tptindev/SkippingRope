@@ -36,12 +36,13 @@ typedef struct {
 
 typedef struct {
 	Shape2D shape;
-} BoxCollider;
+	Vec2 offset;
+} Collider;
 
 typedef struct {
 	Transform* transform;
 	KeyInput* input;
-	BoxCollider* collider;
+	Collider* collider;
 } Components;
 
 #endif // __COMPONENT_H__

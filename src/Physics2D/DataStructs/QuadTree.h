@@ -26,7 +26,7 @@ int QuadTreehash(struct QuadTree* node, float x, float y); // get cell index
 void QuadtreeInsert(struct QuadTree* node, void* obj, const Rect2D* objBoundary);
 void QuadTreePrint(struct QuadTree* node);
 void QuadTreeSearch(struct QuadTree* node, Array1D* outs, const Rect2D* objBoundary);
-void QuadTreeClear(struct QuadTree* node);
+void FreeQuadTree(struct QuadTree* node);
 bool QuadTreeOverlap(struct QuadTree* node, const Rect2D* boundary);
 
 #endif // QUADTREE_H
