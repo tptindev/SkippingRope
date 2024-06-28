@@ -17,12 +17,13 @@ void game_initialize(void* userdata)
 {	
 	api = userdata;
 	world = CreateWorld(9.8f, 5.0f, 3.0f);
+
 	tree = CreateQuadTreeNode(NULL, world->w, world->h, 0);
 	{ // earth
 		earth = CreateEntity(world, (Vec2){ 2.5f, 1.5f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
 		if (earth != NULL)
 		{
-			AddCircleColliderComponent(api, earth, (Vec2) { -0.1575f, -0.1575f }, 0.35f);
+			AddCircleColliderComponent(api, earth, (Vec2) { 0.0f, 0.0f }, 0.3f);
 		}
 	}
 
@@ -30,7 +31,7 @@ void game_initialize(void* userdata)
 		moon = CreateEntity(world, (Vec2){ 2.2f, 1.2f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
 		if (moon != NULL)
 		{
-			AddCircleColliderComponent(api, moon, (Vec2) { -0.075f, -0.075f }, 0.15f);
+			AddCircleColliderComponent(api, moon, (Vec2) { 0.0f, 0.0f }, 0.15f);
 			AddKeyInputComponent(api, moon, false, false, false, false, false, false, true);
 		}
 	}
@@ -62,23 +63,12 @@ void game_draw()
 		if (earth->components.collider != NULL)
 		{
 			Rect2D* box = &earth->components.collider->shape.box;
-			api->graphics->drawRect(
-				(int)(box->x * 80.0f),
-				(int)(box->y * 80.0f),
-				(int)(box->width * 80.0f),
-				(int)(box->height * 80.0f),
-				kColorBlack
-			);
-			api->graphics->drawEllipse(
-				(int)(box->x * 80.0f),
-				(int)(box->y * 80.0f),
-				(int)(box->width * 80.0f),
-				(int)(box->height * 80.0f),
-				2,
-				0.0f,
-				0.0f,
-				kColorBlack
-			);
+			int x = (int)(box->x * 80.0f);
+			int y = (int)(box->y * 80.0f);
+			int width = (int)(box->width * 80.0f);
+			int height = (int)(box->height * 80.0f);
+			api->graphics->drawRect(x, y, width, height, kColorBlack);
+			api->graphics->drawEllipse(x, y, width, height, 2, 0.0f, 0.0f, kColorBlack);
 		}
 	}
 
@@ -86,23 +76,12 @@ void game_draw()
 		if (&moon->components.collider != NULL)
 		{
 			Rect2D* box = &moon->components.collider->shape.box;
-			api->graphics->drawRect(
-				(int)(box->x * 80.0f),
-				(int)(box->y * 80.0f),
-				(int)(box->width * 80.0f),
-				(int)(box->height * 80.0f),
-				kColorBlack
-			);
-			api->graphics->drawEllipse(
-				(int)(box->x * 80.0f),
-				(int)(box->y * 80.0f),
-				(int)(box->width * 80.0f),
-				(int)(box->height * 80.0f),
-				2,
-				0.0f,
-				0.0f,
-				kColorBlack
-			);
+			int x = (int)(box->x * 80.0f);
+			int y = (int)(box->y * 80.0f);
+			int width = (int)(box->width * 80.0f);
+			int height = (int)(box->height * 80.0f);
+			api->graphics->drawRect(x, y, width, height, kColorBlack);
+			api->graphics->drawEllipse(x, y, width, height, 2, 0.0f, 0.0f, kColorBlack);
 		}
 	}
 }

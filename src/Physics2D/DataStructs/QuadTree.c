@@ -130,3 +130,16 @@ void QuadTreeSearch(struct QuadTree* node, Array1D *outs, const Rect2D *objBound
         }
     }
 }
+
+void QuadTreeClear(struct QuadTree* node)
+{
+    if (node == NULL) return;
+    if (node->objects == NULL) return;
+    for (int i = WestNorth; i < NodeLimit; i++)
+    {
+        if (node->nodes[i] != NULL)
+        {
+            FreeQuadTree(node->nodes[i]);
+        }
+    }
+}

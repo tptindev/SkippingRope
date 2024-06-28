@@ -66,22 +66,10 @@ void AddCircleColliderComponent(void* userdata, Entity* entity, Vec2 offset, flo
 		entity->components.collider->offset.y = offset.y;
 		entity->components.collider->shape.type = CIRCLE;
 		entity->components.collider->shape.define = CreateCircle(
-			(Vec2) {
-				entity->components.collider->offset.x + radius,
-				entity->components.collider->offset.y + radius
-			},
+			(Vec2) { 0.0f, 0.0f },
 			radius
 		);
 		GetCircleBoundary(&entity->components.collider->shape.box, (Circle*)entity->components.collider->shape.define);
-		api->system->logToConsole("[%p]'s Collider: offset(%f, %f), boundary(%f, %f, %f, %f)",
-			entity,
-			entity->components.collider->offset.x,
-			entity->components.collider->offset.y,
-			entity->components.collider->shape.box.x,
-			entity->components.collider->shape.box.y,
-			entity->components.collider->shape.box.width,
-			entity->components.collider->shape.box.height
-		);
 	}
 }
 
