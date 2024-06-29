@@ -56,7 +56,7 @@ void AddKeyInputComponent(void* userdata, Entity* entity, bool left, bool right,
 	}
 }
 
-void AddCircleColliderComponent(void* userdata, Entity* entity, Vec2 offset, float radius)
+void AddCircleColliderComponent(void* userdata, struct QuadTree* tree, Entity* entity, Vec2 offset, float radius)
 {
 	PlaydateAPI* api = userdata;
 	entity->components.collider = (Collider*)malloc(sizeof(Collider));
@@ -66,10 +66,21 @@ void AddCircleColliderComponent(void* userdata, Entity* entity, Vec2 offset, flo
 		entity->components.collider->offset.y = offset.y;
 		entity->components.collider->shape.type = CIRCLE;
 		entity->components.collider->shape.define = CreateCircle(
-			(Vec2) { 0.0f, 0.0f },
+			Vec2Add(entity->components.transform->position, offset),
 			radius
 		);
-		GetCircleBoundary(&entity->components.collider->shape.box, (Circle*)entity->components.collider->shape.define);
+		GetCircleBoundary(&entity->components.collider->shape.box, entity->components.collider->shape.define);
+		QuadtreeInsert(tree, entity, &entity->components.collider->shape.box);
+
+		api->system->logToConsole("[%p]'s Collider: offset(%f, %f), boundary(%f, %f, %f, %f)",
+			entity,
+			entity->components.collider->offset.x,
+			entity->components.collider->offset.y,
+			entity->components.collider->shape.box.x,
+			entity->components.collider->shape.box.y,
+			entity->components.collider->shape.box.width,
+			entity->components.collider->shape.box.height
+		);
 	}
 }
 

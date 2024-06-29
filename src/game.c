@@ -23,7 +23,7 @@ void game_initialize(void* userdata)
 		earth = CreateEntity(world, (Vec2){ 2.5f, 1.5f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
 		if (earth != NULL)
 		{
-			AddCircleColliderComponent(api, earth, (Vec2) { 0.0f, 0.0f }, 0.3f);
+			AddCircleColliderComponent(api, tree, earth, (Vec2) { 0.0f, 0.0f }, 0.3f);
 		}
 	}
 
@@ -31,7 +31,7 @@ void game_initialize(void* userdata)
 		moon = CreateEntity(world, (Vec2){ 2.2f, 1.2f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
 		if (moon != NULL)
 		{
-			AddCircleColliderComponent(api, moon, (Vec2) { 0.0f, 0.0f }, 0.15f);
+			AddCircleColliderComponent(api, tree, moon, (Vec2) { 0.0f, 0.0f }, 0.15f);
 			AddKeyInputComponent(api, moon, false, false, false, false, false, false, true);
 		}
 	}
@@ -76,8 +76,8 @@ void game_draw()
 		if (&moon->components.collider != NULL)
 		{
 			Rect2D* box = &moon->components.collider->shape.box;
-			int x = (int)(box->x * 80.0f);
-			int y = (int)(box->y * 80.0f);
+			int x = (int)(box->x * 80.0f - box->width / 2.0f * 80.0f);
+			int y = (int)(box->y * 80.0f - box->height / 2.0f * 80.0f);
 			int width = (int)(box->width * 80.0f);
 			int height = (int)(box->height * 80.0f);
 			api->graphics->drawRect(x, y, width, height, kColorBlack);
