@@ -11,7 +11,7 @@ static PlaydateAPI* api = NULL;
 static World2D* world = NULL;
 static Entity* earth = NULL;
 static Entity* moon = NULL;
-static struct QuadTree* tree = NULL;
+static QuadTree* tree = NULL;
 
 void game_initialize(void* userdata)
 {	
@@ -39,6 +39,10 @@ void game_initialize(void* userdata)
 
 void game_update(float dt)
 {
+	// Preparing Data
+	QuadTreeClear(tree);
+
+
 	{ // earth
 		UpdateInput(api, earth);
 		UpdateScale(earth, 1);
@@ -52,6 +56,7 @@ void game_update(float dt)
 		UpdatePosition(moon, earth->components.transform->position, dt);
 		UpdateCollider(api, moon, tree);
 	}
+	UpdateCollision(api, moon->components.collider, tree);
 }
 
 void game_draw()

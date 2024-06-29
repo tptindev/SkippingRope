@@ -5,9 +5,12 @@
 Array1D *CreateArray1D()
 {
     Array1D* arr = (Array1D*)malloc(sizeof(Array1D));
-    arr->size = 0;
-    arr->capacity = 5;
-    arr->array = malloc(sizeof(void*) * arr->capacity);
+    if (arr != NULL)
+    {
+        arr->size = 0;
+        arr->capacity = 5;
+        arr->array = malloc(sizeof(void*) * arr->capacity);
+    }
     return arr;
 }
 
@@ -64,11 +67,22 @@ void Array1DTraverse(Array1D *arr, void (*cb)(void *))
     }
 }
 
-void Array1DClear(Array1D *arr)
+void Array1DClear(Array1D* arr)
+{
+    if (arr != NULL)
+    {
+        memset(arr, NULL, arr->capacity * 8 /*bytes*/);
+        arr->size = 0;
+    }
+}
+
+void FreeArray1D(Array1D *arr)
 {
     if (arr != NULL)
     {
         free(arr->array);
+        arr->array = NULL;
+
         free(arr);
         arr = NULL;
     }

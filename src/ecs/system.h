@@ -8,6 +8,7 @@
 void UpdateScale(Entity* entity, float scale);
 void UpdateRotation(Entity* entity, float angle);
 void UpdatePosition(Entity* entity, Vec2 to, float dt);
-void UpdateCollider(void* userdata, Entity* entity, struct QuadTree* tree);
+void UpdateCollider(void* userdata, Entity* entity, QuadTree* tree);
+void UpdateCollision(void* userdata, Collider* collider, QuadTree* origin);
 void UpdateInput(void* userdata, Entity* entity);
 #endif // __SYSTEM_H__

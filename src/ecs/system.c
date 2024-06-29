@@ -16,10 +16,9 @@ void UpdatePosition(Entity* entity, Vec2 to, float dt)
 	}
 }
 
-void UpdateCollider(void* userdata, Entity* entity, struct QuadTree* tree)
+void UpdateCollider(void* userdata, Entity* entity, QuadTree* tree)
 {
 	PlaydateAPI* api = userdata;
-	QuadTreeClear(tree);
 	if (entity->components.collider != NULL && entity->components.transform != NULL)
 	{
 		// Update Collider
@@ -31,6 +30,34 @@ void UpdateCollider(void* userdata, Entity* entity, struct QuadTree* tree)
 		}
 
 		QuadtreeInsert(tree, entity, &entity->components.collider->shape.box);
+	}
+}
+
+void UpdateCollision(void* userdata, Collider* collider, QuadTree* origin)
+{
+	PlaydateAPI* api = userdata;
+	Array1D* nodes = CreateArray1D();
+	QuadTreeSearch(origin, nodes, &collider->shape.box);
+
+	for (int i = 0; i < nodes->size; i++)
+	{
+		QuadTree* _node = (struct QuadTree*)Array1DItemAtIndex(nodes, i);
+		Array1D* _objs = _node->objects;
+		for (int j = 0; j < _node->objects->size - 1; ++j) {
+			for (int k = 1; k < _node->objects->size; k++) {
+				Entity* obj1 = (Entity*)Array1DItemAtIndex(_objs, j);
+				Entity* obj2 = (Entity*)Array1DItemAtIndex(_objs, k);
+
+				Circle* c1 = obj1->components.collider->shape.define;
+				Circle* c2 = obj2->components.collider->shape.define;
+
+				bool collided = IsCollisionCircle(c1, c2);
+				if (collided)
+				{
+					api->system->logToConsole("%f %f %f - %f %f %f", c1->center.x, c2->center.y, c1->radius, c2->center.x, c2->center.y, c2->radius);
+				}
+			}
+		}
 	}
 }
 
