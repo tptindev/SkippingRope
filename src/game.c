@@ -50,7 +50,7 @@ void game_update(float dt)
 		UpdateCollider(api, earth, tree);
 	}
 	{ // moon
-		//UpdateInput(api, moon);
+		UpdateInput(api, moon);
 		UpdateScale(moon, 1);
 		UpdateRotation(moon, 0);
 		UpdatePosition(moon, earth->components.transform->position, dt);
