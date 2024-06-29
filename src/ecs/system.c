@@ -24,9 +24,10 @@ void UpdateCollider(void* userdata, Entity* entity, QuadTree* tree)
 		// Update Collider
 		if (entity->components.collider->shape.type == CIRCLE)
 		{
-			Circle* cirle = entity->components.collider->shape.define;
-			entity->components.collider->shape.box.x = entity->components.collider->offset.x + entity->components.transform->position.x - cirle->radius;
-			entity->components.collider->shape.box.y = entity->components.collider->offset.y + entity->components.transform->position.y - cirle->radius;
+			Circle* circle = entity->components.collider->shape.define;
+			circle->center = Vec2Add(entity->components.transform->position, entity->components.collider->offset);
+			entity->components.collider->shape.box.x = entity->components.collider->offset.x + entity->components.transform->position.x - circle->radius;
+			entity->components.collider->shape.box.y = entity->components.collider->offset.y + entity->components.transform->position.y - circle->radius;
 		}
 
 		QuadtreeInsert(tree, entity, &entity->components.collider->shape.box);
@@ -41,12 +42,12 @@ void UpdateCollision(void* userdata, Collider* collider, QuadTree* origin)
 
 	for (int i = 0; i < nodes->size; i++)
 	{
-		QuadTree* _node = (struct QuadTree*)Array1DItemAtIndex(nodes, i);
+		QuadTree* _node = Array1DItemAtIndex(nodes, i);
 		Array1D* _objs = _node->objects;
 		for (int j = 0; j < _node->objects->size - 1; ++j) {
 			for (int k = 1; k < _node->objects->size; k++) {
-				Entity* obj1 = (Entity*)Array1DItemAtIndex(_objs, j);
-				Entity* obj2 = (Entity*)Array1DItemAtIndex(_objs, k);
+				Entity* obj1 = Array1DItemAtIndex(_objs, j);
+				Entity* obj2 = Array1DItemAtIndex(_objs, k);
 
 				Circle* c1 = obj1->components.collider->shape.define;
 				Circle* c2 = obj2->components.collider->shape.define;
