@@ -63,12 +63,13 @@ void game_draw()
 		if (earth->components.collider != NULL)
 		{
 			Rect2D* box = &earth->components.collider->shape.box;
+			Vec2* position = &earth->components.transform->position;
 			int x = (int)(box->x * 80.0f);
 			int y = (int)(box->y * 80.0f);
 			int width = (int)(box->width * 80.0f);
 			int height = (int)(box->height * 80.0f);
 			api->graphics->drawRect(x, y, width, height, kColorBlack);
-			api->graphics->drawEllipse(x, y, width, height, 2, 0.0f, 0.0f, kColorBlack);
+			api->graphics->drawEllipse((int)(position->x * 80.0f) - width / 2, (int)(position->y * 80.0f) - height / 2, width, height, 2, 0.0f, 0.0f, kColorBlack);
 		}
 	}
 
@@ -76,12 +77,13 @@ void game_draw()
 		if (&moon->components.collider != NULL)
 		{
 			Rect2D* box = &moon->components.collider->shape.box;
-			int x = (int)(box->x * 80.0f - box->width / 2.0f * 80.0f);
-			int y = (int)(box->y * 80.0f - box->height / 2.0f * 80.0f);
+			Vec2* position = &moon->components.transform->position;
+			int x = (int)(box->x * 80.0f);
+			int y = (int)(box->y * 80.0f);
 			int width = (int)(box->width * 80.0f);
 			int height = (int)(box->height * 80.0f);
 			api->graphics->drawRect(x, y, width, height, kColorBlack);
-			api->graphics->drawEllipse(x, y, width, height, 2, 0.0f, 0.0f, kColorBlack);
+			api->graphics->drawEllipse((int)(position->x * 80.0f) - width / 2, (int)(position->y * 80.0f) - height / 2, width, height, 2, 0.0f, 0.0f, kColorBlack);
 		}
 	}
 }

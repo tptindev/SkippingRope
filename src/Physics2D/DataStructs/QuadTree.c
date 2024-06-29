@@ -70,12 +70,19 @@ int QuadTreehash(struct QuadTree *node, float x, float y)
 
 void FreeQuadTree(struct QuadTree *node)
 {
-    if (node != NULL)
+    if (node == NULL) return;
+    else 
     {
         // Clear all nodes
         for (int i = WestNorth; i < NodeLimit; i++)
         {
-            FreeQuadTree(node->nodes[i]);
+            if (node->nodes[i] != NULL)
+            {
+                FreeQuadTree(node->nodes[i]);
+                Array1DClear(node->nodes[i]->objects);
+                free(node->nodes[i]);
+                node->nodes[i] = NULL;
+            }
         }
         Array1DClear(node->objects);
         free(node);
@@ -134,12 +141,14 @@ void QuadTreeSearch(struct QuadTree* node, Array1D *outs, const Rect2D *objBound
 void QuadTreeClear(struct QuadTree* node)
 {
     if (node == NULL) return;
-    if (node->objects == NULL) return;
-    for (int i = WestNorth; i < NodeLimit; i++)
+    else 
     {
-        if (node->nodes[i] != NULL)
+        for (int i = WestNorth; i < NodeLimit; i++)
         {
-            FreeQuadTree(node->nodes[i]);
+            if (node->nodes[i] != NULL)
+            {
+                FreeQuadTree(node->nodes[i]);
+            }
         }
     }
 }

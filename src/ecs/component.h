@@ -36,7 +36,7 @@ typedef struct {
 
 typedef struct {
 	Shape2D shape;
-	Vec2 offset;
+	Vec2 offset; // distance from collider center to other
 } Collider;
 
 typedef struct {

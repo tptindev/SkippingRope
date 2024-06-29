@@ -19,7 +19,7 @@ void UpdatePosition(Entity* entity, Vec2 to, float dt)
 void UpdateCollider(void* userdata, Entity* entity, struct QuadTree* tree)
 {
 	PlaydateAPI* api = userdata;
-	//QuadTreeClear(tree);
+	QuadTreeClear(tree);
 	if (entity->components.collider != NULL && entity->components.transform != NULL)
 	{
 		// Update Collider
@@ -30,7 +30,7 @@ void UpdateCollider(void* userdata, Entity* entity, struct QuadTree* tree)
 			entity->components.collider->shape.box.y = entity->components.collider->offset.y + entity->components.transform->position.y - cirle->radius;
 		}
 
-		//QuadtreeInsert(tree, entity, &entity->components.collider->shape.box);
+		QuadtreeInsert(tree, entity, &entity->components.collider->shape.box);
 	}
 }
 
