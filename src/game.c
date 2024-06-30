@@ -29,28 +29,18 @@ void game_initialize(void* userdata)
 	}
 
 	{ // moon
-		moon = CreateEntity(world, (Vec2){ 2.2f, 1.2f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
+		moon = CreateEntity(world, (Vec2){ 2.0f, 1.0f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
 		if (moon != NULL)
 		{
 			AddCircleColliderComponent(api, tree, moon, (Vec2) { 0.0f, 0.0f }, 0.15f);
 			AddKeyInputComponent(api, moon, false, false, false, false, false, false, true);
 		}
 	}
-	{ // rock
-		rock = CreateEntity(world, (Vec2) { 2.5f, 1.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
-		if (rock != NULL)
-		{
-			AddCircleColliderComponent(api, tree, rock, (Vec2) { 0.0f, 0.0f }, 0.10f);
-		}
-	}
 }
 
 void game_update(float dt)
 {
-	// Preparing Data
 	QuadTreeClear(tree);
-
-
 	{ // earth
 		UpdateInput(api, earth);
 		UpdateScale(earth, 1);
@@ -63,12 +53,6 @@ void game_update(float dt)
 		UpdateRotation(moon, 0);
 		UpdatePosition(moon, earth->components.transform->position, dt);
 		UpdateCollider(api, moon, tree);
-	}
-	{ // rock
-		UpdateScale(rock, 1);
-		UpdateRotation(rock, 0);
-		UpdatePosition(rock, (Vec2) { 0.0f, 0.0f }, dt);
-		UpdateCollider(api, rock, tree);
 	}
 	UpdateCollision(api, moon->components.collider, tree);
 }
@@ -97,19 +81,6 @@ void game_draw()
 		{
 			Rect2D* box = &moon->components.collider->shape.box;
 			Vec2* position = &moon->components.transform->position;
-			int x = (int)(box->x * 80.0f);
-			int y = (int)(box->y * 80.0f);
-			int width = (int)(box->width * 80.0f);
-			int height = (int)(box->height * 80.0f);
-			api->graphics->drawRect(x, y, width, height, kColorBlack);
-			api->graphics->drawEllipse((int)(position->x * 80.0f) - width / 2, (int)(position->y * 80.0f) - height / 2, width, height, 2, 0.0f, 0.0f, kColorBlack);
-		}
-	}
-	{ // rock
-		if (&rock->components.collider != NULL)
-		{
-			Rect2D* box = &rock->components.collider->shape.box;
-			Vec2* position = &rock->components.transform->position;
 			int x = (int)(box->x * 80.0f);
 			int y = (int)(box->y * 80.0f);
 			int width = (int)(box->width * 80.0f);

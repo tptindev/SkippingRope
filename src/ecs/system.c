@@ -55,7 +55,7 @@ void UpdateCollision(void* userdata, Collider* collider, QuadTree* origin)
 				bool collided = IsCollisionCircle(c1, c2);
 				if (collided)
 				{
-					api->system->logToConsole("%f %f %f - %f %f %f", c1->center.x, c2->center.y, c1->radius, c2->center.x, c2->center.y, c2->radius);
+					api->system->logToConsole("%f %f %f - %f %f %f | %f", c1->center.x, c2->center.y, c1->radius, c2->center.x, c2->center.y, c2->radius, Vec2Distance(c1->center, c2->center));
 				}
 			}
 		}
@@ -71,7 +71,7 @@ void UpdateInput(void* userdata, Entity* entity)
 		{
 			double angle_rad = api->system->getCrankAngle() * (3.14159265358979323846f / 180.0f);
 			entity->components.transform->position.x = (float)(0.5f * cos(angle_rad));
-			entity->components.transform->position.y = (float)(0.5f * sin(angle_rad));
+			entity->components.transform->position.y = (float)(0.1f * sin(angle_rad));
 		} 
 		// ...
 	}
