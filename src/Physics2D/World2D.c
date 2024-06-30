@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <time.h>
 
-World2D *CreateWorld(float g, float w, float h)
+World2D *CreateWorld(Vec2 gravity, float w, float h)
 {
     srand((unsigned int)time(NULL));
     World2D* world = (World2D*)malloc(sizeof(World2D));
@@ -14,7 +14,8 @@ World2D *CreateWorld(float g, float w, float h)
         return NULL;
     }
     printf("Hello World!\n");
-    world->gravity = g;
+    world->gravity.x = gravity.x;
+    world->gravity.y = gravity.y;
     world->w = w;
     world->h = h;
 	world->objId.max = 32;

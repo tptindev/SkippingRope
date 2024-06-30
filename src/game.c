@@ -17,7 +17,7 @@ static QuadTree* tree = NULL;
 void game_initialize(void* userdata)
 {	
 	api = userdata;
-	world = CreateWorld(9.8f, 5.0f, 3.0f);
+	world = CreateWorld((Vec2){0.0f, 0.0f}, 5.0f, 3.0f);
 
 	tree = CreateQuadTreeNode(NULL, world->w, world->h, 0);
 	{ // earth
@@ -38,7 +38,7 @@ void game_initialize(void* userdata)
 	}
 
 	{ // enemy
-		enemy = CreateEntity(world, (Vec2) { 0.01f, 0.01f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
+		enemy = CreateEntity(world, (Vec2) { 0.01f, 0.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
 		if (enemy != NULL)
 		{
 			AddCircleColliderComponent(api, tree, enemy, (Vec2) { 0.0f, 0.0f }, 0.05f);
