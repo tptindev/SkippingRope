@@ -7,14 +7,14 @@ void UpdateRotation(Entity* entity, float angle)
 {
 }
 
-void UpdateMovement(Entity* entity, Vec2 acceleration, float dt)
+void UpdateMovement(Entity* entity, float dt)
 {
 	if (entity->components.transform != NULL && entity->components.motion != NULL)
 	{
-		Vec2 velocity = Vec2Subtract(entity->components.transform->position, entity->components.motion->last_position);
-		entity->components.motion->acceleration.x += acceleration.x;
-		entity->components.motion->acceleration.y += acceleration.y;
+		entity->components.motion->acceleration.x += 0.1f;
+		entity->components.motion->acceleration.y += 0.1f;
 
+		Vec2 velocity = Vec2Subtract(entity->components.transform->position, entity->components.motion->last_position);
 		entity->components.transform->position.x += velocity.x + (entity->components.motion->direction.x * entity->components.motion->acceleration.x) * dt * dt;
 		entity->components.transform->position.y += velocity.y + (entity->components.motion->direction.y * entity->components.motion->acceleration.y) * dt * dt;
 	}

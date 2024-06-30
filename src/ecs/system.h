@@ -7,7 +7,7 @@
 
 void UpdateScale(Entity* entity, float scale);
 void UpdateRotation(Entity* entity, float angle);
-void UpdateMovement(Entity* entity, Vec2 acceleration, float dt);
+void UpdateMovement(Entity* entity, float dt);
 void UpdatePosition(Entity* entity, Vec2 to, float dt);
 void UpdateCollider(void* userdata, Entity* entity, QuadTree* tree);
 void UpdateCollision(void* userdata, Collider* collider, QuadTree* origin);

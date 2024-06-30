@@ -43,6 +43,7 @@ void game_initialize(void* userdata)
 		{
 			if (earth != NULL)
 			{
+				enemy->components.motion->acceleration = world->gravity;
 				enemy->components.motion->direction = Vec2Normalize(Vec2Subtract(earth->components.transform->position, enemy->components.transform->position));
 			}
 			AddCircleColliderComponent(api, tree, enemy, (Vec2) { 0.0f, 0.0f }, 0.05f);
@@ -70,7 +71,7 @@ void game_update(float dt)
 		UpdateInput(api, enemy);
 		UpdateScale(enemy, 1);
 		UpdateCollider(api, enemy, tree);
-		UpdateMovement(enemy, world->gravity, dt);
+		UpdateMovement(enemy, dt);
 	}
 	UpdateCollision(api, moon->components.collider, tree);
 }
