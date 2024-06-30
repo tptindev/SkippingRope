@@ -19,6 +19,12 @@ typedef struct {
 } Transform;
 
 typedef struct {
+	Vec2 last_position;
+	Vec2 direction;
+	Vec2 acceleration;
+} Motion;
+
+typedef struct {
 	bool left;
 	bool right;
 	bool up;
@@ -43,6 +49,7 @@ typedef struct {
 	Transform* transform;
 	KeyInput* input;
 	Collider* collider;
+	Motion* motion;
 } Components;
 
 #endif // __COMPONENT_H__

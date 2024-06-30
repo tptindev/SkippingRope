@@ -17,7 +17,7 @@ static QuadTree* tree = NULL;
 void game_initialize(void* userdata)
 {	
 	api = userdata;
-	world = CreateWorld((Vec2){0.0f, 0.0f}, 5.0f, 3.0f);
+	world = CreateWorld((Vec2) { 10.0f, 10.0f }, 5.0f, 3.0f);
 
 	tree = CreateQuadTreeNode(NULL, world->w, world->h, 0);
 	{ // earth
@@ -38,9 +38,13 @@ void game_initialize(void* userdata)
 	}
 
 	{ // enemy
-		enemy = CreateEntity(world, (Vec2) { 0.01f, 0.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
+		enemy = CreateEntity(world, (Vec2) { 0.0f, 0.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
 		if (enemy != NULL)
 		{
+			if (earth != NULL)
+			{
+				enemy->components.motion->direction = Vec2Normalize(Vec2Subtract(earth->components.transform->position, enemy->components.transform->position));
+			}
 			AddCircleColliderComponent(api, tree, enemy, (Vec2) { 0.0f, 0.0f }, 0.05f);
 		}
 	}
@@ -65,8 +69,8 @@ void game_update(float dt)
 	{ // enemy
 		UpdateInput(api, enemy);
 		UpdateScale(enemy, 1);
-		UpdatePosition(enemy, (Vec2) { 0.0f, 0.0f }, dt);
 		UpdateCollider(api, enemy, tree);
+		UpdateMovement(enemy, world->gravity, dt);
 	}
 	UpdateCollision(api, moon->components.collider, tree);
 }

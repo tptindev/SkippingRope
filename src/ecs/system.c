@@ -7,6 +7,19 @@ void UpdateRotation(Entity* entity, float angle)
 {
 }
 
+void UpdateMovement(Entity* entity, Vec2 acceleration, float dt)
+{
+	if (entity->components.transform != NULL && entity->components.motion != NULL)
+	{
+		Vec2 velocity = Vec2Subtract(entity->components.transform->position, entity->components.motion->last_position);
+		entity->components.motion->acceleration.x += acceleration.x;
+		entity->components.motion->acceleration.y += acceleration.y;
+
+		entity->components.transform->position.x += velocity.x + (entity->components.motion->direction.x * acceleration.x) * dt * dt;
+		entity->components.transform->position.y += velocity.y + (entity->components.motion->direction.y * acceleration.y) * dt * dt;
+	}
+}
+
 void UpdatePosition(Entity* entity, Vec2 to, float dt)
 {
 	if (entity->components.transform != NULL)
@@ -69,6 +82,11 @@ void UpdateCollision(void* userdata, Collider* collider, QuadTree* origin)
 void UpdateInput(void* userdata, Entity* entity)
 {
 	PlaydateAPI* api = userdata;
+	if (entity->components.motion != NULL)
+	{
+		entity->components.motion->last_position.x = entity->components.transform->position.x;
+		entity->components.motion->last_position.y = entity->components.transform->position.y;
+	}
 	if (entity->components.input != NULL)
 	{
 		if (entity->components.input->crank == true && entity->components.transform != NULL) 

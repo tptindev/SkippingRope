@@ -26,6 +26,19 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 			entity->components.transform->scale.y = scale.y;
 		}
 
+		entity->components.motion = (Motion*)malloc(sizeof(Motion));
+		if (entity->components.motion != NULL)
+		{
+			entity->components.motion->acceleration.x = 0.0f;
+			entity->components.motion->acceleration.y = 0.0f;
+
+			entity->components.motion->last_position.x = 0.0f;
+			entity->components.motion->last_position.y = 0.0f;
+
+			entity->components.motion->direction.x = 0.0f;
+			entity->components.motion->direction.y = 0.0f;
+		}
+
 		entity->components.collider = NULL;
 		entity->components.input = NULL;
 	}
