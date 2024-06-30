@@ -49,13 +49,17 @@ void UpdateCollision(void* userdata, Collider* collider, QuadTree* origin)
 				Entity* obj1 = Array1DItemAtIndex(_objs, j);
 				Entity* obj2 = Array1DItemAtIndex(_objs, k);
 
+				Rect2D* b1 = &obj1->components.collider->shape.box;
+				Rect2D* b2 = &obj2->components.collider->shape.box;
+
 				Circle* c1 = obj1->components.collider->shape.define;
 				Circle* c2 = obj2->components.collider->shape.define;
 
 				bool collided = IsCollisionCircle(c1, c2);
 				if (collided)
 				{
-					api->system->logToConsole("%f %f %f - %f %f %f | %f", c1->center.x, c2->center.y, c1->radius, c2->center.x, c2->center.y, c2->radius, Vec2Distance(c1->center, c2->center));
+					api->system->logToConsole("%f %f - %f %f", b1->x, b1->y, b2->x, b2->y);
+					api->system->logToConsole("%f %f %f - %f %f %f | %f", c1->center.x, c1->center.y, c1->radius, c2->center.x, c2->center.y, c2->radius, Vec2Distance(c1->center, c2->center));
 				}
 			}
 		}
