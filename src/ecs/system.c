@@ -15,8 +15,8 @@ void UpdateMovement(Entity* entity, Vec2 acceleration, float dt)
 		entity->components.motion->acceleration.x += acceleration.x;
 		entity->components.motion->acceleration.y += acceleration.y;
 
-		entity->components.transform->position.x += velocity.x + (entity->components.motion->direction.x * acceleration.x) * dt * dt;
-		entity->components.transform->position.y += velocity.y + (entity->components.motion->direction.y * acceleration.y) * dt * dt;
+		entity->components.transform->position.x += velocity.x + (entity->components.motion->direction.x * entity->components.motion->acceleration.x) * dt * dt;
+		entity->components.transform->position.y += velocity.y + (entity->components.motion->direction.y * entity->components.motion->acceleration.y) * dt * dt;
 	}
 }
 
