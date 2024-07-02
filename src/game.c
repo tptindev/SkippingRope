@@ -5,6 +5,7 @@
 #include "ecs/entity.h"
 #include "ecs/component.h"
 #include "ecs/system.h"
+#include "CollisionHandler.h"
 
 float world_scale = 80.0f;
 static PlaydateAPI* api = NULL;
@@ -58,22 +59,22 @@ void game_update(float dt)
 		UpdateInput(api, earth);
 		UpdateScale(earth, 1);
 		UpdatePosition(earth, (Vec2) { 0.0f, 0.0f }, dt);
-		UpdateCollider(api, earth, tree);
+		UpdateCollider(earth, tree);
 	}
 	{ // moon
 		UpdateInput(api, moon);
 		UpdateScale(moon, 1);
 		UpdateRotation(moon, 0);
 		UpdatePosition(moon, earth->components.transform->position, dt);
-		UpdateCollider(api, moon, tree);
+		UpdateCollider(moon, tree);
 	}
 	{ // enemy
 		UpdateInput(api, enemy);
 		UpdateScale(enemy, 1);
-		UpdateCollider(api, enemy, tree);
+		UpdateCollider(enemy, tree);
 		UpdateMovement(enemy, dt);
 	}
-	UpdateCollision(api, moon->components.collider, tree);
+	UpdateCollision(moon, tree, MoonCollision);
 }
 
 void game_draw()

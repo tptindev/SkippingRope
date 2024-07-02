@@ -54,6 +54,7 @@ Polygon *CreatePolygon(Vec2 *vertices, size_t count);
 Circle *CreateCircle(Vec2 center, float radius);
 Ellipse *CreateEllipse(Vec2 center, float a, float b);
 Capsule *CreateCapsule(Vec2 center, float height, float radius);
+void FreeShape(void* ptr);
 void GetCircleBoundary(Rect2D *rect, Circle* circle);
 void GetPolygonBoundary(Rect2D *rect, Polygon* polygon);
 void GetEllipseBoundary(Rect2D *rect, Ellipse* ellipse);

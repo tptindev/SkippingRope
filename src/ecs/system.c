@@ -29,9 +29,8 @@ void UpdatePosition(Entity* entity, Vec2 to, float dt)
 	}
 }
 
-void UpdateCollider(void* userdata, Entity* entity, QuadTree* tree)
+void UpdateCollider(Entity* entity, QuadTree* tree)
 {
-	PlaydateAPI* api = userdata;
 	if (entity->components.collider != NULL && entity->components.transform != NULL)
 	{
 		// Update Collider
@@ -47,32 +46,29 @@ void UpdateCollider(void* userdata, Entity* entity, QuadTree* tree)
 	}
 }
 
-void UpdateCollision(void* userdata, Collider* collider, QuadTree* origin)
+void UpdateCollision(Entity* entity, QuadTree* tree, void (*callback)(Entity* a, Entity* b))
 {
-	PlaydateAPI* api = userdata;
-	Array1D* nodes = CreateArray1D();
-	QuadTreeSearch(origin, nodes, &collider->shape.box);
-
-	for (int i = 0; i < nodes->size; i++)
+	if (entity != NULL)
 	{
-		QuadTree* _node = Array1DItemAtIndex(nodes, i);
-		Array1D* _objs = _node->objects;
-		for (int j = 0; j < _node->objects->size; ++j) {
-			for (int k = j + 1; k < _node->objects->size; k++) {
-				Entity* obj1 = Array1DItemAtIndex(_objs, j);
-				Entity* obj2 = Array1DItemAtIndex(_objs, k);
-
-				Rect2D* b1 = &obj1->components.collider->shape.box;
-				Rect2D* b2 = &obj2->components.collider->shape.box;
-
-				Circle* c1 = obj1->components.collider->shape.define;
-				Circle* c2 = obj2->components.collider->shape.define;
-
-				bool collided = IsCollisionCircle(c1, c2);
-				if (collided)
+		Array1D* nodes = CreateArray1D();
+		QuadTreeSearch(tree, nodes, &entity->components.collider->shape.box);
+		Circle* c0 = entity->components.collider->shape.define;
+		for (int i = 0; i < nodes->size; i++)
+		{
+			QuadTree* _node = Array1DItemAtIndex(nodes, i);
+			Array1D* _objs = _node->objects;
+			for (int j = 0; j < _node->objects->size; ++j) 
+			{
+				Entity* other = Array1DItemAtIndex(_objs, j);
+				if (entity->id != other->id)
 				{
-					api->system->logToConsole("%f %f - %f %f", b1->x, b1->y, b2->x, b2->y);
-					api->system->logToConsole("%f %f %f - %f %f %f | %f", c1->center.x, c1->center.y, c1->radius, c2->center.x, c2->center.y, c2->radius, Vec2Distance(c1->center, c2->center));
+					Circle* cx = other->components.collider->shape.define;
+
+					bool collided = IsCollisionCircle(c0, cx);
+					if (collided)
+					{
+						callback(entity, other);
+					}
 				}
 			}
 		}

@@ -35,6 +35,10 @@ typedef struct {
 } KeyInput;
 
 typedef struct {
+	const char* sprite;
+} SpriteRenderer;
+
+typedef struct {
 	BodyType type;
 	float mass;
 	float gravity_scale;

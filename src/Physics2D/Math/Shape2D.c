@@ -8,7 +8,7 @@ Polygon *CreatePolygon(Vec2 *vertices, size_t count)
     {
         shape->points = (Vec2*)malloc(count * sizeof(Vec2));
         for (size_t i = 0; i < count; ++i) {
-            if (shape != NULL) {
+            if (shape->points != NULL) {
                 shape->points[i] = vertices[i];
             }
         }
@@ -50,6 +50,12 @@ Capsule *CreateCapsule(Vec2 center, float height, float radius)
         shape->radius = radius;
     }
     return shape;
+}
+
+void FreeShape(void* ptr)
+{
+    free(ptr);
+    ptr = NULL;
 }
 
 float GetShapeArea(const Shape2D *shape)

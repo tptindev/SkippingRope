@@ -13,6 +13,7 @@ typedef struct entity {
 
 Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale);
 void FreeEntity(Entity* entity);
+void FreeComponent(void* ptr);
 
 void AddKeyInputComponent(void* userdata, Entity* entity, bool left, bool right, bool up, bool down, bool a, bool b, bool crank);
 void AddCircleColliderComponent(void* userdata, QuadTree* tree, Entity* entity, Vec2 offset, float radius);

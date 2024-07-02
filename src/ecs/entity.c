@@ -47,11 +47,18 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 
 void FreeEntity(Entity* entity)
 {
-	if (entity->components.transform) free(entity->components.transform);
-	if (entity->components.collider) free(entity->components.collider);
-	if (entity->components.input) free(entity->components.input);
+	if (entity->components.transform) FreeComponent(entity->components.transform);
+	if (entity->components.collider->shape.define) FreeShape(entity->components.collider->shape.define);
+	if (entity->components.collider) FreeComponent(entity->components.collider);
+	if (entity->components.input) FreeComponent(entity->components.input);
 
 	free(entity);
+}
+
+void FreeComponent(void* ptr)
+{
+	free(ptr);
+	ptr = NULL;
 }
 
 void AddKeyInputComponent(void* userdata, Entity* entity, bool left, bool right, bool up, bool down, bool a, bool b, bool crank)
