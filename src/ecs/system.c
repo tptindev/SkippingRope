@@ -75,7 +75,7 @@ void UpdateCollision(Entity* entity, QuadTree* tree, void (*callback)(Entity* a,
 	}
 }
 
-void UpdateRenderer(void* userdata, Entity* entity)
+void UpdateRenderer(void* userdata, Entity* entity, float dt)
 {
 	PlaydateAPI* api = userdata;
 	LCDSprite* sprite = NULL;

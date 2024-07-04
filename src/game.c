@@ -78,30 +78,28 @@ void game_update(float dt)
 		UpdateMovement(enemy, dt);
 	}
 	UpdateCollision(moon, tree, MoonCollision);
-}
 
-void game_draw()
-{
-	api->graphics->clear(kColorWhite);
-	api->graphics->setBackgroundColor(kColorClear);
-	api->sprite->removeAllSprites();
-	UpdateRenderer(api, earth);
-	UpdateRenderer(api, moon);
-	{ // enemy
-		if (&enemy->components.collider != NULL)
-		{
-			Rect2D* box = &enemy->components.collider->shape.box;
-			Vec2* position = &enemy->components.transform->position;
-			int x = (int)(box->x * 80.0f);
-			int y = (int)(box->y * 80.0f);
-			int width = (int)(box->width * 80.0f);
-			int height = (int)(box->height * 80.0f);
-			api->graphics->drawRect(x, y, width, height, kColorBlack);
-			api->graphics->drawEllipse((int)(position->x * 80.0f) - width / 2, (int)(position->y * 80.0f) - height / 2, width, height, 2, 0.0f, 0.0f, kColorBlack);
+	{ // render
+		api->graphics->clear(kColorWhite);
+		api->graphics->setBackgroundColor(kColorClear);
+		api->sprite->removeAllSprites();
+		UpdateRenderer(api, earth, dt);
+		UpdateRenderer(api, moon, dt);
+		{ // enemy
+			if (&enemy->components.collider != NULL)
+			{
+				Rect2D* box = &enemy->components.collider->shape.box;
+				Vec2* position = &enemy->components.transform->position;
+				int x = (int)(box->x * 80.0f);
+				int y = (int)(box->y * 80.0f);
+				int width = (int)(box->width * 80.0f);
+				int height = (int)(box->height * 80.0f);
+				api->graphics->drawRect(x, y, width, height, kColorBlack);
+				api->graphics->drawEllipse((int)(position->x * 80.0f) - width / 2, (int)(position->y * 80.0f) - height / 2, width, height, 2, 0.0f, 0.0f, kColorBlack);
+			}
 		}
+		api->sprite->updateAndDrawSprites();
 	}
-	api->sprite->updateAndDrawSprites();
-
 }
 
 void game_destroy()

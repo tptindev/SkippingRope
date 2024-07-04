@@ -38,7 +38,6 @@ static int update(void* userdata)
 	current_time = api->system->getCurrentTimeMilliseconds();
 	float dt = (float)(current_time - last_time)/1000.0f;
 	game_update(dt);
-	game_draw();
 	last_time = current_time;
 	return 1;
 }
