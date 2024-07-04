@@ -49,7 +49,7 @@ void game_initialize(void* userdata)
 				enemy->components.motion->acceleration = world->gravity;
 				enemy->components.motion->direction = Vec2Normalize(Vec2Subtract(earth->components.transform->position, enemy->components.transform->position));
 			}
-			AddAnimatedSpriteComponent(api, enemy, "images/moon", 0, 0, 28, 28, 1, 1);
+			AddAnimatedSpriteComponent(api, enemy, "images/enemy", 0, 0, 8, 8, 1, 1);
 			AddCircleColliderComponent(api, tree, enemy, (Vec2) { 0.0f, 0.0f }, 0.05f);
 		}
 	}

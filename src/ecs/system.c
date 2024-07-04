@@ -85,7 +85,7 @@ void UpdateAnimateSprite(Entity* entity, unsigned int tick)
 	{
 		int frame_width = entity->components.animated_sprite->frame_width;
 		int frame_count = entity->components.animated_sprite->frame_count;
-		//entity->components.animated_sprite->frame_x = frame_width * (tick % frame_count);
+		entity->components.animated_sprite->frame_x = frame_width * (tick % frame_count);
 	}
 }
 
@@ -103,14 +103,14 @@ void UpdateRenderer(void* userdata, Entity* entity)
 	{
 		sprite = entity->components.animated_sprite->_ptr;
 		z_order = entity->components.animated_sprite->order_in_layer;
-		api->sprite->clearClipRect(sprite);
-		LCDRect rect = { 
-			.left = entity->components.animated_sprite->frame_x,
-			.top = entity->components.animated_sprite->frame_y,
-			.right = entity->components.animated_sprite->frame_x + entity->components.animated_sprite->frame_width,
-			.bottom = entity->components.animated_sprite->frame_y + entity->components.animated_sprite->frame_height
-		};
-		api->sprite->setClipRect(sprite, rect);
+		//api->sprite->clearClipRect(sprite);
+		//LCDRect rect = { 
+		//	.left = entity->components.animated_sprite->frame_x,
+		//	.top = entity->components.animated_sprite->frame_y,
+		//	.right = entity->components.animated_sprite->frame_x + entity->components.animated_sprite->frame_width,
+		//	.bottom = entity->components.animated_sprite->frame_y + entity->components.animated_sprite->frame_height
+		//};
+		//api->sprite->setClipRect(sprite, rect);
 	}
 
 	if (sprite != NULL && entity->components.transform != NULL)
