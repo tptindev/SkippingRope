@@ -41,7 +41,7 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 
 		entity->components.collider = NULL;
 		entity->components.input = NULL;
-		entity->components.sprite_renderer = NULL;
+		entity->components.sprite = NULL;
 	}
 	return entity;
 }
@@ -52,7 +52,8 @@ void FreeEntity(Entity* entity)
 	if (entity->components.collider->shape.define != NULL) FreeShape(entity->components.collider->shape.define);
 	if (entity->components.collider != NULL) FreeComponent(entity->components.collider);
 	if (entity->components.input != NULL) FreeComponent(entity->components.input);
-	if (entity->components.sprite_renderer != NULL) FreeComponent(entity->components.sprite_renderer);
+	if (entity->components.sprite != NULL) FreeComponent(entity->components.sprite);
+	if (entity->components.animation_sprite != NULL) FreeComponent(entity->components.animation_sprite);
 	free(entity);
 }
 
@@ -62,14 +63,31 @@ void FreeComponent(void* ptr)
 	ptr = NULL;
 }
 
-void AddSpriteRendererComponent(Entity* entity, const char* source, bool flip, int16_t z_order)
+void AddAnimatedSpriteComponent(Entity* entity, const char* s, float fx, float fy, float fw, float fh, float fr, float fd, char fc, int16_t z_order)
 {
-	entity->components.sprite_renderer = (Sprite*)malloc(sizeof(Sprite));
-	if (entity->components.sprite_renderer != NULL && entity->components.transform != NULL)
+	entity->components.animation_sprite = (AnimatedSprite*)malloc(sizeof(AnimatedSprite));
+	if (entity->components.animation_sprite != NULL && entity->components.transform != NULL)
 	{
-		entity->components.sprite_renderer->source = source;
-		entity->components.sprite_renderer->flip = flip;
-		entity->components.sprite_renderer->order_in_layer = z_order;
+		entity->components.animation_sprite->frame_x = fx;
+		entity->components.animation_sprite->frame_y = fy;
+		entity->components.animation_sprite->frame_width = fw;
+		entity->components.animation_sprite->frame_height = fh;
+		entity->components.animation_sprite->frame_rate = fr;
+		entity->components.animation_sprite->frame_duration = fd;
+		entity->components.animation_sprite->frame_count = fc;
+		entity->components.animation_sprite->source = s;
+		entity->components.animation_sprite->order_in_layer = z_order;
+	}
+}
+
+void AddSpriteComponent(Entity* entity, const char* source, bool flip, int16_t z_order)
+{
+	entity->components.sprite = (Sprite*)malloc(sizeof(Sprite));
+	if (entity->components.sprite != NULL && entity->components.transform != NULL)
+	{
+		entity->components.sprite->source = source;
+		entity->components.sprite->flip = flip;
+		entity->components.sprite->order_in_layer = z_order;
 	}
 }
 

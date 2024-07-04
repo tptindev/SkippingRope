@@ -41,16 +41,16 @@ typedef struct {
 } Sprite;
 
 typedef struct {
-	const char* source;
+	int16_t order_in_layer;
 	float frame_x; // x of first frame
 	float frame_y; // y of first frame
 	float frame_width;
 	float frame_height;
-	float frame_count;
 	float frame_rate; // Frame Per Second
 	float frame_duration; // Duration of each frame
-	int16_t order_in_layer;
-} AnimationSprite;
+	char frame_count;
+	const char* source;
+} AnimatedSprite;
 
 typedef struct {
 	BodyType type;
@@ -68,7 +68,8 @@ typedef struct {
 	KeyInput* input;
 	Collider* collider;
 	Motion* motion;
-	Sprite* sprite_renderer;
+	Sprite* sprite;
+	AnimatedSprite* animation_sprite;
 } Components;
 
 #endif // __COMPONENT_H__

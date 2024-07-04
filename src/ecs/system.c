@@ -78,10 +78,10 @@ void UpdateCollision(Entity* entity, QuadTree* tree, void (*callback)(Entity* a,
 void UpdateRenderer(void* userdata, Entity* entity, Array1D* sprites)
 {
 	PlaydateAPI* api = userdata;
-	if (entity->components.sprite_renderer != NULL && entity->components.transform != NULL)
+	if (entity->components.sprite != NULL && entity->components.transform != NULL)
 	{
 		const char* outerr = NULL;
-		LCDBitmap* bitmap_ptr = api->graphics->loadBitmap(entity->components.sprite_renderer->source, &outerr);
+		LCDBitmap* bitmap_ptr = api->graphics->loadBitmap(entity->components.sprite->source, &outerr);
 		if (outerr != NULL)
 		{
 			api->system->logToConsole("Error: %s", outerr);
@@ -92,7 +92,7 @@ void UpdateRenderer(void* userdata, Entity* entity, Array1D* sprites)
 		if (sprite_ptr != NULL)
 		{
 			api->sprite->setImage(sprite_ptr, bitmap_ptr, kBitmapUnflipped);
-			api->sprite->setZIndex(sprite_ptr, entity->components.sprite_renderer->order_in_layer);
+			api->sprite->setZIndex(sprite_ptr, entity->components.sprite->order_in_layer);
 			api->sprite->moveTo(sprite_ptr, entity->components.transform->position.x * 80.0f, entity->components.transform->position.y * 80.0f);
 			api->sprite->addSprite(sprite_ptr);
 			Array1DPush(sprites, sprite_ptr);

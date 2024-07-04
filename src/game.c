@@ -27,7 +27,7 @@ void game_initialize(void* userdata)
 		earth = CreateEntity(world, (Vec2){ 2.5f, 1.5f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
 		if (earth != NULL)
 		{
-			AddSpriteRendererComponent(earth, "images/earth", false, 1);
+			AddSpriteComponent(earth, "images/earth", false, 1);
 			AddCircleColliderComponent(api, tree, earth, (Vec2) { 0.0f, 0.0f }, 0.3f);
 		}
 	}
@@ -37,7 +37,7 @@ void game_initialize(void* userdata)
 		if (moon != NULL)
 		{
 			AddKeyInputComponent(api, moon, false, false, false, false, false, false, true);
-			AddSpriteRendererComponent(moon, "images/moon", false, 1);
+			AddSpriteComponent(moon, "images/moon", false, 1);
 			AddCircleColliderComponent(api, tree, moon, (Vec2) { 0.0f, 0.0f }, 0.15f);
 		}
 	}
