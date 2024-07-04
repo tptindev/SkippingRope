@@ -14,12 +14,10 @@ static Entity* earth = NULL;
 static Entity* moon = NULL;
 static Entity* enemy = NULL;
 static QuadTree* tree = NULL;
-static Array1D* sprites = NULL;
 
 void game_initialize(void* userdata)
 {	
 	api = userdata;
-	sprites = CreateArray1D();
 	world = CreateWorld((Vec2) { 10.0f, 10.0f }, 5.0f, 3.0f);
 
 	tree = CreateQuadTreeNode(NULL, world->w, world->h, 0);
@@ -108,7 +106,6 @@ void game_draw()
 
 void game_destroy()
 {
-	FreeArray1D(sprites);
 	FreeEntity(earth);
 	FreeEntity(moon);
 	FreeEntity(enemy);

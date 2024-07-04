@@ -78,15 +78,32 @@ void UpdateCollision(Entity* entity, QuadTree* tree, void (*callback)(Entity* a,
 void UpdateRenderer(void* userdata, Entity* entity)
 {
 	PlaydateAPI* api = userdata;
-	if (entity->components.sprite != NULL && entity->components.transform != NULL)
+	LCDSprite* sprite = NULL;
+	int16_t z_order = -1;
+	if (entity->components.sprite != NULL)
 	{
-		api->sprite->setZIndex(entity->components.sprite->_ptr, entity->components.sprite->order_in_layer);
-		api->sprite->moveTo(entity->components.sprite->_ptr, entity->components.transform->position.x * 80.0f, entity->components.transform->position.y * 80.0f);
-		api->sprite->addSprite(entity->components.sprite->_ptr);
+		sprite = entity->components.sprite->_ptr;
+		z_order = entity->components.sprite->order_in_layer;
 	} 
-	else if (entity->components.animation_sprite != NULL && entity->components.transform != NULL)
+	else if (entity->components.animation_sprite != NULL)
 	{
+		sprite = entity->components.animation_sprite->_ptr;
+		z_order = entity->components.animation_sprite->order_in_layer;
 
+		LCDRect rect = { 
+			entity->components.animation_sprite->frame_x,
+			entity->components.animation_sprite->frame_y,
+			entity->components.animation_sprite->frame_width,
+			entity->components.animation_sprite->frame_height
+		};
+		api->sprite->setClipRect(entity->components.animation_sprite->_ptr, rect);
+	}
+
+	if (sprite != NULL && entity->components.transform != NULL)
+	{
+		api->sprite->setZIndex(sprite, z_order);
+		api->sprite->moveTo(sprite, entity->components.transform->position.x * 80.0f, entity->components.transform->position.y * 80.0f);
+		api->sprite->addSprite(sprite);
 	}
 }
 
