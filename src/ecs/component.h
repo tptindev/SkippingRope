@@ -48,8 +48,6 @@ typedef struct {
 	int frame_y; // y of first frame
 	int frame_width;
 	int frame_height;
-	float frame_rate; // Frame Per Second
-	int frame_duration; // Duration of each frame
 	int frame_count;
 	const char* source;
 	void* bitmap;
@@ -73,7 +71,7 @@ typedef struct {
 	Collider* collider;
 	Motion* motion;
 	Sprite* sprite;
-	AnimatedSprite* animation_sprite;
+	AnimatedSprite* animated_sprite;
 } Components;
 
 #endif // __COMPONENT_H__

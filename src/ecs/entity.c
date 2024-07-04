@@ -42,7 +42,7 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 		entity->components.collider = NULL;
 		entity->components.input = NULL;
 		entity->components.sprite = NULL;
-		entity->components.animation_sprite = NULL;
+		entity->components.animated_sprite = NULL;
 	}
 	return entity;
 }
@@ -62,7 +62,12 @@ void FreeEntity(Entity* entity)
 		free(entity->components.sprite->_ptr);
 		FreeComponent(entity->components.sprite);
 	}
-	if (entity->components.animation_sprite != NULL) FreeComponent(entity->components.animation_sprite);
+	if (entity->components.animated_sprite != NULL)
+	{
+		free(entity->components.animated_sprite->bitmap);
+		free(entity->components.animated_sprite->_ptr);
+		FreeComponent(entity->components.animated_sprite);
+	}
 	free(entity);
 }
 
@@ -72,20 +77,42 @@ void FreeComponent(void* ptr)
 	ptr = NULL;
 }
 
-void AddAnimatedSpriteComponent(void* userdata, Entity* entity, const char* s, int fx, int fy, int fw, int fh, float fr, int fd, int fc, int16_t z_order)
+void AddAnimatedSpriteComponent(void* userdata, Entity* entity, const char* s, int fx, int fy, int fw, int fh, int fc, int16_t z_order)
 {
-	entity->components.animation_sprite = (AnimatedSprite*)malloc(sizeof(AnimatedSprite));
-	if (entity->components.animation_sprite != NULL && entity->components.transform != NULL)
+	PlaydateAPI* api = userdata;
+	entity->components.animated_sprite = (AnimatedSprite*)malloc(sizeof(AnimatedSprite));
+	if (entity->components.animated_sprite != NULL && entity->components.transform != NULL)
 	{
-		entity->components.animation_sprite->frame_x = fx;
-		entity->components.animation_sprite->frame_y = fy;
-		entity->components.animation_sprite->frame_width = fw;
-		entity->components.animation_sprite->frame_height = fh;
-		entity->components.animation_sprite->frame_rate = fr;
-		entity->components.animation_sprite->frame_duration = fd;
-		entity->components.animation_sprite->frame_count = fc;
-		entity->components.animation_sprite->source = s;
-		entity->components.animation_sprite->order_in_layer = z_order;
+		entity->components.animated_sprite->frame_x = fx;
+		entity->components.animated_sprite->frame_y = fy;
+		entity->components.animated_sprite->frame_width = fw;
+		entity->components.animated_sprite->frame_height = fh;
+		entity->components.animated_sprite->frame_count = fc;
+		entity->components.animated_sprite->source = s;
+		entity->components.animated_sprite->order_in_layer = z_order;
+
+		const char* outerr = NULL;
+		LCDBitmap* bitmap_ptr = api->graphics->loadBitmap(s, &outerr);
+		if (outerr != NULL)
+		{
+			api->system->logToConsole("Error: %s", outerr);
+			api->graphics->freeBitmap(bitmap_ptr);
+			return;
+		}
+		entity->components.animated_sprite->bitmap = bitmap_ptr;
+		LCDSprite* sprite_ptr = api->sprite->newSprite();
+		if (sprite_ptr != NULL)
+		{
+			entity->components.animated_sprite->_ptr = sprite_ptr;
+			api->sprite->setImage(sprite_ptr, bitmap_ptr, kBitmapUnflipped);
+			api->sprite->setZIndex(sprite_ptr, z_order);
+			api->sprite->moveTo(
+				sprite_ptr,
+				entity->components.transform->position.x * 80.0f,
+				entity->components.transform->position.y * 80.0f
+			);
+			api->sprite->addSprite(sprite_ptr);
+		}
 	}
 }
 
@@ -100,7 +127,7 @@ void AddSpriteComponent(void* userdata, Entity* entity, const char* source, bool
 		entity->components.sprite->order_in_layer = z_order;
 
 		const char* outerr = NULL;
-		LCDBitmap* bitmap_ptr = api->graphics->loadBitmap(entity->components.sprite->source, &outerr);
+		LCDBitmap* bitmap_ptr = api->graphics->loadBitmap(source, &outerr);
 		if (outerr != NULL)
 		{
 			api->system->logToConsole("Error: %s", outerr);
@@ -114,7 +141,11 @@ void AddSpriteComponent(void* userdata, Entity* entity, const char* source, bool
 			entity->components.sprite->_ptr = sprite_ptr;
 			api->sprite->setImage(sprite_ptr, bitmap_ptr, kBitmapUnflipped);
 			api->sprite->setZIndex(sprite_ptr, z_order);
-			api->sprite->moveTo(sprite_ptr, entity->components.transform->position.x * 80.0f, entity->components.transform->position.y * 80.0f);
+			api->sprite->moveTo(
+				sprite_ptr,
+				entity->components.transform->position.x * 80.0f,
+				entity->components.transform->position.y * 80.0f
+			);
 			api->sprite->addSprite(sprite_ptr);
 		}
 	}

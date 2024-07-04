@@ -49,7 +49,7 @@ void game_initialize(void* userdata)
 				enemy->components.motion->acceleration = world->gravity;
 				enemy->components.motion->direction = Vec2Normalize(Vec2Subtract(earth->components.transform->position, enemy->components.transform->position));
 			}
-			AddAnimatedSpriteComponent(api, enemy, "images/enemy", 0, 0, 8, 8, 0.16f, 16, 5, 1);
+			AddAnimatedSpriteComponent(api, enemy, "images/moon", 0, 0, 28, 28, 1, 1);
 			AddCircleColliderComponent(api, tree, enemy, (Vec2) { 0.0f, 0.0f }, 0.05f);
 		}
 	}
@@ -91,19 +91,7 @@ void game_draw()
 	api->sprite->removeAllSprites();
 	UpdateRenderer(api, earth);
 	UpdateRenderer(api, moon);
-	{ // enemy
-		if (&enemy->components.collider != NULL)
-		{
-			Rect2D* box = &enemy->components.collider->shape.box;
-			Vec2* position = &enemy->components.transform->position;
-			int x = (int)(box->x * 80.0f);
-			int y = (int)(box->y * 80.0f);
-			int width = (int)(box->width * 80.0f);
-			int height = (int)(box->height * 80.0f);
-			api->graphics->drawRect(x, y, width, height, kColorBlack);
-			api->graphics->drawEllipse((int)(position->x * 80.0f) - width / 2, (int)(position->y * 80.0f) - height / 2, width, height, 2, 0.0f, 0.0f, kColorBlack);
-		}
-	}
+	UpdateRenderer(api, enemy);
 	api->sprite->updateAndDrawSprites();
 
 }

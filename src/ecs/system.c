@@ -81,11 +81,11 @@ void UpdateSprite(Entity* entity, unsigned int tick)
 
 void UpdateAnimateSprite(Entity* entity, unsigned int tick)
 {
-	if (entity->components.animation_sprite != NULL)
+	if (entity->components.animated_sprite != NULL)
 	{
-		int frame_width = entity->components.animation_sprite->frame_width;
-		int frame_count = entity->components.animation_sprite->frame_count;
-		entity->components.animation_sprite->frame_x = frame_width * (tick % frame_count);
+		int frame_width = entity->components.animated_sprite->frame_width;
+		int frame_count = entity->components.animated_sprite->frame_count;
+		//entity->components.animated_sprite->frame_x = frame_width * (tick % frame_count);
 	}
 }
 
@@ -99,18 +99,18 @@ void UpdateRenderer(void* userdata, Entity* entity)
 		sprite = entity->components.sprite->_ptr;
 		z_order = entity->components.sprite->order_in_layer;
 	} 
-	else if (entity->components.animation_sprite != NULL)
+	else if (entity->components.animated_sprite != NULL)
 	{
-		sprite = entity->components.animation_sprite->_ptr;
-		z_order = entity->components.animation_sprite->order_in_layer;
-
+		sprite = entity->components.animated_sprite->_ptr;
+		z_order = entity->components.animated_sprite->order_in_layer;
+		api->sprite->clearClipRect(sprite);
 		LCDRect rect = { 
-			entity->components.animation_sprite->frame_x,
-			entity->components.animation_sprite->frame_y,
-			entity->components.animation_sprite->frame_width,
-			entity->components.animation_sprite->frame_height
+			.left = entity->components.animated_sprite->frame_x,
+			.top = entity->components.animated_sprite->frame_y,
+			.right = entity->components.animated_sprite->frame_x + entity->components.animated_sprite->frame_width,
+			.bottom = entity->components.animated_sprite->frame_y + entity->components.animated_sprite->frame_height
 		};
-		api->sprite->setClipRect(entity->components.animation_sprite->_ptr, rect);
+		api->sprite->setClipRect(sprite, rect);
 	}
 
 	if (sprite != NULL && entity->components.transform != NULL)
