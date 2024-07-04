@@ -27,7 +27,7 @@ void game_initialize(void* userdata)
 		earth = CreateEntity(world, (Vec2){ 2.5f, 1.5f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
 		if (earth != NULL)
 		{
-			AddSpriteComponent(earth, "images/earth", false, 1);
+			AddSpriteComponent(api, earth, "images/earth", false, 1);
 			AddCircleColliderComponent(api, tree, earth, (Vec2) { 0.0f, 0.0f }, 0.3f);
 		}
 	}
@@ -37,7 +37,7 @@ void game_initialize(void* userdata)
 		if (moon != NULL)
 		{
 			AddKeyInputComponent(api, moon, false, false, false, false, false, false, true);
-			AddSpriteComponent(moon, "images/moon", false, 1);
+			AddSpriteComponent(api, moon, "images/moon", false, 1);
 			AddCircleColliderComponent(api, tree, moon, (Vec2) { 0.0f, 0.0f }, 0.15f);
 		}
 	}
@@ -51,7 +51,7 @@ void game_initialize(void* userdata)
 				enemy->components.motion->acceleration = world->gravity;
 				enemy->components.motion->direction = Vec2Normalize(Vec2Subtract(earth->components.transform->position, enemy->components.transform->position));
 			}
-			AddAnimatedSpriteComponent(enemy, "", 0.0f, 0.0f, 8.0f, 8.0f, 60.0f, 0.16f, 5, 1);
+			AddAnimatedSpriteComponent(api, enemy, "images/enemy", 0.0f, 0.0f, 8.0f, 8.0f, 60.0f, 0.16f, 5, 1);
 			AddCircleColliderComponent(api, tree, enemy, (Vec2) { 0.0f, 0.0f }, 0.05f);
 		}
 	}
@@ -86,20 +86,9 @@ void game_draw()
 {
 	api->graphics->clear(kColorWhite);
 	api->graphics->setBackgroundColor(kColorClear);
-	for (int i = 0; i < api->sprite->getSpriteCount(); i++)
-	{
-		LCDSprite* sprite = Array1DItemAtIndex(sprites, i);
-		LCDBitmap* bitmap = api->sprite->getImage(sprite);
-		Array1DDelete(sprites, i);
-		if (sprite != NULL && bitmap != NULL)
-		{
-			api->graphics->freeBitmap(bitmap);
-			api->sprite->freeSprite(sprite);
-		}
-	}
 	api->sprite->removeAllSprites();
-	UpdateRenderer(api, earth, sprites);
-	UpdateRenderer(api, moon, sprites);
+	UpdateRenderer(api, earth);
+	UpdateRenderer(api, moon);
 	{ // enemy
 		if (&enemy->components.collider != NULL)
 		{
@@ -113,7 +102,7 @@ void game_draw()
 			api->graphics->drawEllipse((int)(position->x * 80.0f) - width / 2, (int)(position->y * 80.0f) - height / 2, width, height, 2, 0.0f, 0.0f, kColorBlack);
 		}
 	}
-	api->sprite->drawSprites();
+	api->sprite->updateAndDrawSprites();
 
 }
 

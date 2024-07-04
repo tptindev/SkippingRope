@@ -75,28 +75,14 @@ void UpdateCollision(Entity* entity, QuadTree* tree, void (*callback)(Entity* a,
 	}
 }
 
-void UpdateRenderer(void* userdata, Entity* entity, Array1D* sprites)
+void UpdateRenderer(void* userdata, Entity* entity)
 {
 	PlaydateAPI* api = userdata;
 	if (entity->components.sprite != NULL && entity->components.transform != NULL)
 	{
-		const char* outerr = NULL;
-		LCDBitmap* bitmap_ptr = api->graphics->loadBitmap(entity->components.sprite->source, &outerr);
-		if (outerr != NULL)
-		{
-			api->system->logToConsole("Error: %s", outerr);
-			api->graphics->freeBitmap(bitmap_ptr);
-			return;
-		}
-		LCDSprite* sprite_ptr = api->sprite->newSprite();
-		if (sprite_ptr != NULL)
-		{
-			api->sprite->setImage(sprite_ptr, bitmap_ptr, kBitmapUnflipped);
-			api->sprite->setZIndex(sprite_ptr, entity->components.sprite->order_in_layer);
-			api->sprite->moveTo(sprite_ptr, entity->components.transform->position.x * 80.0f, entity->components.transform->position.y * 80.0f);
-			api->sprite->addSprite(sprite_ptr);
-			Array1DPush(sprites, sprite_ptr);
-		}
+		api->sprite->setZIndex(entity->components.sprite->_ptr, entity->components.sprite->order_in_layer);
+		api->sprite->moveTo(entity->components.sprite->_ptr, entity->components.transform->position.x * 80.0f, entity->components.transform->position.y * 80.0f);
+		api->sprite->addSprite(entity->components.sprite->_ptr);
 	} 
 	else if (entity->components.animation_sprite != NULL && entity->components.transform != NULL)
 	{

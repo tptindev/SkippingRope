@@ -35,9 +35,11 @@ typedef struct {
 } KeyInput;
 
 typedef struct {
-	const char* source;
-	bool flip;
 	int16_t order_in_layer;
+	bool flip;
+	const char* source;
+	void* bitmap;
+	void* _ptr; // sprite pointer
 } Sprite;
 
 typedef struct {
@@ -50,6 +52,8 @@ typedef struct {
 	float frame_duration; // Duration of each frame
 	char frame_count;
 	const char* source;
+	void* bitmap;
+	void* _ptr; // sprite pointer
 } AnimatedSprite;
 
 typedef struct {

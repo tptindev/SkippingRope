@@ -42,6 +42,7 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 		entity->components.collider = NULL;
 		entity->components.input = NULL;
 		entity->components.sprite = NULL;
+		entity->components.animation_sprite = NULL;
 	}
 	return entity;
 }
@@ -49,10 +50,18 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 void FreeEntity(Entity* entity)
 {
 	if (entity->components.transform != NULL) FreeComponent(entity->components.transform);
-	if (entity->components.collider->shape.define != NULL) FreeShape(entity->components.collider->shape.define);
-	if (entity->components.collider != NULL) FreeComponent(entity->components.collider);
+	if (entity->components.collider != NULL)
+	{
+		FreeShape(entity->components.collider->shape.define);
+		FreeComponent(entity->components.collider);
+	}
 	if (entity->components.input != NULL) FreeComponent(entity->components.input);
-	if (entity->components.sprite != NULL) FreeComponent(entity->components.sprite);
+	if (entity->components.sprite != NULL)
+	{
+		free(entity->components.sprite->bitmap);
+		free(entity->components.sprite->_ptr);
+		FreeComponent(entity->components.sprite);
+	}
 	if (entity->components.animation_sprite != NULL) FreeComponent(entity->components.animation_sprite);
 	free(entity);
 }
@@ -63,7 +72,7 @@ void FreeComponent(void* ptr)
 	ptr = NULL;
 }
 
-void AddAnimatedSpriteComponent(Entity* entity, const char* s, float fx, float fy, float fw, float fh, float fr, float fd, char fc, int16_t z_order)
+void AddAnimatedSpriteComponent(void* userdata, Entity* entity, const char* s, float fx, float fy, float fw, float fh, float fr, float fd, char fc, int16_t z_order)
 {
 	entity->components.animation_sprite = (AnimatedSprite*)malloc(sizeof(AnimatedSprite));
 	if (entity->components.animation_sprite != NULL && entity->components.transform != NULL)
@@ -80,14 +89,34 @@ void AddAnimatedSpriteComponent(Entity* entity, const char* s, float fx, float f
 	}
 }
 
-void AddSpriteComponent(Entity* entity, const char* source, bool flip, int16_t z_order)
+void AddSpriteComponent(void* userdata, Entity* entity, const char* source, bool flip, int16_t z_order)
 {
+	PlaydateAPI* api = userdata;
 	entity->components.sprite = (Sprite*)malloc(sizeof(Sprite));
 	if (entity->components.sprite != NULL && entity->components.transform != NULL)
 	{
 		entity->components.sprite->source = source;
 		entity->components.sprite->flip = flip;
 		entity->components.sprite->order_in_layer = z_order;
+
+		const char* outerr = NULL;
+		LCDBitmap* bitmap_ptr = api->graphics->loadBitmap(entity->components.sprite->source, &outerr);
+		if (outerr != NULL)
+		{
+			api->system->logToConsole("Error: %s", outerr);
+			api->graphics->freeBitmap(bitmap_ptr);
+			return;
+		}
+		entity->components.sprite->bitmap = bitmap_ptr;
+		LCDSprite* sprite_ptr = api->sprite->newSprite();
+		if (sprite_ptr != NULL)
+		{
+			entity->components.sprite->_ptr = sprite_ptr;
+			api->sprite->setImage(sprite_ptr, bitmap_ptr, kBitmapUnflipped);
+			api->sprite->setZIndex(sprite_ptr, z_order);
+			api->sprite->moveTo(sprite_ptr, entity->components.transform->position.x * 80.0f, entity->components.transform->position.y * 80.0f);
+			api->sprite->addSprite(sprite_ptr);
+		}
 	}
 }
 
