@@ -44,13 +44,13 @@ typedef struct {
 
 typedef struct {
 	int16_t order_in_layer;
-	float frame_x; // x of first frame
-	float frame_y; // y of first frame
-	float frame_width;
-	float frame_height;
+	int frame_x; // x of first frame
+	int frame_y; // y of first frame
+	int frame_width;
+	int frame_height;
 	float frame_rate; // Frame Per Second
-	float frame_duration; // Duration of each frame
-	char frame_count;
+	int frame_duration; // Duration of each frame
+	int frame_count;
 	const char* source;
 	void* bitmap;
 	void* _ptr; // sprite pointer

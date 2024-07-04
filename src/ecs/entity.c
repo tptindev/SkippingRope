@@ -72,7 +72,7 @@ void FreeComponent(void* ptr)
 	ptr = NULL;
 }
 
-void AddAnimatedSpriteComponent(void* userdata, Entity* entity, const char* s, float fx, float fy, float fw, float fh, float fr, float fd, char fc, int16_t z_order)
+void AddAnimatedSpriteComponent(void* userdata, Entity* entity, const char* s, int fx, int fy, int fw, int fh, float fr, int fd, int fc, int16_t z_order)
 {
 	entity->components.animation_sprite = (AnimatedSprite*)malloc(sizeof(AnimatedSprite));
 	if (entity->components.animation_sprite != NULL && entity->components.transform != NULL)
@@ -135,7 +135,7 @@ void AddKeyInputComponent(void* userdata, Entity* entity, bool left, bool right,
 	}
 }
 
-void AddCircleColliderComponent(void* userdata, QuadTree* tree, Entity* entity, Vec2 offset, float radius)
+void AddCircleColliderComponent(void* userdata, struct QuadTree* tree, Entity* entity, Vec2 offset, float radius)
 {
 	PlaydateAPI* api = userdata;
 	entity->components.collider = (Collider*)malloc(sizeof(Collider));

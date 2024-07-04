@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-QuadTree *CreateQuadTreeNode(const QuadTree* parent, float width, float height,  int index)
+struct QuadTree* CreateQuadTreeNode(const struct QuadTree* parent, float width, float height,  int index)
 {
-    QuadTree* node = (QuadTree*)malloc(sizeof(QuadTree));
+    struct QuadTree* node = (struct QuadTree*)malloc(sizeof(struct QuadTree));
     if (node != NULL)
     {
         node->objects = CreateArray1D();
@@ -30,7 +30,7 @@ QuadTree *CreateQuadTreeNode(const QuadTree* parent, float width, float height, 
     return node;
 }
 
-void QuadtreeInsert(QuadTree *node, void *obj, const Rect2D* objBoundary)
+void QuadtreeInsert(struct QuadTree*node, void *obj, const Rect2D* objBoundary)
 {
     if (node == NULL) return;
     if (!QuadTreeOverlap(node, objBoundary))
@@ -55,7 +55,7 @@ void QuadtreeInsert(QuadTree *node, void *obj, const Rect2D* objBoundary)
 }
 
 
-int QuadTreehash(QuadTree *node, float x, float y)
+int QuadTreehash(struct QuadTree*node, float x, float y)
 {
     int columns = 2;
     int rows = 2;
@@ -68,7 +68,7 @@ int QuadTreehash(QuadTree *node, float x, float y)
     return ((hashY * columns) + hashX);
 }
 
-void FreeQuadTree(QuadTree *node)
+void FreeQuadTree(struct QuadTree*node)
 {
     if (node != NULL) 
     {
@@ -90,7 +90,7 @@ void FreeQuadTree(QuadTree *node)
     }
 }
 
-bool QuadTreeOverlap(QuadTree *node, const Rect2D* boundary)
+bool QuadTreeOverlap(struct QuadTree*node, const Rect2D* boundary)
 {
     if (node == NULL || boundary == NULL) return false;
     if ((boundary->x > node->rect.x + node->rect.width) || (boundary->x + boundary->width < node->rect.x)) return false;
@@ -98,7 +98,7 @@ bool QuadTreeOverlap(QuadTree *node, const Rect2D* boundary)
     return true;
 }
 
-void QuadTreePrint(QuadTree *node)
+void QuadTreePrint(struct QuadTree*node)
 {
     if (node == NULL) return;
     for (int i = WestNorth; i < NodeLimit; i++)
@@ -110,7 +110,7 @@ void QuadTreePrint(QuadTree *node)
     printf(buffer);
 }
 
-void QuadTreeSearch(QuadTree* node, Array1D *outs, const Rect2D *objBoundary)
+void QuadTreeSearch(struct QuadTree* node, Array1D *outs, const Rect2D *objBoundary)
 {
     if (node == NULL) return;
     if (node->objects == NULL) return;
@@ -138,7 +138,7 @@ void QuadTreeSearch(QuadTree* node, Array1D *outs, const Rect2D *objBoundary)
     }
 }
 
-void QuadTreeClear(QuadTree* node)
+void QuadTreeClear(struct QuadTree* node)
 {
     if (node == NULL) return;
     else 

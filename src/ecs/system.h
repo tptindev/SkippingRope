@@ -9,9 +9,11 @@ void UpdateScale(Entity* entity, float scale);
 void UpdateRotation(Entity* entity, float angle);
 void UpdateMovement(Entity* entity, float dt);
 void UpdatePosition(Entity* entity, Vec2 to, float dt);
-void UpdateCollider(Entity* entity, QuadTree* tree);
-void UpdateCollision(Entity* entity, QuadTree* tree, void (*callback)(Entity* a, Entity* b));
-void UpdateRenderer(void* userdata, Entity* entity, float dt);
+void UpdateCollider(Entity* entity, struct QuadTree* tree);
+void UpdateCollision(Entity* entity, struct QuadTree* tree, void (*callback)(Entity* a, Entity* b));
+void UpdateSprite(Entity* entity, unsigned int tick);
+void UpdateAnimateSprite(Entity* entity, unsigned int tick);
+void UpdateRenderer(void* userdata, Entity* entity);
 void UpdateInput(void* userdata, Entity* entity);
 
 #endif // __SYSTEM_H__

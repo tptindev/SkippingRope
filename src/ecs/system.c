@@ -29,7 +29,7 @@ void UpdatePosition(Entity* entity, Vec2 to, float dt)
 	}
 }
 
-void UpdateCollider(Entity* entity, QuadTree* tree)
+void UpdateCollider(Entity* entity, struct QuadTree* tree)
 {
 	if (entity->components.collider != NULL && entity->components.transform != NULL)
 	{
@@ -46,7 +46,7 @@ void UpdateCollider(Entity* entity, QuadTree* tree)
 	}
 }
 
-void UpdateCollision(Entity* entity, QuadTree* tree, void (*callback)(Entity* a, Entity* b))
+void UpdateCollision(Entity* entity, struct QuadTree* tree, void (*callback)(Entity* a, Entity* b))
 {
 	if (entity != NULL)
 	{
@@ -55,7 +55,7 @@ void UpdateCollision(Entity* entity, QuadTree* tree, void (*callback)(Entity* a,
 		Circle* c0 = entity->components.collider->shape.define;
 		for (int i = 0; i < nodes->size; i++)
 		{
-			QuadTree* _node = Array1DItemAtIndex(nodes, i);
+			struct QuadTree* _node = Array1DItemAtIndex(nodes, i);
 			Array1D* _objs = _node->objects;
 			for (int j = 0; j < _node->objects->size; ++j) 
 			{
@@ -75,7 +75,21 @@ void UpdateCollision(Entity* entity, QuadTree* tree, void (*callback)(Entity* a,
 	}
 }
 
-void UpdateRenderer(void* userdata, Entity* entity, float dt)
+void UpdateSprite(Entity* entity, unsigned int tick)
+{
+}
+
+void UpdateAnimateSprite(Entity* entity, unsigned int tick)
+{
+	if (entity->components.animation_sprite != NULL)
+	{
+		int frame_width = entity->components.animation_sprite->frame_width;
+		int frame_count = entity->components.animation_sprite->frame_count;
+		entity->components.animation_sprite->frame_x = frame_width * (tick % frame_count);
+	}
+}
+
+void UpdateRenderer(void* userdata, Entity* entity)
 {
 	PlaydateAPI* api = userdata;
 	LCDSprite* sprite = NULL;

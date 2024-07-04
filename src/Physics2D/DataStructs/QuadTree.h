@@ -14,20 +14,20 @@ typedef enum
     NodeLimit
 } QuadtreeNode;
 
-typedef struct
+struct QuadTree
 {
     Rect2D rect; // boundary
     Array1D* objects; // list of objects
     struct QuadTree* nodes[NodeLimit]; // list of nodes
-} QuadTree;
+};
 
-QuadTree* CreateQuadTreeNode(const QuadTree* parent, float width, float height, int index);
-int QuadTreehash(QuadTree* node, float x, float y); // get cell index
-void QuadtreeInsert(QuadTree* node, void* obj, const Rect2D* objBoundary);
-void QuadTreePrint(QuadTree* node);
-void QuadTreeSearch(QuadTree* node, Array1D* outs, const Rect2D* objBoundary);
-void QuadTreeClear(QuadTree* node);
-void FreeQuadTree(QuadTree* node);
-bool QuadTreeOverlap(QuadTree* node, const Rect2D* boundary);
+struct QuadTree* CreateQuadTreeNode(const struct QuadTree* parent, float width, float height, int index);
+int QuadTreehash(struct QuadTree* node, float x, float y); // get cell index
+void QuadtreeInsert(struct QuadTree* node, void* obj, const Rect2D* objBoundary);
+void QuadTreePrint(struct QuadTree* node);
+void QuadTreeSearch(struct QuadTree* node, Array1D* outs, const Rect2D* objBoundary);
+void QuadTreeClear(struct QuadTree* node);
+void FreeQuadTree(struct QuadTree* node);
+bool QuadTreeOverlap(struct QuadTree* node, const Rect2D* boundary);
 
 #endif // QUADTREE_H
