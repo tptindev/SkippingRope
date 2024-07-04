@@ -97,6 +97,10 @@ void UpdateRenderer(void* userdata, Entity* entity, Array1D* sprites)
 			api->sprite->addSprite(sprite_ptr);
 			Array1DPush(sprites, sprite_ptr);
 		}
+	} 
+	else if (entity->components.animation_sprite != NULL && entity->components.transform != NULL)
+	{
+
 	}
 }
 
