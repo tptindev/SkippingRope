@@ -14,10 +14,12 @@ static Entity* earth = NULL;
 static Entity* moon = NULL;
 static Entity* enemy = NULL;
 static QuadTree* tree = NULL;
+static Array1D* sprites = NULL;
 
 void game_initialize(void* userdata)
 {	
 	api = userdata;
+	sprites = CreateArray1D();
 	world = CreateWorld((Vec2) { 10.0f, 10.0f }, 5.0f, 3.0f);
 
 	tree = CreateQuadTreeNode(NULL, world->w, world->h, 0);
@@ -25,6 +27,7 @@ void game_initialize(void* userdata)
 		earth = CreateEntity(world, (Vec2){ 2.5f, 1.5f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
 		if (earth != NULL)
 		{
+			AddSpriteRendererComponent(earth, "images/earth", false, 1);
 			AddCircleColliderComponent(api, tree, earth, (Vec2) { 0.0f, 0.0f }, 0.3f);
 		}
 	}
@@ -33,8 +36,9 @@ void game_initialize(void* userdata)
 		moon = CreateEntity(world, (Vec2){ 2.0f, 1.0f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
 		if (moon != NULL)
 		{
-			AddCircleColliderComponent(api, tree, moon, (Vec2) { 0.0f, 0.0f }, 0.15f);
 			AddKeyInputComponent(api, moon, false, false, false, false, false, false, true);
+			AddSpriteRendererComponent(moon, "images/moon", false, 1);
+			AddCircleColliderComponent(api, tree, moon, (Vec2) { 0.0f, 0.0f }, 0.15f);
 		}
 	}
 
@@ -80,36 +84,21 @@ void game_update(float dt)
 void game_draw()
 {
 	api->graphics->clear(kColorWhite);
-	api->graphics->setBackgroundColor(kColorBlack);
-
-	{ // earth
-		if (earth->components.collider != NULL)
+	api->graphics->setBackgroundColor(kColorClear);
+	for (int i = 0; i < api->sprite->getSpriteCount(); i++)
+	{
+		LCDSprite* sprite = Array1DItemAtIndex(sprites, i);
+		LCDBitmap* bitmap = api->sprite->getImage(sprite);
+		Array1DDelete(sprites, i);
+		if (sprite != NULL && bitmap != NULL)
 		{
-			Rect2D* box = &earth->components.collider->shape.box;
-			Vec2* position = &earth->components.transform->position;
-			int x = (int)(box->x * 80.0f);
-			int y = (int)(box->y * 80.0f);
-			int width = (int)(box->width * 80.0f);
-			int height = (int)(box->height * 80.0f);
-			api->graphics->drawRect(x, y, width, height, kColorBlack);
-			api->graphics->drawEllipse((int)(position->x * 80.0f) - width / 2, (int)(position->y * 80.0f) - height / 2, width, height, 2, 0.0f, 0.0f, kColorBlack);
+			api->graphics->freeBitmap(bitmap);
+			api->sprite->freeSprite(sprite);
 		}
 	}
-
-	{ // moon
-		if (&moon->components.collider != NULL)
-		{
-			Rect2D* box = &moon->components.collider->shape.box;
-			Vec2* position = &moon->components.transform->position;
-			int x = (int)(box->x * 80.0f);
-			int y = (int)(box->y * 80.0f);
-			int width = (int)(box->width * 80.0f);
-			int height = (int)(box->height * 80.0f);
-			api->graphics->drawRect(x, y, width, height, kColorBlack);
-			api->graphics->drawEllipse((int)(position->x * 80.0f) - width / 2, (int)(position->y * 80.0f) - height / 2, width, height, 2, 0.0f, 0.0f, kColorBlack);
-		}
-	}
-
+	api->sprite->removeAllSprites();
+	UpdateRenderer(api, earth, sprites);
+	UpdateRenderer(api, moon, sprites);
 	{ // enemy
 		if (&enemy->components.collider != NULL)
 		{
@@ -123,14 +112,16 @@ void game_draw()
 			api->graphics->drawEllipse((int)(position->x * 80.0f) - width / 2, (int)(position->y * 80.0f) - height / 2, width, height, 2, 0.0f, 0.0f, kColorBlack);
 		}
 	}
+	api->sprite->drawSprites();
+
 }
 
 void game_destroy()
 {
-	FreeQuadTree(tree);
-	DestroyWorld(world);
+	FreeArray1D(sprites);
 	FreeEntity(earth);
 	FreeEntity(moon);
 	FreeEntity(enemy);
-
+	FreeQuadTree(tree);
+	DestroyWorld(world);
 }

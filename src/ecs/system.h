@@ -11,6 +11,7 @@ void UpdateMovement(Entity* entity, float dt);
 void UpdatePosition(Entity* entity, Vec2 to, float dt);
 void UpdateCollider(Entity* entity, QuadTree* tree);
 void UpdateCollision(Entity* entity, QuadTree* tree, void (*callback)(Entity* a, Entity* b));
+void UpdateRenderer(void* userdata, Entity* entity, Array1D* sprites);
 void UpdateInput(void* userdata, Entity* entity);
-void UpdateRenderer(Entity* entity);
+
 #endif // __SYSTEM_H__

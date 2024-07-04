@@ -41,17 +41,18 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 
 		entity->components.collider = NULL;
 		entity->components.input = NULL;
+		entity->components.sprite_renderer = NULL;
 	}
 	return entity;
 }
 
 void FreeEntity(Entity* entity)
 {
-	if (entity->components.transform) FreeComponent(entity->components.transform);
-	if (entity->components.collider->shape.define) FreeShape(entity->components.collider->shape.define);
-	if (entity->components.collider) FreeComponent(entity->components.collider);
-	if (entity->components.input) FreeComponent(entity->components.input);
-
+	if (entity->components.transform != NULL) FreeComponent(entity->components.transform);
+	if (entity->components.collider->shape.define != NULL) FreeShape(entity->components.collider->shape.define);
+	if (entity->components.collider != NULL) FreeComponent(entity->components.collider);
+	if (entity->components.input != NULL) FreeComponent(entity->components.input);
+	if (entity->components.sprite_renderer != NULL) FreeComponent(entity->components.sprite_renderer);
 	free(entity);
 }
 
@@ -59,6 +60,17 @@ void FreeComponent(void* ptr)
 {
 	free(ptr);
 	ptr = NULL;
+}
+
+void AddSpriteRendererComponent(Entity* entity, const char* source, bool flip, int16_t z_order)
+{
+	entity->components.sprite_renderer = (Sprite*)malloc(sizeof(Sprite));
+	if (entity->components.sprite_renderer != NULL && entity->components.transform != NULL)
+	{
+		entity->components.sprite_renderer->source = source;
+		entity->components.sprite_renderer->flip = flip;
+		entity->components.sprite_renderer->order_in_layer = z_order;
+	}
 }
 
 void AddKeyInputComponent(void* userdata, Entity* entity, bool left, bool right, bool up, bool down, bool a, bool b, bool crank)
