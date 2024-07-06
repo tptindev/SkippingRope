@@ -81,13 +81,13 @@ void game_update(float dt)
 		UpdateMovement(enemy, dt);
 		UpdateAnimateSprite(enemy, tick);
 	}
-	UpdateCollision(moon, tree, MoonCollision);
+	UpdateCollision(world, moon, tree, MoonCollision);
 }
 
 void game_draw()
 {
 	api->graphics->clear(kColorWhite);
-	api->graphics->setBackgroundColor(kColorClear);
+	api->graphics->setBackgroundColor(kColorWhite);
 	api->sprite->removeAllSprites();
 	UpdateRenderer(api, earth);
 	UpdateRenderer(api, moon);

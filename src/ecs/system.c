@@ -50,7 +50,7 @@ void UpdateCollider(Entity* entity, struct QuadTree* tree)
 	}
 }
 
-void UpdateCollision(Entity* entity, struct QuadTree* tree, void (*callback)(Entity* a, Entity* b))
+void UpdateCollision(World2D* world, Entity* entity, struct QuadTree* tree, void (*callback)(World2D* world, Entity* a, Entity* b))
 {
 	if (entity == NULL) return;
 	Array1D* nodes = CreateArray1D();
@@ -70,7 +70,7 @@ void UpdateCollision(Entity* entity, struct QuadTree* tree, void (*callback)(Ent
 				bool collided = IsCollisionCircle(c0, cx);
 				if (collided)
 				{
-					callback(entity, other);
+					callback(world, entity, other);
 				}
 			}
 		}

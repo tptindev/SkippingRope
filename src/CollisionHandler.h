@@ -1,3 +1,3 @@
 #include "ecs/entity.h"
 
-void MoonCollision(Entity* moon, Entity* other);
+void MoonCollision(World2D* world, Entity* moon, Entity* other);
