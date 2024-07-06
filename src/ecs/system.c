@@ -83,9 +83,8 @@ void UpdateAnimateSprite(Entity* entity, unsigned int tick)
 {
 	if (entity->components.animated_sprite != NULL)
 	{
-		int frame_width = entity->components.animated_sprite->frame_width;
 		int frame_count = entity->components.animated_sprite->frame_count;
-		entity->components.animated_sprite->frame_x = frame_width * (tick % frame_count);
+		entity->components.animated_sprite->frame_index = (tick % frame_count);
 	}
 }
 
@@ -93,27 +92,23 @@ void UpdateRenderer(void* userdata, Entity* entity)
 {
 	PlaydateAPI* api = userdata;
 	LCDSprite* sprite = NULL;
+	LCDBitmap* bitmap = NULL;
 	int16_t z_order = -1;
 	if (entity->components.sprite != NULL)
 	{
 		sprite = entity->components.sprite->_ptr;
 		z_order = entity->components.sprite->order_in_layer;
+		bitmap = entity->components.sprite->bitmap;
 	} 
 	else if (entity->components.animated_sprite != NULL)
 	{
 		sprite = entity->components.animated_sprite->_ptr;
 		z_order = entity->components.animated_sprite->order_in_layer;
-		//api->sprite->clearClipRect(sprite);
-		//LCDRect rect = { 
-		//	.left = entity->components.animated_sprite->frame_x,
-		//	.top = entity->components.animated_sprite->frame_y,
-		//	.right = entity->components.animated_sprite->frame_x + entity->components.animated_sprite->frame_width,
-		//	.bottom = entity->components.animated_sprite->frame_y + entity->components.animated_sprite->frame_height
-		//};
-		//api->sprite->setClipRect(sprite, rect);
+		bitmap = entity->components.animated_sprite->bitmaps[entity->components.animated_sprite->frame_index];
+		api->sprite->setImage(sprite, bitmap, kBitmapUnflipped);
 	}
 
-	if (sprite != NULL && entity->components.transform != NULL)
+	if (sprite != NULL && bitmap != NULL && entity->components.transform != NULL)
 	{
 		api->sprite->setZIndex(sprite, z_order);
 		api->sprite->moveTo(sprite, entity->components.transform->position.x * 80.0f, entity->components.transform->position.y * 80.0f);

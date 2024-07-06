@@ -34,7 +34,7 @@ set(PLAYDATE_GAME_DEVICE Defend_DEVICE)
 project(${PLAYDATE_GAME_NAME} LANGUAGES C ASM)
 
 file(GLOB RESOURCES
-	"Source/images/*"
+	"Source/*"
 )
 File(GLOB_RECURSE SOURCE_FILES "src/*.h" "src/*.c")
 

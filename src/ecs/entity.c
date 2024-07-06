@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "component.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include "pd_api.h"
 
 Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
@@ -64,7 +65,7 @@ void FreeEntity(Entity* entity)
 	}
 	if (entity->components.animated_sprite != NULL)
 	{
-		free(entity->components.animated_sprite->bitmap);
+		free(entity->components.animated_sprite->bitmaps);
 		free(entity->components.animated_sprite->_ptr);
 		FreeComponent(entity->components.animated_sprite);
 	}
@@ -77,41 +78,47 @@ void FreeComponent(void* ptr)
 	ptr = NULL;
 }
 
-void AddAnimatedSpriteComponent(void* userdata, Entity* entity, const char* s, int fx, int fy, int fw, int fh, int fc, int16_t z_order)
+void AddAnimatedSpriteComponent(void* userdata, Entity* entity, const char* source, int frame_width, int frame_height, int frame_count, int16_t z_order)
 {
 	PlaydateAPI* api = userdata;
 	entity->components.animated_sprite = (AnimatedSprite*)malloc(sizeof(AnimatedSprite));
 	if (entity->components.animated_sprite != NULL && entity->components.transform != NULL)
 	{
-		entity->components.animated_sprite->frame_x = fx;
-		entity->components.animated_sprite->frame_y = fy;
-		entity->components.animated_sprite->frame_width = fw;
-		entity->components.animated_sprite->frame_height = fh;
-		entity->components.animated_sprite->frame_count = fc;
-		entity->components.animated_sprite->source = s;
+		entity->components.animated_sprite->source = source;
+		entity->components.animated_sprite->frame_index = 0;
+		entity->components.animated_sprite->frame_width = frame_width;
+		entity->components.animated_sprite->frame_height = frame_height;
+		entity->components.animated_sprite->frame_count = frame_count;
 		entity->components.animated_sprite->order_in_layer = z_order;
+		entity->components.animated_sprite->bitmaps = NULL;
+		entity->components.animated_sprite->_ptr = NULL;
 
-		const char* outerr = NULL;
-		LCDBitmap* bitmap_ptr = api->graphics->loadBitmap(s, &outerr);
-		if (outerr != NULL)
+		void* (*bitmaps) = malloc(sizeof(void*) * frame_count);
+		if (bitmaps != NULL)
 		{
-			api->system->logToConsole("Error: %s", outerr);
-			api->graphics->freeBitmap(bitmap_ptr);
-			return;
+			for (int i = 0; i < frame_count; i++)
+			{
+				char path_buffer[32];
+				snprintf(path_buffer, sizeof(path_buffer), "images/enemy/%d.png", i);
+
+				const char* outerr = NULL;
+				bitmaps[i] = api->graphics->loadBitmap(path_buffer, outerr); // bitmaps[i] <=> *(bitmaps + i)
+
+				if (outerr != NULL)
+				{
+					api->system->logToConsole("Error: %s", outerr);
+					api->graphics->freeBitmap(bitmaps[i]);
+					bitmaps = NULL;
+					return;
+				}
+			}
 		}
-		entity->components.animated_sprite->bitmap = bitmap_ptr;
+
+		entity->components.animated_sprite->bitmaps = bitmaps;
 		LCDSprite* sprite_ptr = api->sprite->newSprite();
-		if (sprite_ptr != NULL)
+		if (sprite_ptr != NULL && bitmaps != NULL)
 		{
 			entity->components.animated_sprite->_ptr = sprite_ptr;
-			api->sprite->setImage(sprite_ptr, bitmap_ptr, kBitmapUnflipped);
-			api->sprite->setZIndex(sprite_ptr, z_order);
-			api->sprite->moveTo(
-				sprite_ptr,
-				entity->components.transform->position.x * 80.0f,
-				entity->components.transform->position.y * 80.0f
-			);
-			api->sprite->addSprite(sprite_ptr);
 		}
 	}
 }
@@ -125,6 +132,8 @@ void AddSpriteComponent(void* userdata, Entity* entity, const char* source, bool
 		entity->components.sprite->source = source;
 		entity->components.sprite->flip = flip;
 		entity->components.sprite->order_in_layer = z_order;
+		entity->components.sprite->bitmap = NULL;
+		entity->components.sprite->_ptr = NULL;
 
 		const char* outerr = NULL;
 		LCDBitmap* bitmap_ptr = api->graphics->loadBitmap(source, &outerr);
@@ -146,7 +155,6 @@ void AddSpriteComponent(void* userdata, Entity* entity, const char* source, bool
 				entity->components.transform->position.x * 80.0f,
 				entity->components.transform->position.y * 80.0f
 			);
-			api->sprite->addSprite(sprite_ptr);
 		}
 	}
 }

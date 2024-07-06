@@ -43,14 +43,13 @@ typedef struct {
 } Sprite;
 
 typedef struct {
-	int16_t order_in_layer;
-	int frame_x; // x of first frame
-	int frame_y; // y of first frame
+	int frame_index;
 	int frame_width;
 	int frame_height;
 	int frame_count;
+	int16_t order_in_layer;
 	const char* source;
-	void* bitmap;
+	void* (*bitmaps);
 	void* _ptr; // sprite pointer
 } AnimatedSprite;
 
