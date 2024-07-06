@@ -12,6 +12,7 @@ typedef struct entity {
 } Entity;
 
 Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale);
+void DestroyEntity(Entity* entity);
 void FreeEntity(Entity* entity);
 void FreeComponent(void* ptr);
 

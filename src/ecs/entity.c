@@ -48,6 +48,11 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 	return entity;
 }
 
+void DestroyEntity(Entity* entity)
+{
+	FreeEntity(entity);
+}
+
 void FreeEntity(Entity* entity)
 {
 	if (entity->components.transform != NULL) FreeComponent(entity->components.transform);

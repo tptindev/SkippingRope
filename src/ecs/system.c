@@ -5,10 +5,12 @@
 
 void UpdateRotation(Entity* entity, float angle)
 {
+	if (entity == NULL) return;
 }
 
 void UpdateMovement(Entity* entity, float dt)
 {
+	if (entity == NULL) return;
 	if (entity->components.transform != NULL && entity->components.motion != NULL)
 	{
 		entity->components.motion->acceleration.x += 0.1f;
@@ -22,6 +24,7 @@ void UpdateMovement(Entity* entity, float dt)
 
 void UpdatePosition(Entity* entity, Vec2 to, float dt)
 {
+	if (entity == NULL) return;
 	if (entity->components.transform != NULL)
 	{
 		entity->components.transform->position.x += to.x;
@@ -31,6 +34,7 @@ void UpdatePosition(Entity* entity, Vec2 to, float dt)
 
 void UpdateCollider(Entity* entity, struct QuadTree* tree)
 {
+	if (entity == NULL) return;
 	if (entity->components.collider != NULL && entity->components.transform != NULL)
 	{
 		// Update Collider
@@ -48,27 +52,25 @@ void UpdateCollider(Entity* entity, struct QuadTree* tree)
 
 void UpdateCollision(Entity* entity, struct QuadTree* tree, void (*callback)(Entity* a, Entity* b))
 {
-	if (entity != NULL)
+	if (entity == NULL) return;
+	Array1D* nodes = CreateArray1D();
+	QuadTreeSearch(tree, nodes, &entity->components.collider->shape.box);
+	Circle* c0 = entity->components.collider->shape.define;
+	for (int i = 0; i < nodes->size; i++)
 	{
-		Array1D* nodes = CreateArray1D();
-		QuadTreeSearch(tree, nodes, &entity->components.collider->shape.box);
-		Circle* c0 = entity->components.collider->shape.define;
-		for (int i = 0; i < nodes->size; i++)
+		struct QuadTree* _node = Array1DItemAtIndex(nodes, i);
+		Array1D* _objs = _node->objects;
+		for (int j = 0; j < _node->objects->size; ++j)
 		{
-			struct QuadTree* _node = Array1DItemAtIndex(nodes, i);
-			Array1D* _objs = _node->objects;
-			for (int j = 0; j < _node->objects->size; ++j) 
+			Entity* other = Array1DItemAtIndex(_objs, j);
+			if (entity->id != other->id)
 			{
-				Entity* other = Array1DItemAtIndex(_objs, j);
-				if (entity->id != other->id)
-				{
-					Circle* cx = other->components.collider->shape.define;
+				Circle* cx = other->components.collider->shape.define;
 
-					bool collided = IsCollisionCircle(c0, cx);
-					if (collided)
-					{
-						callback(entity, other);
-					}
+				bool collided = IsCollisionCircle(c0, cx);
+				if (collided)
+				{
+					callback(entity, other);
 				}
 			}
 		}
@@ -77,10 +79,15 @@ void UpdateCollision(Entity* entity, struct QuadTree* tree, void (*callback)(Ent
 
 void UpdateSprite(Entity* entity, unsigned int tick)
 {
+	if (entity == NULL) return;
+	if (entity->components.sprite != NULL)
+	{
+	}
 }
 
 void UpdateAnimateSprite(Entity* entity, unsigned int tick)
 {
+	if (entity == NULL) return;
 	if (entity->components.animated_sprite != NULL)
 	{
 		int frame_count = entity->components.animated_sprite->frame_count;
@@ -90,6 +97,7 @@ void UpdateAnimateSprite(Entity* entity, unsigned int tick)
 
 void UpdateRenderer(void* userdata, Entity* entity)
 {
+	if (entity == NULL) return;
 	PlaydateAPI* api = userdata;
 	LCDSprite* sprite = NULL;
 	LCDBitmap* bitmap = NULL;
@@ -118,6 +126,7 @@ void UpdateRenderer(void* userdata, Entity* entity)
 
 void UpdateInput(void* userdata, Entity* entity)
 {
+	if (entity == NULL) return;
 	PlaydateAPI* api = userdata;
 	if (entity->components.motion != NULL)
 	{
@@ -138,4 +147,5 @@ void UpdateInput(void* userdata, Entity* entity)
 
 void UpdateScale(Entity* entity, float scale)
 {
+	if (entity == NULL) return;
 }
