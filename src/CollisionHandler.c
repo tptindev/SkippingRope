@@ -1,6 +1,7 @@
 #include "CollisionHandler.h"
-
-void MoonCollision(World2D* world, Entity* moon, Entity* other)
+#include "pd_api.h"
+void MoonCollision(void* userdata, World2D* world, Entity* moon, Entity* other)
 {
-	
+	if (userdata == NULL) return;
+	DestroyEntity(userdata, other);
 }

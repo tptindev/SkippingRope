@@ -62,7 +62,6 @@ void game_update(float dt)
 	{ // earth
 		UpdateInput(api, earth);
 		UpdateScale(earth, 1);
-		UpdatePosition(earth, (Vec2) { 0.0f, 0.0f }, dt);
 		UpdateCollider(earth, tree);
 		UpdateSprite(earth, tick);
 	}
@@ -81,7 +80,7 @@ void game_update(float dt)
 		UpdateMovement(enemy, dt);
 		UpdateAnimateSprite(enemy, tick);
 	}
-	UpdateCollision(world, moon, tree, MoonCollision);
+	UpdateCollision(api, world, moon, tree, MoonCollision);
 }
 
 void game_draw()
@@ -97,9 +96,9 @@ void game_draw()
 
 void game_destroy()
 {
-	FreeEntity(earth);
-	FreeEntity(moon);
-	FreeEntity(enemy);
+	FreeEntity(api, earth);
+	FreeEntity(api, moon);
+	FreeEntity(api, enemy);
 	FreeQuadTree(tree);
 	DestroyWorld(world);
 }

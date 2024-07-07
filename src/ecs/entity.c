@@ -3,15 +3,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "pd_api.h"
-
+#include "../Utils.h"
 Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 {
 	if (world == NULL) return NULL;
 	if (world->objId.last > world->objId.max) { return NULL; }
-	Entity* entity = (Entity*)malloc(sizeof(Entity));
+	Entity* entity = malloc(sizeof(Entity));
 	if (entity != NULL) {
 		entity->id = world->objId.last++;
-		entity->components.transform = (Transform*)malloc(sizeof(Transform));
+		entity->components.transform = malloc(sizeof(Transform));
 		if (entity->components.transform != NULL)
 		{
 			// Position
@@ -27,7 +27,7 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 			entity->components.transform->scale.y = scale.y;
 		}
 
-		entity->components.motion = (Motion*)malloc(sizeof(Motion));
+		entity->components.motion = malloc(sizeof(Motion));
 		if (entity->components.motion != NULL)
 		{
 			entity->components.motion->acceleration.x = 0.0f;
@@ -48,13 +48,14 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 	return entity;
 }
 
-void DestroyEntity(Entity* entity)
+void DestroyEntity(void *userdata, Entity* entity)
 {
-	FreeEntity(entity);
+	FreeEntity(userdata, entity);
 }
 
-void FreeEntity(Entity* entity)
+void FreeEntity(void *api, Entity* entity)
 {
+	if (entity == NULL || api == NULL) return;
 	if (entity->components.transform != NULL) FreeComponent(entity->components.transform);
 	if (entity->components.collider != NULL)
 	{
@@ -64,29 +65,32 @@ void FreeEntity(Entity* entity)
 	if (entity->components.input != NULL) FreeComponent(entity->components.input);
 	if (entity->components.sprite != NULL)
 	{
-		free(entity->components.sprite->bitmap);
-		free(entity->components.sprite->_ptr);
+		freeBitmap(api, entity->components.sprite->bitmap);
+		freeSprite(api, entity->components.sprite->_ptr);
 		FreeComponent(entity->components.sprite);
 	}
 	if (entity->components.animated_sprite != NULL)
 	{
-		free(entity->components.animated_sprite->bitmaps);
-		free(entity->components.animated_sprite->_ptr);
+		freeSprite(api, entity->components.animated_sprite->_ptr);
+		for (int i = 0; i < entity->components.animated_sprite->frame_count; i++)
+		{
+			freeBitmap(api, entity->components.animated_sprite->bitmaps[i]);
+		}
+		freeObjPtr(entity->components.animated_sprite->bitmaps);
 		FreeComponent(entity->components.animated_sprite);
 	}
-	free(entity);
+	freeObjPtr(entity);
 }
 
 void FreeComponent(void* ptr)
 {
-	free(ptr);
-	ptr = NULL;
+	freeObjPtr(ptr);
 }
 
 void AddAnimatedSpriteComponent(void* userdata, Entity* entity, const char* source, int frame_width, int frame_height, int frame_count, int16_t z_order)
 {
 	PlaydateAPI* api = userdata;
-	entity->components.animated_sprite = (AnimatedSprite*)malloc(sizeof(AnimatedSprite));
+	entity->components.animated_sprite = malloc(sizeof(AnimatedSprite));
 	if (entity->components.animated_sprite != NULL && entity->components.transform != NULL)
 	{
 		entity->components.animated_sprite->source = source;
@@ -125,13 +129,17 @@ void AddAnimatedSpriteComponent(void* userdata, Entity* entity, const char* sour
 		{
 			entity->components.animated_sprite->_ptr = sprite_ptr;
 		}
+		else
+		{
+			api->sprite->freeSprite(sprite_ptr);
+		}
 	}
 }
 
 void AddSpriteComponent(void* userdata, Entity* entity, const char* source, bool flip, int16_t z_order)
 {
 	PlaydateAPI* api = userdata;
-	entity->components.sprite = (Sprite*)malloc(sizeof(Sprite));
+	entity->components.sprite = malloc(sizeof(Sprite));
 	if (entity->components.sprite != NULL && entity->components.transform != NULL)
 	{
 		entity->components.sprite->source = source;
@@ -161,12 +169,16 @@ void AddSpriteComponent(void* userdata, Entity* entity, const char* source, bool
 				entity->components.transform->position.y * 80.0f
 			);
 		}
+		else
+		{
+			api->sprite->freeSprite(sprite_ptr);
+		}
 	}
 }
 
 void AddKeyInputComponent(void* userdata, Entity* entity, bool left, bool right, bool up, bool down, bool a, bool b, bool crank)
 {
-	entity->components.input = (KeyInput*)malloc(sizeof(KeyInput));
+	entity->components.input = malloc(sizeof(KeyInput));
 	if (entity->components.input != NULL)
 	{
 		entity->components.input->left = left;
@@ -182,7 +194,7 @@ void AddKeyInputComponent(void* userdata, Entity* entity, bool left, bool right,
 void AddCircleColliderComponent(void* userdata, struct QuadTree* tree, Entity* entity, Vec2 offset, float radius)
 {
 	PlaydateAPI* api = userdata;
-	entity->components.collider = (Collider*)malloc(sizeof(Collider));
+	entity->components.collider = malloc(sizeof(Collider));
 	if (entity->components.collider != NULL && entity->components.transform != NULL)
 	{
 		entity->components.collider->offset.x = offset.x;

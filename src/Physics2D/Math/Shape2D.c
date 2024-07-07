@@ -54,6 +54,7 @@ Capsule *CreateCapsule(Vec2 center, float height, float radius)
 
 void FreeShape(void* ptr)
 {
+    if (ptr == NULL) return;
     free(ptr);
     ptr = NULL;
 }

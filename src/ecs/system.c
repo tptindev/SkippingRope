@@ -22,13 +22,13 @@ void UpdateMovement(Entity* entity, float dt)
 	}
 }
 
-void UpdatePosition(Entity* entity, Vec2 to, float dt)
+void UpdatePosition(Entity* entity, Vec2 buffer, float dt)
 {
 	if (entity == NULL) return;
 	if (entity->components.transform != NULL)
 	{
-		entity->components.transform->position.x += to.x;
-		entity->components.transform->position.y += to.y;
+		entity->components.transform->position.x += buffer.x;
+		entity->components.transform->position.y += buffer.y;
 	}
 }
 
@@ -50,9 +50,9 @@ void UpdateCollider(Entity* entity, struct QuadTree* tree)
 	}
 }
 
-void UpdateCollision(World2D* world, Entity* entity, struct QuadTree* tree, void (*callback)(World2D* world, Entity* a, Entity* b))
+void UpdateCollision(void* userdata, World2D* world, Entity* entity, struct QuadTree* tree, void (*callback)(void *api, World2D* world, Entity* a, Entity* b))
 {
-	if (entity == NULL) return;
+	if (entity == NULL || userdata == NULL) return;
 	Array1D* nodes = CreateArray1D();
 	QuadTreeSearch(tree, nodes, &entity->components.collider->shape.box);
 	Circle* c0 = entity->components.collider->shape.define;
@@ -63,14 +63,15 @@ void UpdateCollision(World2D* world, Entity* entity, struct QuadTree* tree, void
 		for (int j = 0; j < _node->objects->size; ++j)
 		{
 			Entity* other = Array1DItemAtIndex(_objs, j);
+			if (other == NULL) continue;
 			if (entity->id != other->id)
 			{
 				Circle* cx = other->components.collider->shape.define;
 
 				bool collided = IsCollisionCircle(c0, cx);
-				if (collided)
+				if (collided == true)
 				{
-					callback(world, entity, other);
+					callback(userdata, world, entity, other);
 				}
 			}
 		}
@@ -97,7 +98,7 @@ void UpdateAnimateSprite(Entity* entity, unsigned int tick)
 
 void UpdateRenderer(void* userdata, Entity* entity)
 {
-	if (entity == NULL) return;
+	if (entity == NULL || userdata == NULL) return;
 	PlaydateAPI* api = userdata;
 	LCDSprite* sprite = NULL;
 	LCDBitmap* bitmap = NULL;
@@ -126,7 +127,7 @@ void UpdateRenderer(void* userdata, Entity* entity)
 
 void UpdateInput(void* userdata, Entity* entity)
 {
-	if (entity == NULL) return;
+	if (entity == NULL || userdata == NULL) return;
 	PlaydateAPI* api = userdata;
 	if (entity->components.motion != NULL)
 	{

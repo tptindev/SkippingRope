@@ -12,8 +12,8 @@ typedef struct entity {
 } Entity;
 
 Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale);
-void DestroyEntity(Entity* entity);
-void FreeEntity(Entity* entity);
+void DestroyEntity(void *userdata, Entity* entity);
+void FreeEntity(void *api, Entity* entity);
 void FreeComponent(void* ptr);
 
 void AddAnimatedSpriteComponent(void* userdata, Entity* entity, const char* source, int frame_width, int frame_height, int frame_count, int16_t z_order);
