@@ -10,9 +10,10 @@ void UpdateRotation(Entity* entity, float angle);
 void UpdateMovement(Entity* entity, float dt);
 void UpdatePosition(Entity* entity, Vec2 buffer, float dt);
 void UpdateCollider(Entity* entity, struct QuadTree* tree);
-void UpdateCollision(void* userdata, World2D* world, Entity* entity, struct QuadTree* tree, void (*callback)(void* api, World2D *world, Entity* a, Entity* b));
+void UpdateCollision(Entity* entity, struct QuadTree* tree, void (*callback)(Entity* a, Entity* b));
 void UpdateSprite(Entity* entity, unsigned int tick);
 void UpdateAnimateSprite(Entity* entity, unsigned int tick);
+void UpdateHealth(void* userdata, Entity* entity);
 void UpdateRenderer(void* userdata, Entity* entity);
 void UpdateInput(void* userdata, Entity* entity);
 

@@ -44,6 +44,7 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 		entity->components.input = NULL;
 		entity->components.sprite = NULL;
 		entity->components.animated_sprite = NULL;
+		entity->components.health = NULL;
 	}
 	return entity;
 }
@@ -56,18 +57,19 @@ void DestroyEntity(void *userdata, Entity* entity)
 void FreeEntity(void *api, Entity* entity)
 {
 	if (entity == NULL || api == NULL) return;
-	if (entity->components.transform != NULL) FreeComponent(entity->components.transform);
+	if (entity->components.transform != NULL) freeObjPtr(entity->components.transform);
+	if (entity->components.motion != NULL) freeObjPtr(entity->components.motion);
 	if (entity->components.collider != NULL)
 	{
-		FreeShape(entity->components.collider->shape.define);
-		FreeComponent(entity->components.collider);
+		freeObjPtr(entity->components.collider->shape.define);
+		freeObjPtr(entity->components.collider);
 	}
-	if (entity->components.input != NULL) FreeComponent(entity->components.input);
+	if (entity->components.input != NULL) freeObjPtr(entity->components.input);
 	if (entity->components.sprite != NULL)
 	{
 		freeBitmap(api, entity->components.sprite->bitmap);
 		freeSprite(api, entity->components.sprite->_ptr);
-		FreeComponent(entity->components.sprite);
+		freeObjPtr(entity->components.sprite);
 	}
 	if (entity->components.animated_sprite != NULL)
 	{
@@ -77,9 +79,14 @@ void FreeEntity(void *api, Entity* entity)
 			freeBitmap(api, entity->components.animated_sprite->bitmaps[i]);
 		}
 		freeObjPtr(entity->components.animated_sprite->bitmaps);
-		FreeComponent(entity->components.animated_sprite);
+		freeObjPtr(entity->components.animated_sprite);
+	}
+	if (entity->components.health != NULL)
+	{
+		freeObjPtr(entity->components.health);
 	}
 	freeObjPtr(entity);
+	entity = NULL;
 }
 
 void FreeComponent(void* ptr)
@@ -206,6 +213,16 @@ void AddCircleColliderComponent(void* userdata, struct QuadTree* tree, Entity* e
 		);
 		GetCircleBoundary(&entity->components.collider->shape.box, entity->components.collider->shape.define);
 		QuadtreeInsert(tree, entity, &entity->components.collider->shape.box);
+	}
+}
+
+void AddHealthComponent(void* userdata, Entity* entity, float max)
+{
+	entity->components.health = malloc(sizeof(Health));
+	if (entity->components.health != NULL)
+	{
+		entity->components.health->current = max;
+		entity->components.health->max = max;
 	}
 }
 

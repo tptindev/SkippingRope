@@ -13,6 +13,15 @@ inline void freeObjPtr(void* ptr)
 	}
 }
 
+inline void freeAndNullify(void** ptr)
+{
+	if (ptr != NULL && *ptr != NULL)
+	{
+		free(*ptr);
+		*ptr = NULL;
+	}
+}
+
 inline void freeBitmap(void* userdata, void* bitmap)
 {
 	PlaydateAPI* api = userdata;

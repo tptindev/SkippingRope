@@ -20,4 +20,5 @@ void AddAnimatedSpriteComponent(void* userdata, Entity* entity, const char* sour
 void AddSpriteComponent(void* userdata, Entity* entity, const char* source, bool flip, int16_t z_order);
 void AddKeyInputComponent(void* userdata, Entity* entity, bool left, bool right, bool up, bool down, bool a, bool b, bool crank);
 void AddCircleColliderComponent(void* userdata, struct QuadTree* tree, Entity* entity, Vec2 offset, float radius);
+void AddHealthComponent(void* userdata, Entity* entity, float max);
 #endif // __ENTITY_H__

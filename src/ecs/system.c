@@ -50,9 +50,9 @@ void UpdateCollider(Entity* entity, struct QuadTree* tree)
 	}
 }
 
-void UpdateCollision(void* userdata, World2D* world, Entity* entity, struct QuadTree* tree, void (*callback)(void *api, World2D* world, Entity* a, Entity* b))
+void UpdateCollision(Entity* entity, struct QuadTree* tree, void (*callback)(Entity* a, Entity* b))
 {
-	if (entity == NULL || userdata == NULL) return;
+	if (entity == NULL) return;
 	Array1D* nodes = CreateArray1D();
 	QuadTreeSearch(tree, nodes, &entity->components.collider->shape.box);
 	Circle* c0 = entity->components.collider->shape.define;
@@ -71,7 +71,7 @@ void UpdateCollision(void* userdata, World2D* world, Entity* entity, struct Quad
 				bool collided = IsCollisionCircle(c0, cx);
 				if (collided == true)
 				{
-					callback(userdata, world, entity, other);
+					callback(entity, other);
 				}
 			}
 		}
@@ -93,6 +93,20 @@ void UpdateAnimateSprite(Entity* entity, unsigned int tick)
 	{
 		int frame_count = entity->components.animated_sprite->frame_count;
 		entity->components.animated_sprite->frame_index = (tick % frame_count);
+	}
+}
+
+void UpdateHealth(void* userdata, Entity* entity)
+{
+
+	if (entity == NULL || userdata == NULL) return;
+	PlaydateAPI* api = userdata;
+	if (entity->components.health != NULL)
+	{
+		if (entity->components.health->current <= 0)
+		{
+			FreeEntity(userdata, entity);
+		}
 	}
 }
 

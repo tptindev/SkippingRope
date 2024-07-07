@@ -65,12 +65,18 @@ typedef struct {
 } Collider;
 
 typedef struct {
+	float current;
+	float max;
+} Health;
+
+typedef struct {
 	Transform* transform;
 	KeyInput* input;
 	Collider* collider;
 	Motion* motion;
 	Sprite* sprite;
 	AnimatedSprite* animated_sprite;
+	Health* health;
 } Components;
 
 #endif // __COMPONENT_H__

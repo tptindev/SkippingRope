@@ -27,6 +27,7 @@ void game_initialize(void* userdata)
 		{
 			AddSpriteComponent(api, earth, "images/earth", false, 1);
 			AddCircleColliderComponent(api, tree, earth, (Vec2) { 0.0f, 0.0f }, 0.3f);
+			AddHealthComponent(api, earth, 100);
 		}
 	}
 
@@ -37,7 +38,9 @@ void game_initialize(void* userdata)
 			AddKeyInputComponent(api, moon, false, false, false, false, false, false, true);
 			AddSpriteComponent(api, moon, "images/moon", false, 1);
 			AddCircleColliderComponent(api, tree, moon, (Vec2) { 0.0f, 0.0f }, 0.15f);
+			AddHealthComponent(api, moon, 40);
 		}
+		api->system->logToConsole("moon %p", moon);
 	}
 
 	{ // enemy
@@ -51,7 +54,9 @@ void game_initialize(void* userdata)
 			}
 			AddAnimatedSpriteComponent(api, enemy, "images/enemy", 12, 12, 4, 1);
 			AddCircleColliderComponent(api, tree, enemy, (Vec2) { 0.0f, 0.0f }, (float)(4.0f/80.0f));
+			AddHealthComponent(api, enemy, 10);
 		}
+		api->system->logToConsole("enemy %p", enemy);
 	}
 }
 
@@ -80,7 +85,11 @@ void game_update(float dt)
 		UpdateMovement(enemy, dt);
 		UpdateAnimateSprite(enemy, tick);
 	}
-	UpdateCollision(api, world, moon, tree, MoonCollision);
+	UpdateCollision(moon, tree, MoonCollision);
+	UpdateHealth(api, earth);
+	UpdateHealth(api, moon);
+	UpdateHealth(api, enemy);
+
 }
 
 void game_draw()
@@ -91,7 +100,7 @@ void game_draw()
 	UpdateRenderer(api, earth);
 	UpdateRenderer(api, moon);
 	UpdateRenderer(api, enemy);
-	api->sprite->updateAndDrawSprites();
+	api->sprite->drawSprites();
 }
 
 void game_destroy()
