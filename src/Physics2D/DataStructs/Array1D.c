@@ -1,6 +1,7 @@
 #include "Array1D.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 Array1D *CreateArray1D()
 {
@@ -71,7 +72,7 @@ void Array1DClear(Array1D* arr)
 {
     if (arr != NULL)
     {
-        memset(arr, NULL, arr->capacity * 8 /*bytes*/);
+        memset(arr, 0, arr->capacity * 8 /*bytes*/);
         arr->size = 0;
     }
 }

@@ -103,9 +103,9 @@ void UpdateHealth(void* userdata, Entity* entity)
 	PlaydateAPI* api = userdata;
 	if (entity->components.health != NULL)
 	{
-		if (entity->components.health->current <= 0)
+		if (entity->components.health->current <= 0.0f)
 		{
-			FreeEntity(userdata, entity);
+			DestroyEntity(userdata, entity);
 		}
 	}
 }

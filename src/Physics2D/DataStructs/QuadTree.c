@@ -105,9 +105,9 @@ void QuadTreePrint(struct QuadTree*node)
     {
         QuadTreePrint(node->nodes[i]);
     }
-    char buffer[250];
-    sprintf(buffer, "Node %p, (%f %f %f %f), count: %llu\n", node, node->rect.x, node->rect.y, node->rect.width, node->rect.height, node->objects->size);
-    printf(buffer);
+    //char buffer[250];
+    //sprintf(buffer, "Node %p, (%f %f %f %f), count: %llu\n", node, node->rect.x, node->rect.y, node->rect.width, node->rect.height, node->objects->size);
+    //printf(buffer);
 }
 
 void QuadTreeSearch(struct QuadTree* node, Array1D *outs, const Rect2D *objBoundary)
