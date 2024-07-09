@@ -75,11 +75,17 @@ void FreeEntity(void *api, Entity** entity)
 	if ((*entity)->components.animated_sprite != NULL)
 	{
 		freeSprite(api, (*entity)->components.animated_sprite->_ptr);
-		for (int i = 0; i < (*entity)->components.animated_sprite->frame_count; i++)
+		void** bitmaps = (*entity)->components.animated_sprite->bitmaps;
+		if (bitmaps != NULL)
 		{
-			freeBitmap(api, (*entity)->components.animated_sprite->bitmaps[i]);
+			for (int i = 0; i < (*entity)->components.animated_sprite->frame_count; i++)
+			{
+				freeBitmap(api, (*entity)->components.animated_sprite->bitmaps[i]);
+			}
+			
+			free(bitmaps);
+			bitmaps = NULL;
 		}
-		freeObjPtr(&(*entity)->components.animated_sprite->bitmaps);
 		freeObjPtr(&(*entity)->components.animated_sprite);
 	}
 	if ((*entity)->components.health != NULL)
@@ -113,7 +119,7 @@ void AddAnimatedSpriteComponent(void* userdata, Entity* entity, const char* sour
 				snprintf(path_buffer, sizeof(path_buffer), "%s/%d.png", source, i);
 
 				const char* outerr = NULL;
-				bitmaps[i] = api->graphics->loadBitmap(path_buffer, outerr); // bitmaps[i] <=> *(bitmaps + i)
+				bitmaps[i] = api->graphics->loadBitmap(path_buffer, &outerr); // bitmaps[i] <=> *(bitmaps + i)
 
 				if (outerr != NULL)
 				{
