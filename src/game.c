@@ -6,6 +6,7 @@
 #include "ecs/component.h"
 #include "ecs/system.h"
 #include "CollisionHandler.h"
+#include "HealthHandler.h"
 
 float world_scale = 80.0f;
 static PlaydateAPI* api = NULL;
@@ -85,11 +86,11 @@ void game_update(float dt)
 		UpdateMovement(enemy, dt);
 		UpdateAnimateSprite(enemy, tick);
 	}
+	UpdateCollision(earth, tree, EarthCollision);
 	UpdateCollision(moon, tree, MoonCollision);
-	UpdateHealth(api, earth);
-	UpdateHealth(api, moon);
-	UpdateHealth(api, enemy);
-
+	UpdateHealth(api, &earth, EarthHealth);
+	UpdateHealth(api, &moon, MoonHealth);
+	UpdateHealth(api, &enemy, EnemyHealth);
 }
 
 void game_draw()
@@ -105,9 +106,9 @@ void game_draw()
 
 void game_destroy()
 {
-	FreeEntity(api, earth);
-	FreeEntity(api, moon);
-	FreeEntity(api, enemy);
+	FreeEntity(api, &earth);
+	FreeEntity(api, &moon);
+	FreeEntity(api, &enemy);
 	FreeQuadTree(tree);
 	DestroyWorld(world);
 }

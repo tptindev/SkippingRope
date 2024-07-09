@@ -49,48 +49,38 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 	return entity;
 }
 
-void DestroyEntity(void *userdata, Entity* entity)
+void FreeEntity(void *api, Entity** entity)
 {
-	FreeEntity(userdata, entity);
-}
-
-void FreeEntity(void *api, Entity* entity)
-{
-	if (entity == NULL || api == NULL) return;
-	if (entity->components.transform != NULL) freeObjPtr(entity->components.transform);
-	if (entity->components.motion != NULL) freeObjPtr(entity->components.motion);
-	if (entity->components.collider != NULL)
+	if (entity == NULL || *entity == NULL || api == NULL) return;
+	if ((*entity)->components.transform != NULL) freeObjPtr(&(*entity)->components.transform);
+	if ((*entity)->components.motion != NULL) freeObjPtr(&(*entity)->components.motion);
+	if ((*entity)->components.collider != NULL)
 	{
-		freeObjPtr(entity->components.collider->shape.define);
-		freeObjPtr(entity->components.collider);
+		freeObjPtr(&(*entity)->components.collider->shape.define);
+		freeObjPtr(&(*entity)->components.collider);
 	}
-	if (entity->components.input != NULL) freeObjPtr(entity->components.input);
-	if (entity->components.sprite != NULL)
+	if ((*entity)->components.input != NULL) freeObjPtr(&(*entity)->components.input);
+	if ((*entity)->components.sprite != NULL)
 	{
-		freeSprite(api, entity->components.sprite->_ptr);
-		freeBitmap(api, entity->components.sprite->bitmap);
-		freeObjPtr(entity->components.sprite);
+		freeSprite(api, (*entity)->components.sprite->_ptr);
+		freeBitmap(api, (*entity)->components.sprite->bitmap);
+		freeObjPtr(&(*entity)->components.sprite);
 	}
-	if (entity->components.animated_sprite != NULL)
+	if ((*entity)->components.animated_sprite != NULL)
 	{
-		freeSprite(api, entity->components.animated_sprite->_ptr);
-		for (int i = 0; i < entity->components.animated_sprite->frame_count; i++)
+		freeSprite(api, (*entity)->components.animated_sprite->_ptr);
+		for (int i = 0; i < (*entity)->components.animated_sprite->frame_count; i++)
 		{
-			freeBitmap(api, entity->components.animated_sprite->bitmaps[i]);
+			freeBitmap(api, (*entity)->components.animated_sprite->bitmaps[i]);
 		}
-		freeObjPtr(entity->components.animated_sprite->bitmaps);
-		freeObjPtr(entity->components.animated_sprite);
+		freeObjPtr(&(*entity)->components.animated_sprite->bitmaps);
+		freeObjPtr(&(*entity)->components.animated_sprite);
 	}
-	if (entity->components.health != NULL)
+	if ((*entity)->components.health != NULL)
 	{
-		freeObjPtr(entity->components.health);
+		freeObjPtr(&(*entity)->components.health);
 	}
 	freeObjPtr(entity);
-}
-
-void FreeComponent(void* ptr)
-{
-	freeObjPtr(ptr);
 }
 
 void AddAnimatedSpriteComponent(void* userdata, Entity* entity, const char* source, int frame_width, int frame_height, int frame_count, int16_t z_order)

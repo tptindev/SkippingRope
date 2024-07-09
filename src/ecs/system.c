@@ -96,17 +96,14 @@ void UpdateAnimateSprite(Entity* entity, unsigned int tick)
 	}
 }
 
-void UpdateHealth(void* userdata, Entity* entity)
+void UpdateHealth(void* userdata, Entity** entity, void (*callback)(void* api, Entity** entity, void* health))
 {
 
 	if (entity == NULL || userdata == NULL) return;
-	PlaydateAPI* api = userdata;
-	if (entity->components.health != NULL)
+	if (*entity == NULL) return;
+	if ((*entity)->components.health != NULL && callback != NULL)
 	{
-		if (entity->components.health->current <= 0.0f)
-		{
-			DestroyEntity(userdata, entity);
-		}
+		callback(userdata, entity, (*entity)->components.health);
 	}
 }
 
