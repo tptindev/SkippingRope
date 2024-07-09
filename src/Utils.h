@@ -14,7 +14,6 @@ inline void freeObjPtr(void** ptr)
 			*ptr = NULL;
 		}
 	}
-	return;
 }
 
 inline void freeBitmap(void* userdata, void* bitmap)

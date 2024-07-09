@@ -49,6 +49,12 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 	return entity;
 }
 
+void DestroyEntity(void* api, Entity** entity, World2D* world)
+{
+	FreeEntity(api, entity);
+	world->objId.max++;
+}
+
 void FreeEntity(void *api, Entity** entity)
 {
 	if (entity == NULL || *entity == NULL || api == NULL) return;

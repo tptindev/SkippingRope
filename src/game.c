@@ -88,9 +88,9 @@ void game_update(float dt)
 	}
 	UpdateCollision(earth, tree, EarthCollision);
 	UpdateCollision(moon, tree, MoonCollision);
-	UpdateHealth(api, &earth, EarthHealth);
-	UpdateHealth(api, &moon, MoonHealth);
-	UpdateHealth(api, &enemy, EnemyHealth);
+	UpdateHealth(api, world, &earth, EarthHealth);
+	UpdateHealth(api, world, &moon, MoonHealth);
+	UpdateHealth(api, world, &enemy, EnemyHealth);
 }
 
 void game_draw()

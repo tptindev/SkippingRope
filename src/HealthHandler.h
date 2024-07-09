@@ -1,4 +1,6 @@
 #include "ecs/entity.h"
-void EarthHealth(void* userdata, Entity** earth, void* heath);
-void MoonHealth(void* userdata, Entity** moon, void* heath);
-void EnemyHealth(void* userdata, Entity** enemy, void* heath);
+#include "Physics2D/World2D.h"
+
+void EarthHealth(void* userdata, World2D* world, Entity** earth, void* heath);
+void MoonHealth(void* userdata, World2D* world, Entity** moon, void* heath);
+void EnemyHealth(void* userdata, World2D* world, Entity** enemy, void* heath);

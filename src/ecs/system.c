@@ -96,14 +96,14 @@ void UpdateAnimateSprite(Entity* entity, unsigned int tick)
 	}
 }
 
-void UpdateHealth(void* userdata, Entity** entity, void (*callback)(void* api, Entity** entity, void* health))
+void UpdateHealth(void* userdata, World2D* world, Entity** entity, void (*callback)(void* api, World2D* world, Entity** entity, void* health))
 {
 
 	if (entity == NULL || userdata == NULL) return;
 	if (*entity == NULL) return;
 	if ((*entity)->components.health != NULL && callback != NULL)
 	{
-		callback(userdata, entity, (*entity)->components.health);
+		callback(userdata, world, entity, (*entity)->components.health);
 	}
 }
 
