@@ -33,3 +33,8 @@ void AddParticle(Emitter* emitter, void* particle)
 {
     Array1DPush(emitter->particles, particle);
 }
+
+void UpdateEmitter(Emitter* emitter, float dt)
+{
+    emitter->life_span -= dt;
+}

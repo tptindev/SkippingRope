@@ -124,8 +124,7 @@ void AddAnimatedSpriteComponent(void* userdata, Entity* entity, const char* sour
 				if (outerr != NULL)
 				{
 					api->system->logToConsole("Error: %s", outerr);
-					api->graphics->freeBitmap(bitmaps[i]);
-					bitmaps = NULL;
+					freeBitmap(api, bitmaps[i]);
 					return;
 				}
 			}
@@ -139,7 +138,7 @@ void AddAnimatedSpriteComponent(void* userdata, Entity* entity, const char* sour
 		}
 		else
 		{
-			api->sprite->freeSprite(sprite_ptr);
+			freeSprite(api, sprite_ptr);
 		}
 	}
 }

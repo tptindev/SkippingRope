@@ -9,11 +9,12 @@ typedef struct
     Vec2 acceleration;
     Vec2 velocity;
     float rate;
-    int life_span;
+    int life_span; // ms 
     Array1D *particles; // list of particle
 } Emitter;
 
 Emitter* CreateEmitter(Vec2 a, Vec2 v, float rate, int life_span);
 void FreeEmitter(Emitter* emitter);
 void AddParticle(Emitter* emitter, void* particle);
+void UpdateEmitter(Emitter* emitter, float dt);
 #endif // __EMITTER_H__
