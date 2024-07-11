@@ -4,7 +4,7 @@
 
 static unsigned int last_time;
 static unsigned int current_time;
-static int update(void* userdata);
+static int update(void* pd_ptr);
 
 #ifdef _WINDLL
 __declspec(dllexport)
@@ -25,9 +25,9 @@ int eventHandler(PlaydateAPI* pd, PDSystemEvent event, uint32_t arg)
 }
 
 
-static int update(void* userdata)
+static int update(void* pd_ptr)
 {
-	PlaydateAPI* api = userdata;
+	PlaydateAPI* api = pd_ptr;
 	current_time = api->system->getCurrentTimeMilliseconds();
 	float dt = (float)(current_time - last_time)/1000.0f;
 	game_update(dt);

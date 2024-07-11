@@ -13,16 +13,16 @@ inline void freeObjPtr(void* ptr)
 	}
 }
 
-inline void freeBitmap(void* userdata, void* bitmap)
+inline void freeBitmap(void* pd_ptr, void* bitmap)
 {
-	PlaydateAPI* api = userdata;
+	PlaydateAPI* api = pd_ptr;
 	api->graphics->freeBitmap(bitmap);
 	bitmap = NULL;
 }
 
-inline void freeSprite(void* userdata, void* sprite)
+inline void freeSprite(void* pd_ptr, void* sprite)
 {
-	PlaydateAPI* api = userdata;
+	PlaydateAPI* api = pd_ptr;
 	api->sprite->freeSprite(sprite);
 	sprite = NULL;
 }

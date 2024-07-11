@@ -14,8 +14,8 @@ void UpdateCollider(Entity* entity, struct QuadTree* tree);
 void UpdateCollision(Entity* entity, struct QuadTree* tree, void (*callback)(Entity* a, Entity* b));
 void UpdateSprite(Entity* entity, unsigned int tick);
 void UpdateAnimateSprite(Entity* entity, unsigned int tick);
-void UpdateHealth(void* userdata, World2D* world, Entity** entity, void (*callback)(void* api, World2D* world, Entity** entity, void* health));
-void UpdateRenderer(void* userdata, Entity* entity);
-void UpdateInput(void* userdata, Entity* entity);
+void UpdateHealth(void* pd_ptr, World2D* world, Entity** entity, void (*callback)(void* api, World2D* world, Entity** entity, void* health));
+void UpdateRenderer(void* pd_ptr, Entity* entity);
+void UpdateInput(void* pd_ptr, Entity* entity);
 
 #endif // __SYSTEM_H__
