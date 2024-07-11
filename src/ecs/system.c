@@ -8,6 +8,7 @@ void UpdateRotation(Entity* entity)
 	if (entity == NULL) return;
     if (entity->components.transform != NULL && entity->components.motion != NULL)
     {
+        if (entity->components.transform->rotation.x == 0.0f && entity->components.transform->rotation.y == 0.0f) return;
         entity->components.transform->position.x = entity->components.motion->direction.x + entity->components.transform->rotation.x;
         entity->components.transform->position.y = entity->components.motion->direction.y + entity->components.transform->rotation.y;
     }
@@ -18,12 +19,15 @@ void UpdateMovement(Entity* entity, float dt)
 	if (entity == NULL) return;
 	if (entity->components.transform != NULL && entity->components.motion != NULL)
 	{
-		entity->components.motion->acceleration.x += 0.1f;
-		entity->components.motion->acceleration.y += 0.1f;
+        if (entity->components.motion->acceleration.x != 0.0f || entity->components.motion->acceleration.y != 0.0f)
+        {
+            entity->components.motion->acceleration.x += 0.1f;
+            entity->components.motion->acceleration.y += 0.1f;
 
-		Vec2 velocity = Vec2Subtract(entity->components.transform->position, entity->components.motion->last_position);
-		entity->components.transform->position.x += velocity.x + (entity->components.motion->direction.x * entity->components.motion->acceleration.x) * dt * dt;
-		entity->components.transform->position.y += velocity.y + (entity->components.motion->direction.y * entity->components.motion->acceleration.y) * dt * dt;
+            Vec2 velocity = Vec2Subtract(entity->components.transform->position, entity->components.motion->last_position);
+            entity->components.transform->position.x += velocity.x + (entity->components.motion->direction.x * entity->components.motion->acceleration.x) * dt * dt;
+            entity->components.transform->position.y += velocity.y + (entity->components.motion->direction.y * entity->components.motion->acceleration.y) * dt * dt;
+        }
 	}
 }
 
@@ -57,7 +61,7 @@ void UpdateCollider(Entity* entity, struct QuadTree* tree)
 
 void UpdateCollision(Entity* entity, struct QuadTree* tree, void (*callback)(Entity* a, Entity* b))
 {
-	if (entity == NULL) return;
+    if (entity == NULL || callback == NULL) return;
 	Array1D* nodes = CreateArray1D();
 	QuadTreeSearch(tree, nodes, &entity->components.collider->shape.box);
 	Circle* c0 = entity->components.collider->shape.define;

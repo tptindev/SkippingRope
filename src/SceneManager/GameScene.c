@@ -46,7 +46,7 @@ void GameSceneInit(void* api, Scene *scene)
         enemy = CreateEntity(scene->world, (Vec2) { 0.0f, 0.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
         if (enemy != NULL)
         {
-            SceneAddGameObject(scene, earth);
+            SceneAddGameObject(scene, enemy);
             // Add components
             if (earth != NULL)
             {
@@ -73,8 +73,10 @@ void GameSceneUpdate(void* api, Scene *scene, float dt)
         UpdateInput(api, entity);
         UpdateScale(entity, 1);
         UpdateRotation(entity);
+        UpdateMovement(entity, dt);
         UpdateCollider(entity, tree);
         UpdateSprite(entity, tick);
+        UpdateAnimateSprite(entity, tick);
     }
     for (size_t i = 0; i < scene->entites->size; i++)
     {
@@ -95,6 +97,6 @@ void GameSceneRender(void* api, Scene *scene)
     for (size_t i = 0; i < scene->entites->size; i++)
     {
         entity = Array1DItemAtIndex(scene->entites, i);
-        UpdateRenderer(((PlaydateAPI*)api), entity);
+        UpdateRenderer(api, entity);
     }
 }
