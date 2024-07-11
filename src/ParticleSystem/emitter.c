@@ -36,5 +36,4 @@ void AddParticle(Emitter* emitter, void* particle)
 
 void UpdateEmitter(Emitter* emitter, float dt)
 {
-    emitter->life_span -= dt;
 }

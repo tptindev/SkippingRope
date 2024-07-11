@@ -57,20 +57,20 @@ void DestroyEntity(void* api, Entity** entity, World2D* world)
 
 void FreeEntity(void *api, Entity** entity)
 {
-	if (entity == NULL || *entity == NULL || api == NULL) return;
-	if ((*entity)->components.transform != NULL) freeObjPtr(&(*entity)->components.transform);
-	if ((*entity)->components.motion != NULL) freeObjPtr(&(*entity)->components.motion);
+    if (entity == NULL || *entity == NULL || api == NULL) return;
+    if ((*entity)->components.transform != NULL) freeObjPtr((void**)&(*entity)->components.transform);
+    if ((*entity)->components.motion != NULL) freeObjPtr((void**)&(*entity)->components.motion);
 	if ((*entity)->components.collider != NULL)
 	{
-		freeObjPtr(&(*entity)->components.collider->shape.define);
-		freeObjPtr(&(*entity)->components.collider);
+        freeObjPtr((void**)&(*entity)->components.collider->shape.define);
+        freeObjPtr((void**)&(*entity)->components.collider);
 	}
-	if ((*entity)->components.input != NULL) freeObjPtr(&(*entity)->components.input);
+    if ((*entity)->components.input != NULL) freeObjPtr((void**)&(*entity)->components.input);
 	if ((*entity)->components.sprite != NULL)
 	{
 		freeSprite(api, (*entity)->components.sprite->_ptr);
 		freeBitmap(api, (*entity)->components.sprite->bitmap);
-		freeObjPtr(&(*entity)->components.sprite);
+        freeObjPtr((void**)&(*entity)->components.sprite);
 	}
 	if ((*entity)->components.animated_sprite != NULL)
 	{
@@ -86,13 +86,13 @@ void FreeEntity(void *api, Entity** entity)
 			free(bitmaps);
 			bitmaps = NULL;
 		}
-		freeObjPtr(&(*entity)->components.animated_sprite);
+        freeObjPtr((void**)&(*entity)->components.animated_sprite);
 	}
 	if ((*entity)->components.health != NULL)
 	{
-		freeObjPtr(&(*entity)->components.health);
+        freeObjPtr((void**)&(*entity)->components.health);
 	}
-	freeObjPtr(entity);
+    freeObjPtr((void**)entity);
 }
 
 void AddAnimatedSpriteComponent(void* userdata, Entity* entity, const char* source, int frame_width, int frame_height, int frame_count, int16_t z_order)

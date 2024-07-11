@@ -3,9 +3,14 @@
 #include "../Physics2D/Collision.h"
 #include "pd_api.h"
 
-void UpdateRotation(Entity* entity, float angle)
+void UpdateRotation(Entity* entity)
 {
 	if (entity == NULL) return;
+    if (entity->components.transform != NULL && entity->components.motion != NULL)
+    {
+        entity->components.transform->position.x = entity->components.motion->direction.x + entity->components.transform->rotation.x;
+        entity->components.transform->position.y = entity->components.motion->direction.y + entity->components.transform->rotation.y;
+    }
 }
 
 void UpdateMovement(Entity* entity, float dt)
@@ -145,13 +150,13 @@ void UpdateInput(void* userdata, Entity* entity)
 		entity->components.motion->last_position.x = entity->components.transform->position.x;
 		entity->components.motion->last_position.y = entity->components.transform->position.y;
 	}
-	if (entity->components.input != NULL)
+    if (entity->components.input != NULL && entity->components.transform != NULL)
 	{
 		if (entity->components.input->crank == true && entity->components.transform != NULL) 
 		{
 			double angle_rad = api->system->getCrankAngle() * (3.14159265358979323846f / 180.0f);
-			entity->components.transform->position.x = (float)(0.5f * cos(angle_rad));
-			entity->components.transform->position.y = (float)(0.5f * sin(angle_rad));
+            entity->components.transform->rotation.x = (float)(0.5f * cos(angle_rad));
+            entity->components.transform->rotation.y = (float)(0.5f * sin(angle_rad));
 		} 
 		// ...
 	}

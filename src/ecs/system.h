@@ -7,7 +7,7 @@
 #include "entity.h"
 
 void UpdateScale(Entity* entity, float scale);
-void UpdateRotation(Entity* entity, float angle);
+void UpdateRotation(Entity* entity);
 void UpdateMovement(Entity* entity, float dt);
 void UpdatePosition(Entity* entity, Vec2 buffer, float dt);
 void UpdateCollider(Entity* entity, struct QuadTree* tree);

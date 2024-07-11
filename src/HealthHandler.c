@@ -1,6 +1,5 @@
 #include "HealthHandler.h"
 #include "ecs/component.h"
-#include "pd_api.h"
 void EarthHealth(void* userdata, World2D* world, Entity** earth, void* heath)
 {
     Health* _health = heath;

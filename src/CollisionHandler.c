@@ -1,5 +1,4 @@
 #include "CollisionHandler.h"
-#include "pd_api.h"
 void EarthCollision(Entity* earth, Entity* other)
 {
 	if (earth->components.health != NULL)
