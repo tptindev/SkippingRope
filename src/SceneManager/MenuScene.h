@@ -3,8 +3,9 @@
 
 #include "Scene.h"
 
-void MenuSceneInit(void* api, Scene* scene);
-void MenuSceneUpdate(void* api, Scene* scene, float dt);
-void MenuSceneRender(void* api, Scene* scene);
+void MenuSceneInit(void* pd_ptr, Scene* scene);
+void MenuSceneEvent(void* pd_ptr, Scene* scene, void* manager);
+void MenuSceneUpdate(void* pd_ptr, Scene* scene, float dt);
+void MenuSceneRender(void* pd_ptr, Scene* scene);
 
 #endif // MENUSCENE_H

@@ -1,5 +1,6 @@
 #include "system.h"
 #include "entity.h"
+#include "component.h"
 #include "../Physics2D/Collision.h"
 #include "pd_api.h"
 
@@ -142,27 +143,6 @@ void UpdateRenderer(void* pd_ptr, Entity* entity)
 		api->sprite->setZIndex(sprite, z_order);
 		api->sprite->moveTo(sprite, entity->components.transform->position.x * 80.0f, entity->components.transform->position.y * 80.0f);
 		api->sprite->addSprite(sprite);
-	}
-}
-
-void UpdateInput(void* pd_ptr, Entity* entity)
-{
-    if (entity == NULL || pd_ptr == NULL) return;
-    PlaydateAPI* api = pd_ptr;
-	if (entity->components.motion != NULL)
-	{
-		entity->components.motion->last_position.x = entity->components.transform->position.x;
-		entity->components.motion->last_position.y = entity->components.transform->position.y;
-	}
-    if (entity->components.input != NULL && entity->components.transform != NULL)
-	{
-		if (entity->components.input->crank == true && entity->components.transform != NULL) 
-		{
-			double angle_rad = api->system->getCrankAngle() * (3.14159265358979323846f / 180.0f);
-            entity->components.transform->rotation.x = (float)(0.5f * cos(angle_rad));
-            entity->components.transform->rotation.y = (float)(0.5f * sin(angle_rad));
-		} 
-		// ...
 	}
 }
 

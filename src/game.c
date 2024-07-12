@@ -6,43 +6,12 @@
 #include "SceneManager/Scene.h"
 #include "SceneManager/MenuScene.h"
 #include "SceneManager/GameScene.h"
-
+#include "SceneManager/SceneIDs.h"
 float world_scale = 80.0f;
 static PlaydateAPI* api = NULL;
 static World2D* world = NULL;
 static SceneManager* scene_manager = NULL;
 
-typedef enum
-{
-    MENU,
-    GAME,
-    GAME_OVER,
-} SceneID;
-static int btnCbFn(PDButtons button, int down, uint32_t when, void* userdata)
-{
-    SceneManager* manager = userdata;
-    if (down)
-    {
-        switch (button)
-        {
-        case kButtonB:
-        {
-            if (manager->current_scene->id == MENU)
-            {
-                SceneManagerTransition(manager, GAME);
-            }
-            else
-            {
-                SceneManagerTransition(manager, MENU);
-            }
-            break;
-        }
-        default:
-            break;
-        }
-    }
-    return 0;
-}
 
 void game_initialize(void* pd_ptr)
 {	
@@ -64,27 +33,27 @@ void game_initialize(void* pd_ptr)
     GameSceneInit(api, game_scene);
 
     SceneManagerActiveScene(scene_manager, game_scene);
-
-    api->system->setButtonCallback(btnCbFn, scene_manager, 5);
 }
 
 void game_update(float dt)
 {
     if (scene_manager->current_scene->id == MENU)
     {
+        MenuSceneEvent(api, scene_manager->current_scene, scene_manager);
         MenuSceneUpdate(api, scene_manager->current_scene, dt);
     }
     else if (scene_manager->current_scene->id == GAME)
     {
+        GameSceneEvent(api, scene_manager->current_scene, scene_manager);
         GameSceneUpdate(api, scene_manager->current_scene, dt);
     }
 }
 
 void game_draw()
 {
+    api->sprite->removeAllSprites();
     api->graphics->clear(kColorWhite);
     api->graphics->setBackgroundColor(kColorWhite);
-	api->sprite->removeAllSprites();
     if (scene_manager->current_scene->id == MENU)
     {
         MenuSceneRender(api, scene_manager->current_scene);

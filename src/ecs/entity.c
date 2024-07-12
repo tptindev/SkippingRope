@@ -45,6 +45,7 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 		entity->components.sprite = NULL;
 		entity->components.animated_sprite = NULL;
 		entity->components.health = NULL;
+        entity->components.button = NULL;
 	}
 	return entity;
 }
@@ -91,11 +92,15 @@ void FreeEntity(void *api, Entity** entity)
 	if ((*entity)->components.health != NULL)
 	{
         freeObjPtr((void**)&(*entity)->components.health);
-	}
+    }
+    if ((*entity)->components.button != NULL)
+    {
+        freeObjPtr((void**)&(*entity)->components.button);
+    }
     freeObjPtr((void**)entity);
 }
 
-void AddAnimatedSpriteComponent(void* pd_ptr, Entity* entity, const char* source, int frame_width, int frame_height, int frame_count, int16_t z_order)
+void AddAnimatedSpriteComponent(void* pd_ptr, Entity* entity, const char* source, int frame_width, int frame_height, int frame_count, float offset, int16_t z_order)
 {
     PlaydateAPI* api = pd_ptr;
 	entity->components.animated_sprite = malloc(sizeof(AnimatedSprite));
@@ -121,10 +126,13 @@ void AddAnimatedSpriteComponent(void* pd_ptr, Entity* entity, const char* source
 				const char* outerr = NULL;
 				bitmaps[i] = api->graphics->loadBitmap(path_buffer, &outerr); // bitmaps[i] <=> *(bitmaps + i)
 
-				if (outerr != NULL)
+                if (outerr != NULL)
 				{
 					api->system->logToConsole("Error: %s", outerr);
-					freeBitmap(api, bitmaps[i]);
+                    if (bitmaps[i] != NULL)
+                    {
+                        freeBitmap(api, bitmaps[i]);
+                    }
 					return;
 				}
 			}
@@ -133,7 +141,8 @@ void AddAnimatedSpriteComponent(void* pd_ptr, Entity* entity, const char* source
 		entity->components.animated_sprite->bitmaps = bitmaps;
 		LCDSprite* sprite_ptr = api->sprite->newSprite();
 		if (sprite_ptr != NULL && bitmaps != NULL)
-		{
+        {
+            api->sprite->setCenter(sprite_ptr, offset, offset);
 			entity->components.animated_sprite->_ptr = sprite_ptr;
 		}
 		else
@@ -143,7 +152,7 @@ void AddAnimatedSpriteComponent(void* pd_ptr, Entity* entity, const char* source
 	}
 }
 
-void AddSpriteComponent(void* pd_ptr, Entity* entity, const char* source, bool flip, int16_t z_order)
+void AddSpriteComponent(void* pd_ptr, Entity* entity, const char* source, bool flip, float offset, int16_t z_order)
 {
     PlaydateAPI* api = pd_ptr;
 	entity->components.sprite = malloc(sizeof(Sprite));
@@ -169,7 +178,8 @@ void AddSpriteComponent(void* pd_ptr, Entity* entity, const char* source, bool f
 		{
 			entity->components.sprite->_ptr = sprite_ptr;
 			api->sprite->setImage(sprite_ptr, bitmap_ptr, kBitmapUnflipped);
-			api->sprite->setZIndex(sprite_ptr, z_order);
+            api->sprite->setZIndex(sprite_ptr, z_order);
+            api->sprite->setCenter(sprite_ptr, offset, offset);
 			api->sprite->moveTo(
 				sprite_ptr,
 				entity->components.transform->position.x * 80.0f,
@@ -200,8 +210,7 @@ void AddKeyInputComponent(void* pd_ptr, Entity* entity, bool left, bool right, b
 
 void AddCircleColliderComponent(void* pd_ptr, struct QuadTree* tree, Entity* entity, Vec2 offset, float radius)
 {
-    PlaydateAPI* api = pd_ptr;
-	entity->components.collider = malloc(sizeof(Collider));
+    entity->components.collider = malloc(sizeof(Collider));
 	if (entity->components.collider != NULL && entity->components.transform != NULL)
 	{
 		entity->components.collider->offset.x = offset.x;
@@ -226,3 +235,15 @@ void AddHealthComponent(void* pd_ptr, Entity* entity, float max)
 	}
 }
 
+
+void AddButtonComponent(void *pd_ptr, Entity *entity, BtnStatus status, BtnState state, const char* normal, const char* active)
+{
+    entity->components.button = malloc(sizeof(Button));
+    if (entity->components.button != NULL)
+    {
+        entity->components.button->state = state;
+        entity->components.button->status = status;
+        entity->components.button->active = active;
+        entity->components.button->normal = normal;
+    }
+}

@@ -12,6 +12,19 @@ typedef enum
 	e_kinematic
 } BodyType;
 
+typedef enum
+{
+    ACTIVE,
+    NORMAL,
+    DISABLE,
+} BtnStatus;
+
+typedef enum
+{
+    PUSHED,
+    RELEASE,
+} BtnState;
+
 typedef struct {
 	Vec2 position;
 	Vec2 rotation;
@@ -70,6 +83,13 @@ typedef struct {
 } Health;
 
 typedef struct {
+    BtnStatus status;
+    BtnState state;
+    const char* normal;
+    const char* active;
+} Button;
+
+typedef struct {
 	Transform* transform;
 	KeyInput* input;
 	Collider* collider;
@@ -77,6 +97,7 @@ typedef struct {
 	Sprite* sprite;
 	AnimatedSprite* animated_sprite;
 	Health* health;
+    Button* button;
 } Components;
 
 #endif // __COMPONENT_H__
