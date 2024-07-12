@@ -59,13 +59,20 @@ void SceneManagerActiveScene(SceneManager *manager, Scene *scene)
     }
 }
 
-void SceneManagerTransition(SceneManager *manager, Scene *next)
+void SceneManagerTransition(SceneManager *manager, int id)
 {
     if (manager != NULL)
     {
         manager->current_scene->active = false;
 
-        manager->current_scene = next;
-        manager->current_scene->active = true;
+        Scene* scene = NULL;
+        for (size_t i = 0; i < manager->scenes->size; ++i) {
+            scene = Array1DItemAtIndex(manager->scenes, i);
+            if (id == scene->id)
+            {
+                manager->current_scene = scene;
+                manager->current_scene->active = true;
+            }
+        }
     }
 }

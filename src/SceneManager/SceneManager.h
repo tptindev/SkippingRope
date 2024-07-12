@@ -13,7 +13,7 @@ SceneManager* CreateSceneManager();
 void SceneManagerActiveScene(SceneManager* manager, Scene* scene);
 void SceneManagerAddScene(SceneManager* manager, Scene* scene);
 void SceneManagerRemoveScene(SceneManager* manager, int id);
-void SceneManagerTransition(SceneManager* manager, Scene* next);
+void SceneManagerTransition(SceneManager* manager, int id);
 void FreeSceneManager(void *api, SceneManager* manager);
 
 #endif // SCENEMANAGER_H

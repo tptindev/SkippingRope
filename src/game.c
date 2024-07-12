@@ -18,6 +18,31 @@ typedef enum
     GAME,
     GAME_OVER,
 } SceneID;
+static int btnCbFn(PDButtons button, int down, uint32_t when, void* userdata)
+{
+    SceneManager* manager = userdata;
+    if (down)
+    {
+        switch (button)
+        {
+        case kButtonB:
+        {
+            if (manager->current_scene->id == MENU)
+            {
+                SceneManagerTransition(manager, GAME);
+            }
+            else
+            {
+                SceneManagerTransition(manager, MENU);
+            }
+            break;
+        }
+        default:
+            break;
+        }
+    }
+    return 0;
+}
 
 void game_initialize(void* pd_ptr)
 {	
@@ -40,7 +65,7 @@ void game_initialize(void* pd_ptr)
 
     SceneManagerActiveScene(scene_manager, game_scene);
 
-    api->system->setButtonCallback(NULL, scene_manager, 5);
+    api->system->setButtonCallback(btnCbFn, scene_manager, 5);
 }
 
 void game_update(float dt)
