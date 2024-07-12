@@ -59,12 +59,13 @@ void SceneManagerActiveScene(SceneManager *manager, Scene *scene)
     }
 }
 
-void SceneManagerTransition(SceneManager *manager, Scene *current, Scene *next)
+void SceneManagerTransition(SceneManager *manager, Scene *next)
 {
     if (manager != NULL)
     {
+        manager->current_scene->active = false;
+
         manager->current_scene = next;
-        current->active = false;
-        next->active = true;
+        manager->current_scene->active = true;
     }
 }
