@@ -95,9 +95,9 @@ void FreeEntity(void *api, Entity** entity)
     freeObjPtr((void**)entity);
 }
 
-void AddAnimatedSpriteComponent(void* userdata, Entity* entity, const char* source, int frame_width, int frame_height, int frame_count, int16_t z_order)
+void AddAnimatedSpriteComponent(void* pd_ptr, Entity* entity, const char* source, int frame_width, int frame_height, int frame_count, int16_t z_order)
 {
-	PlaydateAPI* api = userdata;
+    PlaydateAPI* api = pd_ptr;
 	entity->components.animated_sprite = malloc(sizeof(AnimatedSprite));
 	if (entity->components.animated_sprite != NULL && entity->components.transform != NULL)
 	{
@@ -143,9 +143,9 @@ void AddAnimatedSpriteComponent(void* userdata, Entity* entity, const char* sour
 	}
 }
 
-void AddSpriteComponent(void* userdata, Entity* entity, const char* source, bool flip, int16_t z_order)
+void AddSpriteComponent(void* pd_ptr, Entity* entity, const char* source, bool flip, int16_t z_order)
 {
-	PlaydateAPI* api = userdata;
+    PlaydateAPI* api = pd_ptr;
 	entity->components.sprite = malloc(sizeof(Sprite));
 	if (entity->components.sprite != NULL && entity->components.transform != NULL)
 	{
@@ -183,7 +183,7 @@ void AddSpriteComponent(void* userdata, Entity* entity, const char* source, bool
 	}
 }
 
-void AddKeyInputComponent(void* userdata, Entity* entity, bool left, bool right, bool up, bool down, bool a, bool b, bool crank)
+void AddKeyInputComponent(void* pd_ptr, Entity* entity, bool left, bool right, bool up, bool down, bool a, bool b, bool crank)
 {
 	entity->components.input = malloc(sizeof(KeyInput));
 	if (entity->components.input != NULL)
@@ -198,9 +198,9 @@ void AddKeyInputComponent(void* userdata, Entity* entity, bool left, bool right,
 	}
 }
 
-void AddCircleColliderComponent(void* userdata, struct QuadTree* tree, Entity* entity, Vec2 offset, float radius)
+void AddCircleColliderComponent(void* pd_ptr, struct QuadTree* tree, Entity* entity, Vec2 offset, float radius)
 {
-	PlaydateAPI* api = userdata;
+    PlaydateAPI* api = pd_ptr;
 	entity->components.collider = malloc(sizeof(Collider));
 	if (entity->components.collider != NULL && entity->components.transform != NULL)
 	{
@@ -216,7 +216,7 @@ void AddCircleColliderComponent(void* userdata, struct QuadTree* tree, Entity* e
 	}
 }
 
-void AddHealthComponent(void* userdata, Entity* entity, float max)
+void AddHealthComponent(void* pd_ptr, Entity* entity, float max)
 {
 	entity->components.health = malloc(sizeof(Health));
 	if (entity->components.health != NULL)

@@ -105,21 +105,21 @@ void UpdateAnimateSprite(Entity* entity, unsigned int tick)
 	}
 }
 
-void UpdateHealth(void* userdata, World2D* world, Entity** entity, void (*callback)(void* api, World2D* world, Entity** entity, void* health))
+void UpdateHealth(void* pd_ptr, World2D* world, Entity** entity, void (*callback)(void* api, World2D* world, Entity** entity, void* health))
 {
 
-	if (entity == NULL || userdata == NULL) return;
+    if (entity == NULL || pd_ptr == NULL) return;
 	if (*entity == NULL) return;
 	if ((*entity)->components.health != NULL && callback != NULL)
 	{
-		callback(userdata, world, entity, (*entity)->components.health);
+        callback(pd_ptr, world, entity, (*entity)->components.health);
 	}
 }
 
-void UpdateRenderer(void* userdata, Entity* entity)
+void UpdateRenderer(void* pd_ptr, Entity* entity)
 {
-	if (entity == NULL || userdata == NULL) return;
-	PlaydateAPI* api = userdata;
+    if (entity == NULL || pd_ptr == NULL) return;
+    PlaydateAPI* api = pd_ptr;
 	LCDSprite* sprite = NULL;
 	LCDBitmap* bitmap = NULL;
 	int16_t z_order = -1;
@@ -145,10 +145,10 @@ void UpdateRenderer(void* userdata, Entity* entity)
 	}
 }
 
-void UpdateInput(void* userdata, Entity* entity)
+void UpdateInput(void* pd_ptr, Entity* entity)
 {
-	if (entity == NULL || userdata == NULL) return;
-	PlaydateAPI* api = userdata;
+    if (entity == NULL || pd_ptr == NULL) return;
+    PlaydateAPI* api = pd_ptr;
 	if (entity->components.motion != NULL)
 	{
 		entity->components.motion->last_position.x = entity->components.transform->position.x;

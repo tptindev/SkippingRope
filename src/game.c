@@ -15,12 +15,13 @@ static SceneManager* scene_manager = NULL;
 typedef enum
 {
     MENU,
-    GAME
+    GAME,
+    GAME_OVER,
 } SceneID;
 
-void game_initialize(void* userdata)
+void game_initialize(void* pd_ptr)
 {	
-	api = userdata;
+    api = pd_ptr;
 	world = CreateWorld((Vec2) { 10.0f, 10.0f }, 5.0f, 3.0f);
 
     scene_manager = CreateSceneManager();
@@ -38,6 +39,8 @@ void game_initialize(void* userdata)
     GameSceneInit(api, game_scene);
 
     SceneManagerActiveScene(scene_manager, game_scene);
+
+    api->system->setButtonCallback(NULL, scene_manager, 5);
 }
 
 void game_update(float dt)
