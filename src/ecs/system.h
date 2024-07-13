@@ -15,5 +15,6 @@ void UpdateSprite(Entity* entity, unsigned int tick);
 void UpdateAnimateSprite(Entity* entity, unsigned int tick);
 void UpdateHealth(void* pd_ptr, World2D* world, Entity** entity, void (*callback)(void* api, World2D* world, Entity** entity, void* health));
 void UpdateRenderer(void* pd_ptr, Entity* entity);
+void UpdateButtonImage(void* pd_ptr, Entity* entity);
 
 #endif // __SYSTEM_H__

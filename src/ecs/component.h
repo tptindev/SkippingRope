@@ -85,9 +85,10 @@ typedef struct {
 typedef struct {
     BtnStatus status;
     BtnState state;
-    const char* normal;
-    const char* active;
-} Button;
+    const char* imgdir;
+    void* bitmaps[3];
+    void* sprite;
+} ButtonImage;
 
 typedef struct {
 	Transform* transform;
@@ -97,7 +98,7 @@ typedef struct {
 	Sprite* sprite;
 	AnimatedSprite* animated_sprite;
 	Health* health;
-    Button* button;
+    ButtonImage* button_img;
 } Components;
 
 #endif // __COMPONENT_H__

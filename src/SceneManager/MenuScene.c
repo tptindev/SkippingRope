@@ -22,9 +22,7 @@ void MenuSceneInit(void* pd_ptr, Scene *scene)
         {
             SceneAddGameObject(scene, start_btn);
             // Add Components
-            const char* sources[2] = {"images/menu/buttons/start_normal", "images/menu/buttons/start_active"};
-            AddSpriteComponent(pd_ptr, start_btn, sources[0], false, 0.5f, 1);
-            AddButtonComponent(pd_ptr, start_btn, ACTIVE, RELEASE, sources[0], sources[1]);
+            AddButtonImageComponent(pd_ptr, start_btn, ACTIVE, RELEASE, "images/menu/buttons/start", 0.5, 2);
         }
     }
     {
@@ -33,9 +31,7 @@ void MenuSceneInit(void* pd_ptr, Scene *scene)
         {
             SceneAddGameObject(scene, exit_btn);
             // Add Components
-            const char* sources[2] = {"images/menu/buttons/exit_normal", "images/menu/buttons/exit_active"};
-            AddSpriteComponent(pd_ptr, exit_btn, sources[0], false, 0.5f, 1);
-            AddButtonComponent(pd_ptr, exit_btn, NORMAL, RELEASE, sources[0], sources[1]);
+            AddButtonImageComponent(pd_ptr, exit_btn, NORMAL, RELEASE, "images/menu/buttons/exit", 0.5, 2);
         }
     }
 }
@@ -53,6 +49,7 @@ void MenuSceneUpdate(void* pd_ptr, Scene *scene, float dt)
         UpdateRotation(entity);
         UpdateSprite(entity, tick);
         UpdateAnimateSprite(entity, tick);
+        UpdateButtonImage(pd_ptr, entity);
     }
 }
 
@@ -77,6 +74,12 @@ void MenuSceneEvent(void *pd_ptr, Scene *scene, void* manager)
         PDButtons released;
         api->system->getButtonState(&current, &pushed, &released);
         switch (pushed) {
+        case kButtonUp:
+        {
+            Entity* entity = Array1DItemAtIndex(scene->entites, 0);
+            entity->components.button_img->status = ACTIVE;
+            break;
+        }
         case kButtonB:
             SceneManagerTransition(manager, GAME);
             break;

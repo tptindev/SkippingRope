@@ -45,7 +45,7 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 		entity->components.sprite = NULL;
 		entity->components.animated_sprite = NULL;
 		entity->components.health = NULL;
-        entity->components.button = NULL;
+        entity->components.button_img = NULL;
 	}
 	return entity;
 }
@@ -93,9 +93,17 @@ void FreeEntity(void *api, Entity** entity)
 	{
         freeObjPtr((void**)&(*entity)->components.health);
     }
-    if ((*entity)->components.button != NULL)
+    if ((*entity)->components.button_img != NULL)
     {
-        freeObjPtr((void**)&(*entity)->components.button);
+        for (size_t i = 0; i < (sizeof((*entity)->components.button_img->bitmaps)/sizeof(void*)); i++)
+        {
+            freeBitmap(api, (*entity)->components.button_img->bitmaps[i]);
+        }
+        if ((*entity)->components.button_img->sprite != NULL)
+        {
+            freeSprite(api, (*entity)->components.button_img->sprite);
+        }
+        freeObjPtr((void**)&(*entity)->components.button_img);
     }
     freeObjPtr((void**)entity);
 }
@@ -236,14 +244,50 @@ void AddHealthComponent(void* pd_ptr, Entity* entity, float max)
 }
 
 
-void AddButtonComponent(void *pd_ptr, Entity *entity, BtnStatus status, BtnState state, const char* normal, const char* active)
+void AddButtonImageComponent(void *pd_ptr, Entity *entity, BtnStatus status, BtnState state, const char* imgdir, float offset, int16_t z_order)
 {
-    entity->components.button = malloc(sizeof(Button));
-    if (entity->components.button != NULL)
+    if (pd_ptr == NULL || entity == NULL) return;
+    PlaydateAPI* api = pd_ptr;
+    entity->components.button_img = malloc(sizeof(ButtonImage));
+    if (entity->components.button_img != NULL)
     {
-        entity->components.button->state = state;
-        entity->components.button->status = status;
-        entity->components.button->active = active;
-        entity->components.button->normal = normal;
+        entity->components.button_img->state = state;
+        entity->components.button_img->status = status;
+        entity->components.button_img->imgdir = imgdir;
+
+        for (int i = 0; i < (int)DISABLE; i++)
+        {
+            entity->components.button_img->bitmaps[i] = NULL;
+            char path_buffer[32];
+            snprintf(path_buffer, sizeof(path_buffer), "%s/%d.png", imgdir, (int)status);
+
+            const char* outerr = NULL;
+            LCDBitmap* bitmap_ptr = api->graphics->loadBitmap(path_buffer, &outerr);
+            if (outerr != NULL)
+            {
+                api->system->logToConsole("Error: %s", outerr);
+                api->graphics->freeBitmap(bitmap_ptr);
+                return;
+            }
+            entity->components.button_img->bitmaps[i] = bitmap_ptr;
+        }
+
+        LCDSprite* sprite_ptr = api->sprite->newSprite();
+        if (sprite_ptr != NULL)
+        {
+            entity->components.button_img->sprite = sprite_ptr;
+            api->sprite->setImage(sprite_ptr, entity->components.button_img->bitmaps[(int)status], kBitmapUnflipped);
+            api->sprite->setZIndex(sprite_ptr, z_order);
+            api->sprite->setCenter(sprite_ptr, offset, offset);
+            api->sprite->moveTo(
+                sprite_ptr,
+                entity->components.transform->position.x * 80.0f,
+                entity->components.transform->position.y * 80.0f
+                );
+        }
+        else
+        {
+            api->sprite->freeSprite(sprite_ptr);
+        }
     }
 }
