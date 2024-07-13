@@ -31,6 +31,7 @@ void SceneManagerAddScene(SceneManager *manager, Scene *scene)
 {
     if (manager != NULL)
     {
+        scene->manager = manager;
         Array1DPush(manager->scenes, scene);
     }
 }
@@ -44,6 +45,7 @@ void SceneManagerRemoveScene(SceneManager *manager, int id)
             scene = Array1DItemAtIndex(manager->scenes, i);
             if (id == scene->id)
             {
+                scene->manager = NULL;
                 Array1DDelete(manager->scenes, i);
             }
         }

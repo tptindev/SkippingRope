@@ -5,11 +5,13 @@
 #include "../Physics2D/DataStructs/Array1D.h"
 #include "../Physics2D/World2D.h"
 #include "../ecs/entity.h"
+
 typedef struct
 {
     int id;
     Array1D* entites;
     World2D* world;
+    void* manager;
     int16_t z;
     bool active;
 } Scene;

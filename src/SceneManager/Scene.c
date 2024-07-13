@@ -11,6 +11,7 @@ Scene *CreateScene(int id, World2D* world)
         scene->world = world;
         scene->z = 0;
         scene->active = false;
+        scene->manager = NULL;
     }
     return scene;
 }

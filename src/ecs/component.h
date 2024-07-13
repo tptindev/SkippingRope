@@ -83,6 +83,7 @@ typedef struct {
 } Health;
 
 typedef struct {
+    int event_id; // Event { id, fn }
 	int16_t order_in_layer;
     BtnStatus status;
     BtnState state;

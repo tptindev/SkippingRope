@@ -4,6 +4,7 @@
 #include "../ecs/system.h"
 #include "SceneManager.h"
 #include "SceneIDs.h"
+#include "EventIDs.h"
 
 void MenuSceneInit(void* pd_ptr, Scene *scene)
 {
@@ -22,7 +23,7 @@ void MenuSceneInit(void* pd_ptr, Scene *scene)
         {
             SceneAddGameObject(scene, start_btn);
             // Add Components
-            AddButtonImageComponent(pd_ptr, start_btn, ACTIVE, RELEASE, "images/menu/buttons/start", 0.5f, 2);
+            AddButtonImageComponent(pd_ptr, start_btn, ACTIVE, EVT_START, "images/menu/buttons/start", 0.5f, 2);
         }
     }
     {
@@ -31,7 +32,7 @@ void MenuSceneInit(void* pd_ptr, Scene *scene)
         {
             SceneAddGameObject(scene, exit_btn);
             // Add Components
-            AddButtonImageComponent(pd_ptr, exit_btn, NORMAL, RELEASE, "images/menu/buttons/exit", 0.5f, 2);
+            AddButtonImageComponent(pd_ptr, exit_btn, NORMAL, EVT_EXIT, "images/menu/buttons/exit", 0.5f, 2);
         }
     }
 }
@@ -51,6 +52,7 @@ void MenuSceneUpdate(void* pd_ptr, Scene *scene, float dt)
             UpdateRotation(entity);
             UpdateSprite(entity, tick);
             UpdateAnimateSprite(entity, tick);
+            UpdateButtonImage(entity, scene);
         }
     }
 }
@@ -76,12 +78,13 @@ void MenuSceneEvent(void *pd_ptr, Scene *scene, void* manager)
     { // system
 
         float angle = api->system->getCrankAngle();
+        int current_idx = (int)angle % scene->entites->size;
         Entity* entity = NULL;
         for (size_t i = 0; i < scene->entites->size; i++)
         {
             entity = Array1DItemAtIndex(scene->entites, i);
             if (entity == NULL) continue;
-            if (i == (int)angle % scene->entites->size)
+            if (i == current_idx)
             {
                 if (entity->components.button_img != NULL)
                 {
@@ -95,20 +98,42 @@ void MenuSceneEvent(void *pd_ptr, Scene *scene, void* manager)
                     entity->components.button_img->status = NORMAL;
                 }
             }
+            entity = NULL;
         }
 
         PDButtons current;
         PDButtons pushed;
         PDButtons released;
         api->system->getButtonState(&current, &pushed, &released);
-        switch (pushed) {
+        switch (current) {
         case kButtonUp:
         {
             break;
         }
         case kButtonB:
-            SceneManagerTransition(manager, GAME);
+            if (current == pushed)
+            {
+            }
             break;
+        case kButtonA:
+        {
+            entity = Array1DItemAtIndex(scene->entites, current_idx);
+            if (entity != NULL)
+            {
+                if (entity->components.button_img != NULL)
+                {
+                    if (current == pushed)
+                    {
+                        entity->components.button_img->state = PUSHED;
+                    }
+                    else
+                    {
+                        entity->components.button_img->state = RELEASE;
+                    }
+                }
+            }
+            break;
+        }
         default:
             break;
         }

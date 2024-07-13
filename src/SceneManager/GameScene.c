@@ -137,9 +137,12 @@ void GameSceneEvent(void *pd_ptr, Scene *scene, void *manager)
         PDButtons pushed;
         PDButtons released;
         api->system->getButtonState(&current, &pushed, &released);
-        switch (pushed) {
+        switch (current) {
         case kButtonB:
-            SceneManagerTransition(manager, MENU);
+            if (current == pushed)
+            {
+                SceneManagerTransition(manager, MENU);
+            }
             break;
         default:
             break;

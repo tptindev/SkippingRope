@@ -250,7 +250,7 @@ void AddHealthComponent(void* pd_ptr, Entity* entity, float max)
 }
 
 
-void AddButtonImageComponent(void *pd_ptr, Entity *entity, BtnStatus status, BtnState state, const char* imgdir, float offset, int16_t z_order)
+void AddButtonImageComponent(void *pd_ptr, Entity *entity, BtnStatus status, int event_id, const char* imgdir, float offset, int16_t z_order)
 {
     if (pd_ptr == NULL || entity == NULL) return;
     PlaydateAPI* api = pd_ptr;
@@ -258,10 +258,11 @@ void AddButtonImageComponent(void *pd_ptr, Entity *entity, BtnStatus status, Btn
     if (entity->components.button_img != NULL)
     {
 		entity->components.button_img->order_in_layer = z_order;
-        entity->components.button_img->state = state;
+        entity->components.button_img->state = RELEASE;
         entity->components.button_img->status = status;
         entity->components.button_img->imgdir = imgdir;
 		entity->components.button_img->bitmaps = malloc(sizeof(void*) * 3);
+        entity->components.button_img->event_id = event_id;
 
         for (int i = 0; i < 3; i++)
         {

@@ -3,6 +3,7 @@
 #include "component.h"
 #include "../Physics2D/Collision.h"
 #include "pd_api.h"
+#include "../SceneManager/EventDefines.h"
 
 void UpdateRotation(Entity* entity)
 {
@@ -161,7 +162,20 @@ void UpdateScale(Entity* entity, float scale)
     if (entity == NULL) return;
 }
 
-void UpdateButtonImage(void *pd_ptr, Entity* entity)
+void UpdateButtonImage(Entity* entity, void* userdata)
 {
-    if (pd_ptr == NULL || entity == NULL) return;
+    if (entity == NULL) return;
+    if (entity->components.button_img != NULL)
+    {
+        if (entity->components.button_img->state == PUSHED)
+        {
+            for (size_t i = 0; i < (sizeof(MenuSceneEvents)/sizeof(Event)); i++)
+            {
+                if (MenuSceneEvents[i].id == entity->components.button_img->event_id)
+                {
+                    MenuSceneEvents[i].fn(userdata);
+                }
+            }
+        }
+    }
 }
