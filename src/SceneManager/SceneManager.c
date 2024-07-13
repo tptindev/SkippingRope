@@ -64,7 +64,6 @@ void SceneManagerTransition(SceneManager *manager, int id)
     if (manager != NULL)
     {
         manager->current_scene->active = false;
-
         Scene* scene = NULL;
         for (size_t i = 0; i < manager->scenes->size; ++i) {
             scene = Array1DItemAtIndex(manager->scenes, i);

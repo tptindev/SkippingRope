@@ -251,6 +251,7 @@ void AddButtonImageComponent(void *pd_ptr, Entity *entity, BtnStatus status, Btn
     entity->components.button_img = malloc(sizeof(ButtonImage));
     if (entity->components.button_img != NULL)
     {
+		entity->components.button_img->order_in_layer = z_order;
         entity->components.button_img->state = state;
         entity->components.button_img->status = status;
         entity->components.button_img->imgdir = imgdir;

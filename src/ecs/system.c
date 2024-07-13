@@ -137,6 +137,16 @@ void UpdateRenderer(void* pd_ptr, Entity* entity)
         bitmap = entity->components.animated_sprite->bitmaps[entity->components.animated_sprite->frame_index];
         api->sprite->setImage(sprite, bitmap, kBitmapUnflipped);
     }
+    else if (entity->components.button_img != NULL)
+    {
+        sprite = entity->components.button_img->sprite;
+        bitmap = entity->components.button_img->bitmaps[(size_t)entity->components.button_img->status];
+        z_order = entity->components.button_img->order_in_layer;
+        if (sprite != NULL && bitmap != NULL)
+        {
+            api->sprite->setImage(sprite, bitmap, kBitmapUnflipped);
+        }
+    }
 
     if (sprite != NULL && bitmap != NULL && entity->components.transform != NULL)
     {
@@ -154,17 +164,4 @@ void UpdateScale(Entity* entity, float scale)
 void UpdateButtonImage(void *pd_ptr, Entity* entity)
 {
     if (pd_ptr == NULL || entity == NULL) return;
-    PlaydateAPI* api = pd_ptr;
-    LCDSprite* sprite = NULL;
-    LCDBitmap* bitmap = NULL;
-    if (entity->components.button_img != NULL)
-    {
-        sprite = entity->components.button_img->sprite;
-        bitmap = entity->components.button_img->bitmaps[(size_t)entity->components.button_img->status];
-        if (sprite != NULL && bitmap != NULL)
-        {
-            api->sprite->setImage(sprite, bitmap, kBitmapUnflipped);
-            api->sprite->addSprite(sprite);
-        }
-    }
 }

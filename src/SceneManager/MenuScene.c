@@ -49,7 +49,6 @@ void MenuSceneUpdate(void* pd_ptr, Scene *scene, float dt)
         UpdateRotation(entity);
         UpdateSprite(entity, tick);
         UpdateAnimateSprite(entity, tick);
-        UpdateButtonImage(pd_ptr, entity);
     }
 }
 
@@ -77,7 +76,13 @@ void MenuSceneEvent(void *pd_ptr, Scene *scene, void* manager)
         case kButtonUp:
         {
             Entity* entity = Array1DItemAtIndex(scene->entites, 0);
-            entity->components.button_img->status = ACTIVE;
+            if (entity != NULL)
+            {
+                if (entity->components.button_img != NULL)
+                {
+                    entity->components.button_img->status = ACTIVE;
+                }
+            }
             break;
         }
         case kButtonB:
