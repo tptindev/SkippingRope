@@ -14,8 +14,8 @@ typedef enum
 
 typedef enum
 {
+	NORMAL,
     ACTIVE,
-    NORMAL,
     DISABLE,
 } BtnStatus;
 
@@ -87,7 +87,7 @@ typedef struct {
     BtnStatus status;
     BtnState state;
     const char* imgdir;
-    void* bitmaps[3];
+    void* (*bitmaps);
     void* sprite;
 } ButtonImage;
 

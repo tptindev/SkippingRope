@@ -95,10 +95,16 @@ void FreeEntity(void *api, Entity** entity)
     }
     if ((*entity)->components.button_img != NULL)
     {
-        for (size_t i = 0; i < (sizeof((*entity)->components.button_img->bitmaps)/sizeof(void*)); i++)
-        {
-            freeBitmap(api, (*entity)->components.button_img->bitmaps[i]);
-        }
+		if ((*entity)->components.button_img->bitmaps != NULL)
+		{
+			for (size_t i = 0; i < 3; i++)
+			{
+				freeBitmap(api, (*entity)->components.button_img->bitmaps[i]);
+			}
+			free((*entity)->components.button_img->bitmaps);
+			(*entity)->components.button_img->bitmaps = NULL;
+		}
+
         if ((*entity)->components.button_img->sprite != NULL)
         {
             freeSprite(api, (*entity)->components.button_img->sprite);
@@ -255,20 +261,21 @@ void AddButtonImageComponent(void *pd_ptr, Entity *entity, BtnStatus status, Btn
         entity->components.button_img->state = state;
         entity->components.button_img->status = status;
         entity->components.button_img->imgdir = imgdir;
+		entity->components.button_img->bitmaps = malloc(sizeof(void*) * 3);
 
-        for (int i = 0; i < (int)DISABLE; i++)
+        for (int i = 0; i < 3; i++)
         {
-            entity->components.button_img->bitmaps[i] = NULL;
+			entity->components.button_img->bitmaps[i] = NULL;
             char path_buffer[32];
-            snprintf(path_buffer, sizeof(path_buffer), "%s/%d.png", imgdir, (int)status);
-
-            const char* outerr = NULL;
+            snprintf(path_buffer, sizeof(path_buffer), "%s/%d", imgdir, i);
+			api->system->logToConsole("%s", path_buffer);
+			const char* outerr = NULL;
             LCDBitmap* bitmap_ptr = api->graphics->loadBitmap(path_buffer, &outerr);
             if (outerr != NULL)
             {
                 api->system->logToConsole("Error: %s", outerr);
                 api->graphics->freeBitmap(bitmap_ptr);
-                return;
+                continue;
             }
             entity->components.button_img->bitmaps[i] = bitmap_ptr;
         }

@@ -22,7 +22,7 @@ void MenuSceneInit(void* pd_ptr, Scene *scene)
         {
             SceneAddGameObject(scene, start_btn);
             // Add Components
-            AddButtonImageComponent(pd_ptr, start_btn, ACTIVE, RELEASE, "images/menu/buttons/start", 0.5, 2);
+            AddButtonImageComponent(pd_ptr, start_btn, ACTIVE, RELEASE, "images/menu/buttons/start", 0.5f, 2);
         }
     }
     {
@@ -31,7 +31,7 @@ void MenuSceneInit(void* pd_ptr, Scene *scene)
         {
             SceneAddGameObject(scene, exit_btn);
             // Add Components
-            AddButtonImageComponent(pd_ptr, exit_btn, NORMAL, RELEASE, "images/menu/buttons/exit", 0.5, 2);
+            AddButtonImageComponent(pd_ptr, exit_btn, NORMAL, RELEASE, "images/menu/buttons/exit", 0.5f, 2);
         }
     }
 }
@@ -45,10 +45,13 @@ void MenuSceneUpdate(void* pd_ptr, Scene *scene, float dt)
     for (size_t i = 0; i < scene->entites->size; i++)
     {
         entity = Array1DItemAtIndex(scene->entites, i);
-        UpdateScale(entity, 1);
-        UpdateRotation(entity);
-        UpdateSprite(entity, tick);
-        UpdateAnimateSprite(entity, tick);
+        if (entity != NULL)
+        {
+            UpdateScale(entity, 1);
+            UpdateRotation(entity);
+            UpdateSprite(entity, tick);
+            UpdateAnimateSprite(entity, tick);
+        }
     }
 }
 
@@ -59,7 +62,10 @@ void MenuSceneRender(void* pd_ptr, Scene *scene)
     for (size_t i = 0; i < scene->entites->size; i++)
     {
         entity = Array1DItemAtIndex(scene->entites, i);
-        UpdateRenderer(pd_ptr, entity);
+        if (entity != NULL)
+        {
+            UpdateRenderer(pd_ptr, entity);
+        }
     }
 }
 
@@ -68,6 +74,29 @@ void MenuSceneEvent(void *pd_ptr, Scene *scene, void* manager)
     if (scene == NULL || pd_ptr == NULL) return;
     PlaydateAPI* api = pd_ptr;
     { // system
+
+        float angle = api->system->getCrankAngle();
+        Entity* entity = NULL;
+        for (size_t i = 0; i < scene->entites->size; i++)
+        {
+            entity = Array1DItemAtIndex(scene->entites, i);
+            if (entity == NULL) continue;
+            if (i == (int)angle % scene->entites->size)
+            {
+                if (entity->components.button_img != NULL)
+                {
+                    entity->components.button_img->status = ACTIVE;
+                }
+            }
+            else
+            {
+                if (entity->components.button_img != NULL)
+                {
+                    entity->components.button_img->status = NORMAL;
+                }
+            }
+        }
+
         PDButtons current;
         PDButtons pushed;
         PDButtons released;
@@ -75,14 +104,6 @@ void MenuSceneEvent(void *pd_ptr, Scene *scene, void* manager)
         switch (pushed) {
         case kButtonUp:
         {
-            Entity* entity = Array1DItemAtIndex(scene->entites, 0);
-            if (entity != NULL)
-            {
-                if (entity->components.button_img != NULL)
-                {
-                    entity->components.button_img->status = ACTIVE;
-                }
-            }
             break;
         }
         case kButtonB:

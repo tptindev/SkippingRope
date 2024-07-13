@@ -140,7 +140,7 @@ void UpdateRenderer(void* pd_ptr, Entity* entity)
     else if (entity->components.button_img != NULL)
     {
         sprite = entity->components.button_img->sprite;
-        bitmap = entity->components.button_img->bitmaps[(size_t)entity->components.button_img->status];
+        bitmap = entity->components.button_img->bitmaps[entity->components.button_img->status];
         z_order = entity->components.button_img->order_in_layer;
         if (sprite != NULL && bitmap != NULL)
         {
