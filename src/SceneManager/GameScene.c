@@ -4,6 +4,7 @@
 #include "../ecs/system.h"
 #include "SceneManager.h"
 #include "Events/SceneIDs.h"
+#include "Events/EventIDs.h"
 
 static struct QuadTree* tree = NULL;
 
@@ -21,7 +22,7 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
             SceneAddGameObject(scene, earth);
             // Add components
             AddSpriteComponent(pd_ptr, earth, "images/earth", false, 0.5f, 1);
-            AddCircleColliderComponent(pd_ptr, tree, earth, (Vec2) { 0.0f, 0.0f }, 0.3f);
+            AddCircleColliderComponent(pd_ptr, tree, earth, (Vec2) { 0.0f, 0.0f }, 0.3f, EVT_GAME_EARTH_COLLIDED);
             AddHealthComponent(pd_ptr, earth, 100);
         }
     }
@@ -39,7 +40,7 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
             }
             AddKeyInputComponent(pd_ptr, moon, false, false, false, false, false, false, true);
             AddSpriteComponent(pd_ptr, moon, "images/moon", false, 0.5f, 1);
-            AddCircleColliderComponent(pd_ptr, tree, moon, (Vec2) { 0.0f, 0.0f }, 0.15f);
+            AddCircleColliderComponent(pd_ptr, tree, moon, (Vec2) { 0.0f, 0.0f }, 0.15f, EVT_GAME_MOON_COLLIDED);
             AddHealthComponent(pd_ptr, moon, 40);
         }
     }
@@ -56,7 +57,7 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
                 enemy->components.motion->direction = Vec2Normalize(Vec2Subtract(earth->components.transform->position, enemy->components.transform->position));
             }
             AddAnimatedSpriteComponent(pd_ptr, enemy, "images/enemy", 12, 12, 8, 0.5f, 1);
-            AddCircleColliderComponent(pd_ptr, tree, enemy, (Vec2) { 0.0f, 0.0f }, (float)(4.0f/80.0f));
+            AddCircleColliderComponent(pd_ptr, tree, enemy, (Vec2) { 0.0f, 0.0f }, (float)(4.0f/80.0f), EVT_GAME_ENEMY_COLLIDED);
             AddHealthComponent(pd_ptr, enemy, 10);
         }
     }
@@ -82,12 +83,12 @@ void GameSceneUpdate(void* pd_ptr, Scene *scene, float dt)
     for (size_t i = 0; i < scene->entites->size; i++)
     {
         entity = Array1DItemAtIndex(scene->entites, i);
-        UpdateCollision(entity, tree, NULL);
+        UpdateCollisionDetection(entity, tree);
     }
     for (size_t i = 0; i < scene->entites->size; i++)
     {
         entity = Array1DItemAtIndex(scene->entites, i);
-        UpdateHealth(pd_ptr, scene->world, &entity, NULL);
+        UpdateHealth(pd_ptr, scene->world, &entity);
     }
 }
 

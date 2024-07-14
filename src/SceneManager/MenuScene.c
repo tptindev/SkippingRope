@@ -12,7 +12,7 @@ void MenuSceneInit(void* pd_ptr, Scene *scene)
         {
             SceneAddGameObject(scene, start_btn);
             // Add Components
-            AddButtonImageComponent(pd_ptr, start_btn, ACTIVE, EVT_START, "images/menu/buttons/start", 0.5f, 2);
+            AddButtonImageComponent(pd_ptr, start_btn, ACTIVE, EVT_MENU_START, "images/menu/buttons/start", 0.5f, 2);
         }
     }
     {
@@ -21,7 +21,7 @@ void MenuSceneInit(void* pd_ptr, Scene *scene)
         {
             SceneAddGameObject(scene, exit_btn);
             // Add Components
-            AddButtonImageComponent(pd_ptr, exit_btn, NORMAL, EVT_EXIT, "images/menu/buttons/exit", 0.5f, 2);
+            AddButtonImageComponent(pd_ptr, exit_btn, NORMAL, EVT_MENU_EXIT, "images/menu/buttons/exit", 0.5f, 2);
         }
     }
     {
@@ -75,7 +75,7 @@ void MenuSceneEvent(void *pd_ptr, Scene *scene, void* manager)
     PlaydateAPI* api = pd_ptr;
     { // system
         float angle = api->system->getCrankAngle();
-        int current_idx = ((int)angle % 180) / (180 / (scene->entites->size - 1));
+        int current_idx = ((int)angle % 180) / (180 / (int)(scene->entites->size - 1));
         Entity* entity = NULL;
         for (size_t i = 0; i < scene->entites->size; i++)
         {

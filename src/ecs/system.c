@@ -61,9 +61,9 @@ void UpdateCollider(Entity* entity, struct QuadTree* tree)
     }
 }
 
-void UpdateCollision(Entity* entity, struct QuadTree* tree, void (*callback)(Entity* a, Entity* b))
+void UpdateCollisionDetection(Entity* entity, struct QuadTree* tree)
 {
-    if (entity == NULL || callback == NULL) return;
+    if (entity == NULL) return;
     Array1D* nodes = CreateArray1D();
     QuadTreeSearch(tree, nodes, &entity->components.collider->shape.box);
     Circle* c0 = entity->components.collider->shape.define;
@@ -82,7 +82,17 @@ void UpdateCollision(Entity* entity, struct QuadTree* tree, void (*callback)(Ent
                 bool collided = IsCollisionCircle(c0, cx);
                 if (collided == true)
                 {
-                    callback(entity, other);
+                    entity->components.collider->collided = collided;
+                    for (size_t i = 0; i < (sizeof(CollisionEvents)/sizeof(Event)); i++)
+                    {
+                        if (CollisionEvents[i].id == entity->components.collider->event_id && CollisionEvents[i].fn != NULL)
+                        {
+                            if (CollisionEvents[i].fn != NULL)
+                            {
+                                CollisionEvents[i].fn(entity, other);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -107,14 +117,17 @@ void UpdateAnimateSprite(Entity* entity, unsigned int tick)
     }
 }
 
-void UpdateHealth(void* pd_ptr, World2D* world, Entity** entity, void (*callback)(void* api, World2D* world, Entity** entity, void* health))
+void UpdateHealth(void* pd_ptr, World2D* world, Entity** entity)
 {
 
     if (entity == NULL || pd_ptr == NULL) return;
     if (*entity == NULL) return;
-    if ((*entity)->components.health != NULL && callback != NULL)
+    if ((*entity)->components.health != NULL)
     {
-        callback(pd_ptr, world, entity, (*entity)->components.health);
+        if ((*entity)->components.health->current <= 0)
+        {
+            DestroyEntity(pd_ptr, entity, world);
+        }
     }
 }
 
@@ -172,7 +185,7 @@ void UpdateButtonImage(Entity* entity, void* userdata)
             entity->components.button_img->state = RELEASE;
             for (size_t i = 0; i < (sizeof(MenuSceneEvents)/sizeof(Event)); i++)
             {
-                if (MenuSceneEvents[i].id == entity->components.button_img->event_id)
+                if (MenuSceneEvents[i].id == entity->components.button_img->event_id && GameSceneEvents[i].fn != NULL)
                 {
                     MenuSceneEvents[i].fn(userdata);
                 }

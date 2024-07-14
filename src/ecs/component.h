@@ -73,13 +73,15 @@ typedef struct {
 } Regidbody;
 
 typedef struct {
+    int event_id;
 	Shape2D shape;
 	Vec2 offset; // distance from collider center to other
+    bool collided;
 } Collider;
 
 typedef struct {
 	float current;
-	float max;
+    float max;
 } Health;
 
 typedef struct {

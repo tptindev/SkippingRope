@@ -222,11 +222,13 @@ void AddKeyInputComponent(void* pd_ptr, Entity* entity, bool left, bool right, b
 	}
 }
 
-void AddCircleColliderComponent(void* pd_ptr, struct QuadTree* tree, Entity* entity, Vec2 offset, float radius)
+void AddCircleColliderComponent(void* pd_ptr, struct QuadTree* tree, Entity* entity, Vec2 offset, float radius, int event_id)
 {
     entity->components.collider = malloc(sizeof(Collider));
 	if (entity->components.collider != NULL && entity->components.transform != NULL)
 	{
+        entity->components.collider->event_id = event_id;
+        entity->components.collider->collided = false;
 		entity->components.collider->offset.x = offset.x;
 		entity->components.collider->offset.y = offset.y;
 		entity->components.collider->shape.type = CIRCLE;

@@ -1,7 +1,5 @@
 #include "game.h"
 #include "pd_api.h"
-#include "CollisionHandler.h"
-#include "HealthHandler.h"
 #include "SceneManager/SceneManager.h"
 #include "SceneManager/Scene.h"
 #include "SceneManager/MenuScene.h"
