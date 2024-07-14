@@ -3,7 +3,7 @@
 #include "../Physics2D/DataStructs/QuadTree.h"
 #include "../ecs/system.h"
 #include "SceneManager.h"
-#include "SceneIDs.h"
+#include "Events/SceneIDs.h"
 
 static struct QuadTree* tree = NULL;
 

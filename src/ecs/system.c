@@ -3,7 +3,7 @@
 #include "component.h"
 #include "../Physics2D/Collision.h"
 #include "pd_api.h"
-#include "../SceneManager/EventDefines.h"
+#include "../SceneManager/Events/EventDefines.h"
 
 void UpdateRotation(Entity* entity)
 {

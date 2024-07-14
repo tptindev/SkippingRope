@@ -2,9 +2,7 @@
 #include "pd_api.h"
 #include "../ecs/entity.h"
 #include "../ecs/system.h"
-#include "SceneManager.h"
-#include "SceneIDs.h"
-#include "EventIDs.h"
+#include "Events/EventIDs.h"
 
 void MenuSceneInit(void* pd_ptr, Scene *scene)
 {

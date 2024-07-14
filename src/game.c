@@ -6,7 +6,7 @@
 #include "SceneManager/Scene.h"
 #include "SceneManager/MenuScene.h"
 #include "SceneManager/GameScene.h"
-#include "SceneManager/SceneIDs.h"
+#include "SceneManager/Events/SceneIDs.h"
 float world_scale = 80.0f;
 static PlaydateAPI* api = NULL;
 static World2D* world = NULL;
@@ -32,7 +32,7 @@ void game_initialize(void* pd_ptr)
     MenuSceneInit(api, menu_scene);
     GameSceneInit(api, game_scene);
 
-    SceneManagerActiveScene(scene_manager, game_scene);
+    SceneManagerActiveScene(scene_manager, menu_scene);
 }
 
 void game_update(float dt)

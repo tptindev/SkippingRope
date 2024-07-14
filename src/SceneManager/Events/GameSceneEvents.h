@@ -1,0 +1,6 @@
+#ifndef GAMESCENEEVENTS_H
+#define GAMESCENEEVENTS_H
+
+void EVT_BACK_MENU_FUNC(void* userdata);
+
+#endif // GAMESCENEEVENTS_H
