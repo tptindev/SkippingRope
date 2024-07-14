@@ -7,15 +7,6 @@
 void MenuSceneInit(void* pd_ptr, Scene *scene)
 {
     {
-        Entity* menu_bg = CreateEntity(scene->world, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
-        if (menu_bg != NULL)
-        {
-            SceneAddGameObject(scene, menu_bg);
-            // Add Components
-            AddSpriteComponent(pd_ptr, menu_bg, "images/menu/menu_bg", false, 0.0f, 1);
-        }
-    }
-    {
         Entity* start_btn = CreateEntity(scene->world, (Vec2) {2.5f, 1.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
         if (start_btn != NULL)
         {
@@ -31,6 +22,15 @@ void MenuSceneInit(void* pd_ptr, Scene *scene)
             SceneAddGameObject(scene, exit_btn);
             // Add Components
             AddButtonImageComponent(pd_ptr, exit_btn, NORMAL, EVT_EXIT, "images/menu/buttons/exit", 0.5f, 2);
+        }
+    }
+    {
+        Entity* menu_bg = CreateEntity(scene->world, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
+        if (menu_bg != NULL)
+        {
+            SceneAddGameObject(scene, menu_bg);
+            // Add Components
+            AddSpriteComponent(pd_ptr, menu_bg, "images/menu/menu_bg", false, 0.0f, 1);
         }
     }
 }
@@ -74,9 +74,8 @@ void MenuSceneEvent(void *pd_ptr, Scene *scene, void* manager)
     if (scene == NULL || pd_ptr == NULL) return;
     PlaydateAPI* api = pd_ptr;
     { // system
-
         float angle = api->system->getCrankAngle();
-        int current_idx = (int)angle % scene->entites->size;
+        int current_idx = ((int)angle % 180) / (180 / (scene->entites->size - 1));
         Entity* entity = NULL;
         for (size_t i = 0; i < scene->entites->size; i++)
         {
