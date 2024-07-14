@@ -6,7 +6,7 @@ void EVT_START_FUNC(void *userdata)
 {
     Scene* scene = userdata;
     SceneManager* manager = scene->manager;
-    SceneManagerTransition(manager, GAME);
+    SceneManagerTransition(manager, GAME_SCENE);
 }
 
 void EVT_EXIT_FUNC(void *userdata)

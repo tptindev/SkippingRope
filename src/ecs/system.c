@@ -169,6 +169,7 @@ void UpdateButtonImage(Entity* entity, void* userdata)
     {
         if (entity->components.button_img->state == PUSHED)
         {
+            entity->components.button_img->state = RELEASE;
             for (size_t i = 0; i < (sizeof(MenuSceneEvents)/sizeof(Event)); i++)
             {
                 if (MenuSceneEvents[i].id == entity->components.button_img->event_id)

@@ -141,7 +141,7 @@ void GameSceneEvent(void *pd_ptr, Scene *scene, void *manager)
         case kButtonB:
             if (current == pushed)
             {
-                SceneManagerTransition(manager, MENU);
+                SceneManagerTransition(manager, MENU_SCENE);
             }
             break;
         default:

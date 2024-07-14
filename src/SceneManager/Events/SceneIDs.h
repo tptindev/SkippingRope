@@ -3,9 +3,9 @@
 
 typedef enum
 {
-    MENU,
-    GAME,
-    GAME_OVER,
+    MENU_SCENE,
+    GAME_SCENE,
+    GAME_OVER_SCENE,
 } SceneID;
 
 #endif // SCENEIDS_H

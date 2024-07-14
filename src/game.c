@@ -22,9 +22,9 @@ void game_initialize(void* pd_ptr)
 
     Scene* menu_scene = NULL;
     Scene* game_scene = NULL;
-
-    menu_scene = CreateScene(MENU, world);
-    game_scene = CreateScene(GAME, world);
+    
+    menu_scene = CreateScene(MENU_SCENE, world);
+    game_scene = CreateScene(GAME_SCENE, world);
 
     SceneManagerAddScene(scene_manager, menu_scene);
     SceneManagerAddScene(scene_manager, game_scene);
@@ -37,12 +37,12 @@ void game_initialize(void* pd_ptr)
 
 void game_update(float dt)
 {
-    if (scene_manager->current_scene->id == MENU)
+    if (scene_manager->current_scene->id == MENU_SCENE)
     {
         MenuSceneEvent(api, scene_manager->current_scene, scene_manager);
         MenuSceneUpdate(api, scene_manager->current_scene, dt);
     }
-    else if (scene_manager->current_scene->id == GAME)
+    else if (scene_manager->current_scene->id == GAME_SCENE)
     {
         GameSceneEvent(api, scene_manager->current_scene, scene_manager);
         GameSceneUpdate(api, scene_manager->current_scene, dt);
@@ -54,11 +54,11 @@ void game_draw()
     api->sprite->removeAllSprites();
     api->graphics->clear(kColorWhite);
     api->graphics->setBackgroundColor(kColorWhite);
-    if (scene_manager->current_scene->id == MENU)
+    if (scene_manager->current_scene->id == MENU_SCENE)
     {
         MenuSceneRender(api, scene_manager->current_scene);
     }
-    else if (scene_manager->current_scene->id == GAME)
+    else if (scene_manager->current_scene->id == GAME_SCENE)
     {
         GameSceneRender(api, scene_manager->current_scene);
     }
