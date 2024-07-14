@@ -126,7 +126,7 @@ void UpdateHealth(void* pd_ptr, World2D* world, Entity** entity)
     {
         if ((*entity)->components.health->current <= 0)
         {
-            DestroyEntity(pd_ptr, entity, world);
+//            DestroyEntity(pd_ptr, entity, world);
         }
     }
 }
