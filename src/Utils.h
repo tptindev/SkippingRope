@@ -2,18 +2,16 @@
 #define __GAME_UTILS__
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include "pd_api.h"
 
-inline void freeObjPtr(void** ptr)
+inline void freeObjPtr(void* ptr)
 {
-	if (ptr != NULL)
-	{
-		if (*ptr != NULL)
-		{
-			free(*ptr);
-			*ptr = NULL;
-		}
-	}
+    if (ptr != NULL)
+    {
+        free(ptr);
+        ptr = NULL;
+    }
 }
 
 inline void freeBitmap(void* pd_ptr, void* bitmap)
@@ -22,8 +20,8 @@ inline void freeBitmap(void* pd_ptr, void* bitmap)
 	{
 		PlaydateAPI* api = pd_ptr;
 		api->graphics->freeBitmap(bitmap);
-		bitmap = NULL;
 	}
+	bitmap = NULL;
 }
 
 inline void freeSprite(void* pd_ptr, void* sprite)
@@ -31,8 +29,9 @@ inline void freeSprite(void* pd_ptr, void* sprite)
 	if (sprite != NULL && pd_ptr != NULL)
 	{
 		PlaydateAPI* api = pd_ptr;
+		api->sprite->removeSprite(sprite);
 		api->sprite->freeSprite(sprite);
-		sprite = NULL;
 	}
+	sprite = NULL;
 }
 #endif // !__GAME_UTILS__

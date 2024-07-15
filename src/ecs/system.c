@@ -63,7 +63,7 @@ void UpdateCollider(Entity* entity, struct QuadTree* tree)
 
 void UpdateCollisionDetection(Entity* entity, struct QuadTree* tree)
 {
-    if (entity == NULL) return;
+    if (entity == NULL || tree == NULL) return;
     Array1D* nodes = CreateArray1D();
     QuadTreeSearch(tree, nodes, &entity->components.collider->shape.box);
     Circle* c0 = entity->components.collider->shape.define;
@@ -83,14 +83,12 @@ void UpdateCollisionDetection(Entity* entity, struct QuadTree* tree)
                 if (collided == true)
                 {
                     entity->components.collider->collided = collided;
+                    other->components.collider->collided = collided;
                     for (size_t i = 0; i < (sizeof(CollisionEvents)/sizeof(Event)); i++)
                     {
                         if (CollisionEvents[i].id == entity->components.collider->event_id && CollisionEvents[i].fn != NULL)
                         {
-                            if (CollisionEvents[i].fn != NULL)
-                            {
-                                CollisionEvents[i].fn(entity, other);
-                            }
+                            CollisionEvents[i].fn(entity, other);
                         }
                     }
                 }
@@ -117,16 +115,17 @@ void UpdateAnimateSprite(Entity* entity, unsigned int tick)
     }
 }
 
-void UpdateHealth(void* pd_ptr, World2D* world, Entity** entity)
+void UpdateHealth(void* pd_ptr, World2D* world, Entity** entity_ptr)
 {
 
-    if (entity == NULL || pd_ptr == NULL) return;
-    if (*entity == NULL) return;
-    if ((*entity)->components.health != NULL)
+    if (entity_ptr == NULL || pd_ptr == NULL) return;
+    if (*entity_ptr == NULL) return;
+    Entity *entity = *entity_ptr;
+    if (entity->components.health != NULL)
     {
-        if ((*entity)->components.health->current <= 0)
+        if (entity->components.health->current <= 0)
         {
-//            DestroyEntity(pd_ptr, entity, world);
+            DestroyEntity(pd_ptr, entity_ptr, world);
         }
     }
 }
@@ -149,7 +148,10 @@ void UpdateRenderer(void* pd_ptr, Entity* entity)
         sprite = entity->components.animated_sprite->_ptr;
         z_order = entity->components.animated_sprite->order_in_layer;
         bitmap = entity->components.animated_sprite->bitmaps[entity->components.animated_sprite->frame_index];
-        api->sprite->setImage(sprite, bitmap, kBitmapUnflipped);
+        if (sprite != NULL)
+        {
+            api->sprite->setImage(sprite, bitmap, kBitmapUnflipped);
+        }
     }
     else if (entity->components.button_img != NULL)
     {

@@ -49,9 +49,9 @@ void game_update(float dt)
 
 void game_draw()
 {
-    api->sprite->removeAllSprites();
     api->graphics->clear(kColorWhite);
     api->graphics->setBackgroundColor(kColorWhite);
+    api->sprite->removeAllSprites();
     if (scene_manager->current_scene->id == MENU_SCENE)
     {
         MenuSceneRender(api, scene_manager->current_scene);

@@ -69,7 +69,7 @@ void GameSceneUpdate(void* pd_ptr, Scene *scene, float dt)
     QuadTreeClear(tree);
     unsigned int tick = ((PlaydateAPI*)pd_ptr)->system->getCurrentTimeMilliseconds();
 
-    Entity* entity = NULL;
+    static Entity* entity = NULL;
     for (size_t i = 0; i < scene->entites->size; i++)
     {
         entity = Array1DItemAtIndex(scene->entites, i);
@@ -99,7 +99,10 @@ void GameSceneRender(void* pd_ptr, Scene *scene)
     for (size_t i = 0; i < scene->entites->size; i++)
     {
         entity = Array1DItemAtIndex(scene->entites, i);
-        UpdateRenderer(pd_ptr, entity);
+        if (entity != NULL)
+        {
+            UpdateRenderer(pd_ptr, entity);
+        }
     }
 }
 
@@ -120,7 +123,7 @@ void GameSceneEvent(void *pd_ptr, Scene *scene, void *manager)
                     entity->components.motion->last_position.x = entity->components.transform->position.x;
                     entity->components.motion->last_position.y = entity->components.transform->position.y;
                 }
-                if (entity->components.input != NULL && entity->components.transform != NULL)
+                if (entity->components.input != NULL)
                 {
                     if (entity->components.input->crank == true)
                     {
