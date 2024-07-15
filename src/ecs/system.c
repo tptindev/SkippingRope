@@ -4,6 +4,8 @@
 #include "../Physics2D/Collision.h"
 #include "pd_api.h"
 #include "../SceneManager/Events/EventDefines.h"
+#include "../SceneManager/Scene.h"
+
 
 void UpdateRotation(Entity* entity)
 {
@@ -115,17 +117,16 @@ void UpdateAnimateSprite(Entity* entity, unsigned int tick)
     }
 }
 
-void UpdateHealth(void* pd_ptr, World2D* world, Entity** entity_ptr)
+void UpdateHealth(void* pd_ptr, void* scene_ptr, Entity* entity)
 {
-
-    if (entity_ptr == NULL || pd_ptr == NULL) return;
-    if (*entity_ptr == NULL) return;
-    Entity *entity = *entity_ptr;
+    if (entity == NULL || pd_ptr == NULL || scene_ptr == NULL) return;
+    Scene* scene = scene_ptr;
     if (entity->components.health != NULL)
     {
         if (entity->components.health->current <= 0)
         {
-            DestroyEntity(pd_ptr, entity_ptr, world);
+            DestroyEntity(pd_ptr, entity, scene->world);
+            SceneRemoveGameObject(scene, entity->id);
         }
     }
 }

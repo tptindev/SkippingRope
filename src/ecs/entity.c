@@ -50,18 +50,15 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 	return entity;
 }
 
-void DestroyEntity(void* api, Entity** entity_ptr, World2D* world)
+void DestroyEntity(void* api, Entity* entity, World2D* world)
 {
-	FreeEntity(api, entity_ptr);
+	FreeEntity(api, entity);
 	world->objId.max++;
 }
 
-void FreeEntity(void *api, Entity** entity_ptr)
+void FreeEntity(void *api, Entity* entity)
 {
-    if (entity_ptr == NULL || api == NULL) return;
-	if ((*entity_ptr) == NULL) return;
-
-	Entity* entity = (*entity_ptr);
+    if (entity == NULL || api == NULL) return;
     if (entity->components.transform != NULL) freeObjPtr((void*)entity->components.transform);
     if (entity->components.motion != NULL) freeObjPtr((void*)entity->components.motion);
     if (entity->components.collider != NULL)
@@ -113,7 +110,6 @@ void FreeEntity(void *api, Entity** entity_ptr)
     }
 
     freeObjPtr(entity);
-	entity = NULL;
 }
 
 void AddAnimatedSpriteComponent(void* pd_ptr, Entity* entity, const char* source, int frame_width, int frame_height, int frame_count, float offset, int16_t z_order)

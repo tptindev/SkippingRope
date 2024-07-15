@@ -14,8 +14,8 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
     tree = CreateQuadTreeNode(NULL, scene->world->w, scene->world->h, 0);
 
 
-    Entity* earth = NULL;
     { // earth
+        Entity* earth = NULL;
         earth = CreateEntity(scene->world, (Vec2){ 2.5f, 1.5f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
         if (earth != NULL)
         {
@@ -25,40 +25,38 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
             AddCircleColliderComponent(pd_ptr, tree, earth, (Vec2) { 0.0f, 0.0f }, 0.3f, EVT_GAME_EARTH_COLLIDED);
             AddHealthComponent(pd_ptr, earth, 100);
         }
-    }
 
-    { // moon
-        Entity* moon = NULL;
-        moon = CreateEntity(scene->world, (Vec2){ 2.0f, 1.0f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
-        if (moon != NULL)
-        {
-            SceneAddGameObject(scene, moon);
-            // Add components
-            if (earth != NULL)
+        { // moon
+            Entity* moon = CreateEntity(scene->world, (Vec2) { 2.0f, 1.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
+            if (moon != NULL)
             {
-                moon->components.motion->direction = earth->components.transform->position;
+                SceneAddGameObject(scene, moon);
+                // Add components
+                if (earth != NULL)
+                {
+                    moon->components.motion->direction = earth->components.transform->position;
+                }
+                AddKeyInputComponent(pd_ptr, moon, false, false, false, false, false, false, true);
+                AddSpriteComponent(pd_ptr, moon, "images/moon", false, 0.5f, 1);
+                AddCircleColliderComponent(pd_ptr, tree, moon, (Vec2) { 0.0f, 0.0f }, 0.15f, EVT_GAME_MOON_COLLIDED);
+                AddHealthComponent(pd_ptr, moon, 40);
             }
-            AddKeyInputComponent(pd_ptr, moon, false, false, false, false, false, false, true);
-            AddSpriteComponent(pd_ptr, moon, "images/moon", false, 0.5f, 1);
-            AddCircleColliderComponent(pd_ptr, tree, moon, (Vec2) { 0.0f, 0.0f }, 0.15f, EVT_GAME_MOON_COLLIDED);
-            AddHealthComponent(pd_ptr, moon, 40);
         }
-    }
-    { // enemy
-        Entity* enemy = NULL;
-        enemy = CreateEntity(scene->world, (Vec2) { 0.0f, 0.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
-        if (enemy != NULL)
-        {
-            SceneAddGameObject(scene, enemy);
-            // Add components
-            if (earth != NULL)
+        { // enemy
+            Entity* enemy = CreateEntity(scene->world, (Vec2) { 0.0f, 0.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
+            if (enemy != NULL)
             {
-                enemy->components.motion->acceleration = scene->world->gravity;
-                enemy->components.motion->direction = Vec2Normalize(Vec2Subtract(earth->components.transform->position, enemy->components.transform->position));
+                SceneAddGameObject(scene, enemy);
+                // Add components
+                if (earth != NULL)
+                {
+                    enemy->components.motion->acceleration = scene->world->gravity;
+                    enemy->components.motion->direction = Vec2Normalize(Vec2Subtract(earth->components.transform->position, enemy->components.transform->position));
+                }
+                AddAnimatedSpriteComponent(pd_ptr, enemy, "images/enemy", 12, 12, 8, 0.5f, 1);
+                AddCircleColliderComponent(pd_ptr, tree, enemy, (Vec2) { 0.0f, 0.0f }, (float)(4.0f / 80.0f), EVT_GAME_ENEMY_COLLIDED);
+                AddHealthComponent(pd_ptr, enemy, 10);
             }
-            AddAnimatedSpriteComponent(pd_ptr, enemy, "images/enemy", 12, 12, 8, 0.5f, 1);
-            AddCircleColliderComponent(pd_ptr, tree, enemy, (Vec2) { 0.0f, 0.0f }, (float)(4.0f/80.0f), EVT_GAME_ENEMY_COLLIDED);
-            AddHealthComponent(pd_ptr, enemy, 10);
         }
     }
 }
@@ -69,7 +67,7 @@ void GameSceneUpdate(void* pd_ptr, Scene *scene, float dt)
     QuadTreeClear(tree);
     unsigned int tick = ((PlaydateAPI*)pd_ptr)->system->getCurrentTimeMilliseconds();
 
-    static Entity* entity = NULL;
+    Entity* entity = NULL;
     for (size_t i = 0; i < scene->entites->size; i++)
     {
         entity = Array1DItemAtIndex(scene->entites, i);
@@ -88,7 +86,7 @@ void GameSceneUpdate(void* pd_ptr, Scene *scene, float dt)
     for (size_t i = 0; i < scene->entites->size; i++)
     {
         entity = Array1DItemAtIndex(scene->entites, i);
-        UpdateHealth(pd_ptr, scene->world, &entity);
+        UpdateHealth(pd_ptr, scene, entity);
     }
 }
 

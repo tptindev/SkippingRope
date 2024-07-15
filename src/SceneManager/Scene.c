@@ -20,7 +20,10 @@ void SceneAddGameObject(Scene* scene, Entity *entity)
 {
     if (scene != NULL)
     {
-        Array1DPush(scene->entites, entity);
+        if (entity != NULL)
+        {
+            Array1DPush(scene->entites, entity);
+        }
     }
 }
 
