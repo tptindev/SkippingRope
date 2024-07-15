@@ -239,11 +239,12 @@ void AddCircleColliderComponent(void* pd_ptr, struct QuadTree* tree, Entity* ent
 	}
 }
 
-void AddHealthComponent(void* pd_ptr, Entity* entity, float max)
+void AddHealthComponent(void* pd_ptr, Entity* entity, float max, int event_id)
 {
 	entity->components.health = malloc(sizeof(Health));
 	if (entity->components.health != NULL)
 	{
+        entity->components.health->event_id = event_id;
 		entity->components.health->current = max;
 		entity->components.health->max = max;
 	}

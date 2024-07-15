@@ -80,6 +80,7 @@ typedef struct {
 } Collider;
 
 typedef struct {
+    int event_id;
 	float current;
     float max;
 } Health;

@@ -4,6 +4,7 @@
 #include "SceneManager/Scene.h"
 #include "SceneManager/MenuScene.h"
 #include "SceneManager/GameScene.h"
+#include "SceneManager/GameOverScene.h"
 #include "SceneManager/Events/SceneIDs.h"
 float world_scale = 80.0f;
 static PlaydateAPI* api = NULL;
@@ -20,15 +21,19 @@ void game_initialize(void* pd_ptr)
 
     Scene* menu_scene = NULL;
     Scene* game_scene = NULL;
+    Scene* game_over_scene = NULL;
     
     menu_scene = CreateScene(MENU_SCENE, world);
     game_scene = CreateScene(GAME_SCENE, world);
+    game_over_scene = CreateScene(GAME_OVER_SCENE, world);
 
     SceneManagerAddScene(scene_manager, menu_scene);
     SceneManagerAddScene(scene_manager, game_scene);
+    SceneManagerAddScene(scene_manager, game_over_scene);
 
     MenuSceneInit(api, menu_scene);
     GameSceneInit(api, game_scene);
+    GameOverSceneInit(api, game_over_scene);
 
     SceneManagerActiveScene(scene_manager, menu_scene);
 }
@@ -45,6 +50,11 @@ void game_update(float dt)
         GameSceneEvent(api, scene_manager->current_scene, scene_manager);
         GameSceneUpdate(api, scene_manager->current_scene, dt);
     }
+    else if (scene_manager->current_scene->id == GAME_OVER_SCENE)
+    {
+        GameOverSceneEvent(api, scene_manager->current_scene, scene_manager);
+        GameOverSceneUpdate(api, scene_manager->current_scene, dt);
+    }
 }
 
 void game_draw()
@@ -60,7 +70,11 @@ void game_draw()
     {
         GameSceneRender(api, scene_manager->current_scene);
     }
-	api->sprite->drawSprites();
+    else if (scene_manager->current_scene->id == GAME_OVER_SCENE)
+    {
+        GameOverSceneRender(api, scene_manager->current_scene);
+    }
+    api->sprite->drawSprites();
 }
 
 void game_destroy()

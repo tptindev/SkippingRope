@@ -5,6 +5,7 @@
 #include "pd_api.h"
 #include "../SceneManager/Events/EventDefines.h"
 #include "../SceneManager/Scene.h"
+#include "../Physics2D/World2D.h"
 
 
 void UpdateRotation(Entity* entity)
@@ -86,11 +87,14 @@ void UpdateCollisionDetection(Entity* entity, struct QuadTree* tree)
                 {
                     entity->components.collider->collided = collided;
                     other->components.collider->collided = collided;
-                    for (size_t i = 0; i < (sizeof(CollisionEvents)/sizeof(Event)); i++)
+                    for (size_t i = 0; i < (sizeof(GameSceneEvents)/sizeof(Event)); i++)
                     {
-                        if (CollisionEvents[i].id == entity->components.collider->event_id && CollisionEvents[i].fn != NULL)
+                        if (GameSceneEvents[i].id == entity->components.collider->event_id)
                         {
-                            CollisionEvents[i].fn(entity, other);
+                            if (GameSceneEvents[i].collision != NULL)
+                            {
+                                GameSceneEvents[i].collision(entity);
+                            }
                         }
                     }
                 }
@@ -117,16 +121,25 @@ void UpdateAnimateSprite(Entity* entity, unsigned int tick)
     }
 }
 
-void UpdateHealth(void* pd_ptr, void* scene_ptr, Entity* entity)
+void UpdateHealth(void* pd_ptr, void* manager, Entity* entity)
 {
-    if (entity == NULL || pd_ptr == NULL || scene_ptr == NULL) return;
-    Scene* scene = scene_ptr;
+    if (entity == NULL || pd_ptr == NULL || manager == NULL) return;
     if (entity->components.health != NULL)
     {
         if (entity->components.health->current <= 0)
         {
-            DestroyEntity(pd_ptr, entity, scene->world);
-            SceneRemoveGameObject(scene, entity->id);
+            for (size_t i = 0; i < (sizeof(GameSceneEvents)/sizeof(Event)); i++)
+            {
+                if (GameSceneEvents[i].id == entity->components.health->event_id)
+                {
+                    if (GameSceneEvents[i].transition != NULL)
+                    {
+                        GameSceneEvents[i].transition(manager);
+                    }
+                }
+            }
+//            DestroyEntity(pd_ptr, entity, scene->world);
+//            SceneRemoveGameObject(scene, entity->id);
         }
     }
 }
@@ -188,9 +201,12 @@ void UpdateButtonImage(Entity* entity, void* userdata)
             entity->components.button_img->state = RELEASE;
             for (size_t i = 0; i < (sizeof(MenuSceneEvents)/sizeof(Event)); i++)
             {
-                if (MenuSceneEvents[i].id == entity->components.button_img->event_id && GameSceneEvents[i].fn != NULL)
+                if (MenuSceneEvents[i].id == entity->components.button_img->event_id)
                 {
-                    MenuSceneEvents[i].fn(userdata);
+                    if (GameSceneEvents[i].transition != NULL)
+                    {
+                        MenuSceneEvents[i].transition(userdata);
+                    }
                 }
             }
         }

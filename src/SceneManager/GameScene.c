@@ -23,7 +23,7 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
             // Add components
             AddSpriteComponent(pd_ptr, earth, "images/earth", false, 0.5f, 1);
             AddCircleColliderComponent(pd_ptr, tree, earth, (Vec2) { 0.0f, 0.0f }, 0.3f, EVT_GAME_EARTH_COLLIDED);
-            AddHealthComponent(pd_ptr, earth, 100);
+            AddHealthComponent(pd_ptr, earth, 100, EVT_GAME_EARTH_DEAD);
         }
 
         { // moon
@@ -39,7 +39,7 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
                 AddKeyInputComponent(pd_ptr, moon, false, false, false, false, false, false, true);
                 AddSpriteComponent(pd_ptr, moon, "images/moon", false, 0.5f, 1);
                 AddCircleColliderComponent(pd_ptr, tree, moon, (Vec2) { 0.0f, 0.0f }, 0.15f, EVT_GAME_MOON_COLLIDED);
-                AddHealthComponent(pd_ptr, moon, 40);
+                AddHealthComponent(pd_ptr, moon, 40, EVT_GAME_MOON_DEAD);
             }
         }
         { // enemy
@@ -55,7 +55,7 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
                 }
                 AddAnimatedSpriteComponent(pd_ptr, enemy, "images/enemy", 12, 12, 8, 0.5f, 1);
                 AddCircleColliderComponent(pd_ptr, tree, enemy, (Vec2) { 0.0f, 0.0f }, (float)(4.0f / 80.0f), EVT_GAME_ENEMY_COLLIDED);
-                AddHealthComponent(pd_ptr, enemy, 10);
+                AddHealthComponent(pd_ptr, enemy, 10, EVT_GAME_ENEMY_DEAD);
             }
         }
     }
@@ -86,7 +86,7 @@ void GameSceneUpdate(void* pd_ptr, Scene *scene, float dt)
     for (size_t i = 0; i < scene->entites->size; i++)
     {
         entity = Array1DItemAtIndex(scene->entites, i);
-        UpdateHealth(pd_ptr, scene, entity);
+        UpdateHealth(pd_ptr, scene->manager, entity);
     }
 }
 

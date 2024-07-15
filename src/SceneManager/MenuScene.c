@@ -50,7 +50,7 @@ void MenuSceneUpdate(void* pd_ptr, Scene *scene, float dt)
             UpdateRotation(entity);
             UpdateSprite(entity, tick);
             UpdateAnimateSprite(entity, tick);
-            UpdateButtonImage(entity, scene);
+            UpdateButtonImage(entity, scene->manager);
         }
     }
 }

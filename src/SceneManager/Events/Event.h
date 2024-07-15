@@ -1,16 +1,14 @@
 #ifndef EVENT_H
 #define EVENT_H
 
-typedef struct
-{
-    int id;
-    void (*fn)(void* userdata);
-} Event;
+#include "../SceneManager.h"
+#include "../../ecs/entity.h"
 
 typedef struct
 {
     int id;
-    void (*fn)(void* a, void* b);
-} CollisionEvent;
+    void (*transition)(SceneManager* manager);
+    void (*collision)(Entity* entity);
+} Event;
 
 #endif // EVENT_H
