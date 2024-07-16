@@ -47,6 +47,7 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 		entity->components.animated_sprite = NULL;
 		entity->components.health = NULL;
         entity->components.button_img = NULL;
+        entity->components.strength = NULL;
 	}
 	return entity;
 }
@@ -304,5 +305,14 @@ void AddButtonImageComponent(void *pd_ptr, Entity *entity, BtnStatus status, int
         {
             api->sprite->freeSprite(sprite_ptr);
         }
+    }
+}
+
+void AddStrengthComponent(void *pd_ptr, Entity *entity, float damage)
+{
+    entity->components.strength = malloc(sizeof(Strength));
+    if (entity->components.strength != NULL)
+    {
+        entity->components.strength->damage = damage;
     }
 }

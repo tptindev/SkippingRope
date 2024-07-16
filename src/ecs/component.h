@@ -86,6 +86,10 @@ typedef struct {
 } Health;
 
 typedef struct {
+    float damage;
+} Strength;
+
+typedef struct {
     int event_id; // Event { id, fn }
 	int16_t order_in_layer;
     BtnStatus status;
@@ -104,6 +108,7 @@ typedef struct {
 	AnimatedSprite* animated_sprite;
 	Health* health;
     ButtonImage* button_img;
+    Strength* strength;
 } Components;
 
 #endif // __COMPONENT_H__

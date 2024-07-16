@@ -10,9 +10,9 @@ void EVT_GAME_EARTH_COLLIDED_FUNC(Entity* entity, Entity* other)
 {
     if (entity != NULL)
     {
-        if (entity->components.health != NULL)
+        if (entity->components.health != NULL && other->components.strength != NULL)
         {
-            entity->components.health->current -= 10;
+            entity->components.health->current -= other->components.strength->damage;
         }
     }
 }

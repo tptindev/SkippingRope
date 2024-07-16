@@ -22,4 +22,5 @@ void AddKeyInputComponent(void* pd_ptr, Entity* entity, bool left, bool right, b
 void AddCircleColliderComponent(void* pd_ptr, struct QuadTree* tree, Entity* entity, Vec2 offset, float radius, int event_id);
 void AddHealthComponent(void* pd_ptr, Entity* entity, float max, int event_id);
 void AddButtonImageComponent(void* pd_ptr, Entity* entity, BtnStatus status, int event_id, const char* imgdir, float offset, int16_t z_order);
+void AddStrengthComponent(void* pd_ptr, Entity* entity, float damage);
 #endif // __ENTITY_H__
