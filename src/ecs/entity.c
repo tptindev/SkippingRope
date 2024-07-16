@@ -114,6 +114,10 @@ void FreeEntity(void *api, Entity* entity)
         }
         freeObjPtr((void*)entity->components.button_img);
     }
+    if (entity->components.strength != NULL)
+    {
+        freeObjPtr(entity->components.strength);
+    }
 
     freeObjPtr(entity);
 }
