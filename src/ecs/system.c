@@ -4,9 +4,6 @@
 #include "../Physics2D/Collision.h"
 #include "pd_api.h"
 #include "../SceneManager/Events/EventDefines.h"
-#include "../SceneManager/Scene.h"
-#include "../Physics2D/World2D.h"
-
 
 void UpdateRotation(Entity* entity)
 {
@@ -121,9 +118,10 @@ void UpdateAnimateSprite(Entity* entity, unsigned int tick)
     }
 }
 
-void UpdateHealth(void* pd_ptr, void* manager, Entity* entity)
+void UpdateHealth(void* pd_ptr, void* scene_ptr, Entity* entity)
 {
-    if (entity == NULL || pd_ptr == NULL || manager == NULL) return;
+    if (entity == NULL || pd_ptr == NULL || scene_ptr == NULL) return;
+    Scene* scene = scene_ptr;
     if (entity->components.health != NULL)
     {
         if (entity->components.health->current <= 0)
@@ -134,12 +132,19 @@ void UpdateHealth(void* pd_ptr, void* manager, Entity* entity)
                 {
                     if (GameSceneEvents[i].transition != NULL)
                     {
-                        GameSceneEvents[i].transition(manager);
+                        GameSceneEvents[i].transition(scene->manager);
                     }
+                    if (GameSceneEvents[i].collision != NULL)
+                    {
+                        GameSceneEvents[i].collision(entity);
+                    }
+                    if (GameSceneEvents[i].dead != NULL)
+                    {
+                        GameSceneEvents[i].dead(pd_ptr, scene->manager, entity);
+                    }
+                    break;
                 }
             }
-//            DestroyEntity(pd_ptr, entity, scene->world);
-//            SceneRemoveGameObject(scene, entity->id);
         }
     }
 }

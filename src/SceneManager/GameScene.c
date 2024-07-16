@@ -86,7 +86,7 @@ void GameSceneUpdate(void* pd_ptr, Scene *scene, float dt)
     for (size_t i = 0; i < scene->entites->size; i++)
     {
         entity = Array1DItemAtIndex(scene->entites, i);
-        UpdateHealth(pd_ptr, scene->manager, entity);
+        UpdateHealth(pd_ptr, scene, entity);
     }
 }
 

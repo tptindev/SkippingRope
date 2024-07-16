@@ -11,6 +11,7 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 	Entity* entity = malloc(sizeof(Entity));
 	if (entity != NULL) {
 		entity->id = world->objId.last++;
+        entity->world = world;
 		entity->components.transform = malloc(sizeof(Transform));
 		if (entity->components.transform != NULL)
 		{
@@ -50,10 +51,14 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 	return entity;
 }
 
-void DestroyEntity(void* api, Entity* entity, World2D* world)
+void DestroyEntity(void* api, Entity* entity)
 {
-	FreeEntity(api, entity);
-	world->objId.max++;
+    if (entity != NULL && api != NULL)
+    {
+        World2D* world = entity->world;
+        FreeEntity(api, entity);
+        world->objId.max++;
+    }
 }
 
 void FreeEntity(void *api, Entity* entity)

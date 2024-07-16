@@ -55,7 +55,7 @@ void FreeScene(void *api, Scene *scene)
             entity = Array1DItemAtIndex(scene->entites, i);
             if (entity != NULL)
             {
-                FreeEntity(api, &entity);
+                FreeEntity(api, entity);
             }
         }
         FreeArray1D(scene->entites);

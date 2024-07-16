@@ -36,3 +36,9 @@ void EVT_GAME_EARTH_DEAD_FUNC(SceneManager* manager)
 {
     SceneManagerTransition(manager, GAME_OVER_SCENE);
 }
+
+void EVT_GAME_ENEMY_DEAD_FUNC(void* pd_ptr, SceneManager* manager, Entity* entity)
+{
+    SceneRemoveGameObject(manager->current_scene, entity->id);
+    DestroyEntity(pd_ptr, entity);
+}
