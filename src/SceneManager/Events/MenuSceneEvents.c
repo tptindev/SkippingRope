@@ -1,5 +1,6 @@
 #include "MenuSceneEvents.h"
 #include "SceneIDs.h"
+#include "pd_api.h"
 
 void EVT_MENU_START_FUNC(SceneManager* manager)
 {
@@ -8,5 +9,8 @@ void EVT_MENU_START_FUNC(SceneManager* manager)
 
 void EVT_MENU_EXIT_FUNC(SceneManager* manager)
 {
-
+    PlaydateAPI* api = manager->pd;
+    if (api != NULL)
+    {
+    }
 }

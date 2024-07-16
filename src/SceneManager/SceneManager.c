@@ -1,13 +1,14 @@
 #include "SceneManager.h"
 #include <stdlib.h>
 
-SceneManager *CreateSceneManager()
+SceneManager *CreateSceneManager(void* pd)
 {
     SceneManager* manager = malloc(sizeof(SceneManager));
     if (manager != NULL)
     {
         manager->current_scene = NULL;
         manager->scenes = CreateArray1D();
+        manager->pd = pd;
     }
     return manager;
 }

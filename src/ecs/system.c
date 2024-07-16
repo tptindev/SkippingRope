@@ -118,7 +118,7 @@ void UpdateCollisionDetection(Entity* entity, struct QuadTree* tree)
                         {
                             if (GameSceneEvents[i].collision != NULL)
                             {
-                                GameSceneEvents[i].collision(entity);
+                                GameSceneEvents[i].collision(entity, other);
                             }
                         }
                     }
@@ -164,11 +164,11 @@ void UpdateHealth(void* pd_ptr, void* scene_ptr, Entity* entity)
                     }
                     if (GameSceneEvents[i].collision != NULL)
                     {
-                        GameSceneEvents[i].collision(entity);
+                        GameSceneEvents[i].collision(entity, NULL);
                     }
                     if (GameSceneEvents[i].dead != NULL)
                     {
-                        GameSceneEvents[i].dead(pd_ptr, scene->manager, entity);
+                        GameSceneEvents[i].dead(scene->manager, entity);
                     }
                     break;
                 }

@@ -6,22 +6,22 @@ void EVT_GAME_BACK_MENU_FUNC(SceneManager* manager)
     SceneManagerTransition(manager, MENU_SCENE);
 }
 
-void EVT_GAME_EARTH_COLLIDED_FUNC(Entity* entity)
+void EVT_GAME_EARTH_COLLIDED_FUNC(Entity* entity, Entity* other)
 {
     if (entity != NULL)
     {
         if (entity->components.health != NULL)
         {
-            entity->components.health->current = 10;
+            entity->components.health->current -= 10;
         }
     }
 }
 
-void EVT_GAME_MOON_COLLIDED_FUNC(Entity* entity)
+void EVT_GAME_MOON_COLLIDED_FUNC(Entity* entity, Entity* other)
 {
 }
 
-void EVT_GAME_ENEMY_COLLIDED_FUNC(Entity* entity)
+void EVT_GAME_ENEMY_COLLIDED_FUNC(Entity* entity, Entity* other)
 {
     if (entity != NULL)
     {
@@ -37,8 +37,8 @@ void EVT_GAME_EARTH_DEAD_FUNC(SceneManager* manager)
     SceneManagerTransition(manager, GAME_OVER_SCENE);
 }
 
-void EVT_GAME_ENEMY_DEAD_FUNC(void* pd_ptr, SceneManager* manager, Entity* entity)
+void EVT_GAME_ENEMY_DEAD_FUNC(SceneManager* manager, Entity* entity)
 {
     SceneRemoveGameObject(manager->current_scene, entity->id);
-    DestroyEntity(pd_ptr, entity);
+    DestroyEntity(manager->pd, entity);
 }

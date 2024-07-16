@@ -7,9 +7,10 @@ typedef struct
 {
     Scene* current_scene;
     Array1D* scenes;
+    void* pd;
 } SceneManager;
 
-SceneManager* CreateSceneManager();
+SceneManager* CreateSceneManager(void* pd);
 void SceneManagerActiveScene(SceneManager* manager, Scene* scene);
 void SceneManagerAddScene(SceneManager* manager, Scene* scene);
 void SceneManagerRemoveScene(SceneManager* manager, int id);
