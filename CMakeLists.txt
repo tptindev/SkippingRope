@@ -39,7 +39,7 @@ file(GLOB RESOURCES
 File(GLOB_RECURSE SOURCE_FILES "src/*.h" "src/*.c")
 
 if (TOOLCHAIN STREQUAL "armgcc")
-    add_executable(${PLAYDATE_GAME_DEVICE} "${SDK}/C_API/buildsupport/setup.c" "${SOURCE_FILES}")
+    add_executable(${PLAYDATE_GAME_DEVICE} "${SDK}/C_API/buildsupport/setup.c" "${SOURCE_FILES} ${RESOURCES}")
 else()
     add_library(${PLAYDATE_GAME_NAME} SHARED ${SOURCE_FILES} ${RESOURCES})
 endif()

@@ -64,9 +64,12 @@ void UpdateCollider(Entity* entity, struct QuadTree* tree)
 void UpdateCollisionDetection(Entity* entity, struct QuadTree* tree)
 {
     if (entity == NULL || tree == NULL) return;
+    if (entity->components.collider == NULL) return;
     Array1D* nodes = CreateArray1D();
     QuadTreeSearch(tree, nodes, &entity->components.collider->shape.box);
     Circle* c0 = entity->components.collider->shape.define;
+    float y = entity->components.collider->shape.box.y;
+
     for (int i = 0; i < nodes->size; i++)
     {
         struct QuadTree* _node = Array1DItemAtIndex(nodes, i);
@@ -78,6 +81,31 @@ void UpdateCollisionDetection(Entity* entity, struct QuadTree* tree)
             if (entity->id != other->id)
             {
                 Circle* cx = other->components.collider->shape.define;
+                float y1 = other->components.collider->shape.box.y;
+                int16_t* z_order = NULL;
+                if (entity->components.sprite != NULL)
+                {
+                    z_order = &entity->components.sprite->order_in_layer;
+                }
+                else if (entity->components.animated_sprite != NULL)
+                {
+                    z_order = &entity->components.animated_sprite->order_in_layer;
+                }
+                else if (entity->components.button_img != NULL)
+                {
+                    z_order = &entity->components.button_img->order_in_layer;
+                }
+                if (z_order != NULL)
+                {
+                    if (y < y1)
+                    {
+                        (*z_order)--;
+                    }
+                    else
+                    {
+                        (*z_order)++;
+                    }
+                }
 
                 bool collided = IsCollisionCircle(c0, cx);
                 if (collided == true)
