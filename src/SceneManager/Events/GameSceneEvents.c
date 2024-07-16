@@ -12,7 +12,7 @@ void EVT_GAME_EARTH_COLLIDED_FUNC(Entity* entity)
     {
         if (entity->components.health != NULL)
         {
-            entity->components.health->current-=20;
+            entity->components.health->current = 0;
         }
     }
 }
