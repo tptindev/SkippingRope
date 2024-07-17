@@ -4,13 +4,12 @@
 #include <stdio.h>
 #include "pd_api.h"
 #include "../Utils.h"
-Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
+Entity* CreateEntity(unsigned int id, World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 {
 	if (world == NULL) return NULL;
-	if (world->objId.last > world->objId.max) { return NULL; }
 	Entity* entity = malloc(sizeof(Entity));
 	if (entity != NULL) {
-		entity->id = world->objId.last++;
+        entity->id = id;
         entity->world = world;
 		entity->components.transform = malloc(sizeof(Transform));
 		if (entity->components.transform != NULL)
@@ -48,6 +47,7 @@ Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale)
 		entity->components.health = NULL;
         entity->components.button_img = NULL;
         entity->components.strength = NULL;
+        entity->components.binding = NULL;
 	}
 	return entity;
 }
@@ -56,9 +56,7 @@ void DestroyEntity(void* api, Entity* entity)
 {
     if (entity != NULL && api != NULL)
     {
-        World2D* world = entity->world;
         FreeEntity(api, entity);
-        world->objId.max++;
     }
 }
 
@@ -117,6 +115,11 @@ void FreeEntity(void *api, Entity* entity)
     if (entity->components.strength != NULL)
     {
         freeObjPtr(entity->components.strength);
+    }
+    if (entity->components.binding != NULL)
+    {
+        Array1DClear(entity->components.binding->others);
+        freeObjPtr(entity->components.binding);
     }
 
     freeObjPtr(entity);
@@ -319,4 +322,16 @@ void AddStrengthComponent(void *pd_ptr, Entity *entity, float damage)
     {
         entity->components.strength->damage = damage;
     }
+}
+
+void AddBindingComponent(void *pd_ptr, Entity *entity, void *other, int event_id)
+{
+    if (entity->components.binding == NULL)
+    {
+        entity->components.binding = malloc(sizeof(Binding));
+        entity->components.binding->event_id = event_id;
+        entity->components.binding->others = CreateArray1D();
+    }
+
+    Array1DPush(entity->components.binding->others, other);
 }

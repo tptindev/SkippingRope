@@ -12,7 +12,7 @@ typedef struct entity {
 	Components components;
 } Entity;
 
-Entity* CreateEntity(World2D* world, Vec2 position, Vec2 rotation, Vec2 scale);
+Entity* CreateEntity(unsigned int id, World2D* world, Vec2 position, Vec2 rotation, Vec2 scale);
 void DestroyEntity(void* api, Entity* entity);
 void FreeEntity(void *api, Entity* entity);
 
@@ -23,4 +23,5 @@ void AddCircleColliderComponent(void* pd_ptr, struct QuadTree* tree, Entity* ent
 void AddHealthComponent(void* pd_ptr, Entity* entity, float max, int event_id);
 void AddButtonImageComponent(void* pd_ptr, Entity* entity, BtnStatus status, int event_id, const char* imgdir, float offset, int16_t z_order);
 void AddStrengthComponent(void* pd_ptr, Entity* entity, float damage);
+void AddBindingComponent(void* pd_ptr, Entity* entity, void* other, int event_id);
 #endif // __ENTITY_H__

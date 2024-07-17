@@ -2,11 +2,12 @@
 #include "pd_api.h"
 #include "../ecs/entity.h"
 #include "../ecs/system.h"
+#include "../ecs/EntityIDs.h"
 
 void GameOverSceneInit(void *pd_ptr, Scene *scene)
 {
     {
-        Entity* menu_bg = CreateEntity(scene->world, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
+        Entity* menu_bg = CreateEntity(ENTITY_BG_GAME_OVER, scene->world, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
         if (menu_bg != NULL)
         {
             SceneAddGameObject(scene, menu_bg);

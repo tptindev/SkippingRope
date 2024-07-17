@@ -240,6 +240,31 @@ void UpdateButtonImage(Entity* entity, void* userdata)
                     {
                         MenuSceneEvents[i].transition(userdata);
                     }
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void UpdateBinding(void* scene_ptr, Entity *entity)
+{
+    if (entity == NULL || scene_ptr == NULL) return;
+    Scene* scene = scene_ptr;
+    if (entity->components.binding != NULL)
+    {
+        for (size_t k = 0; k < Array1DTotalSize(entity->components.binding->others); k++)
+        {
+            Entity* other = Array1DItemAtIndex(entity->components.binding->others, k);
+            for (size_t i = 0; i < (sizeof(GameSceneEvents)/sizeof(Event)); i++)
+            {
+                if (GameSceneEvents[i].id == entity->components.binding->event_id)
+                {
+                    if (GameSceneEvents[i].trigger != NULL)
+                    {
+                        GameSceneEvents[i].trigger(scene->manager, entity, other);
+                    }
+                    break;
                 }
             }
         }

@@ -2,12 +2,12 @@
 #include "pd_api.h"
 #include "../ecs/entity.h"
 #include "../ecs/system.h"
+#include "../ecs/EntityIDs.h"
 #include "Events/EventIDs.h"
-
 void MenuSceneInit(void* pd_ptr, Scene *scene)
 {
     {
-        Entity* start_btn = CreateEntity(scene->world, (Vec2) {2.5f, 1.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
+        Entity* start_btn = CreateEntity(ENTITY_BTN_START, scene->world, (Vec2) {2.5f, 1.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
         if (start_btn != NULL)
         {
             SceneAddGameObject(scene, start_btn);
@@ -16,7 +16,7 @@ void MenuSceneInit(void* pd_ptr, Scene *scene)
         }
     }
     {
-        Entity* exit_btn = CreateEntity(scene->world, (Vec2) {2.5f, 2.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
+        Entity* exit_btn = CreateEntity(ENTITY_BTN_EXIT, scene->world, (Vec2) {2.5f, 2.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
         if (exit_btn != NULL)
         {
             SceneAddGameObject(scene, exit_btn);
@@ -25,7 +25,7 @@ void MenuSceneInit(void* pd_ptr, Scene *scene)
         }
     }
     {
-        Entity* menu_bg = CreateEntity(scene->world, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
+        Entity* menu_bg = CreateEntity(ENTITY_BG_MENU, scene->world, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
         if (menu_bg != NULL)
         {
             SceneAddGameObject(scene, menu_bg);

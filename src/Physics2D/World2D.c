@@ -18,8 +18,6 @@ World2D *CreateWorld(Vec2 gravity, float w, float h)
     world->gravity.y = gravity.y;
     world->w = w;
     world->h = h;
-	world->objId.max = 255; // increase if any gameobj is free (free(void*))
-	world->objId.last = 0;
     return world;
 }
 

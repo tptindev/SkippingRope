@@ -4,17 +4,11 @@
 #include <stdbool.h>
 #include "Math//Vector2D.h"
 
-typedef struct {
-	unsigned int max;
-	unsigned int last;	
-} ObjectId;
-
 typedef struct
 {
     Vec2 gravity;
     float w;
     float h;
-	ObjectId objId;
 } World2D;
 
 World2D *CreateWorld(Vec2 gravity, float w, float h);

@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include "../Physics2D/Math/Vector2D.h"
 #include "../Physics2D/Math/Shape2D.h"
+#include "../Physics2D/DataStructs/Array1D.h"
 
 typedef enum
 {
@@ -100,6 +101,11 @@ typedef struct {
 } ButtonImage;
 
 typedef struct {
+    int event_id;
+    Array1D* others;
+} Binding;
+
+typedef struct {
 	Transform* transform;
 	KeyInput* input;
 	Collider* collider;
@@ -109,6 +115,7 @@ typedef struct {
 	Health* health;
     ButtonImage* button_img;
     Strength* strength;
+    Binding* binding;
 } Components;
 
 #endif // __COMPONENT_H__

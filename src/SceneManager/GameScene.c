@@ -5,6 +5,7 @@
 #include "SceneManager.h"
 #include "Events/SceneIDs.h"
 #include "Events/EventIDs.h"
+#include "../ecs/EntityIDs.h"
 
 static struct QuadTree* tree = NULL;
 
@@ -13,10 +14,26 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
     if (scene == NULL || pd_ptr == NULL) return;
     tree = CreateQuadTreeNode(NULL, scene->world->w, scene->world->h, 0);
 
+    Entity* earth_blood = NULL;
+    Entity* moon_blood = NULL;
+    { // widgets
+        earth_blood = CreateEntity(ENTITY_EARTH_BLOOD, scene->world, (Vec2){ 0.1f, 0.1f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
+        if (earth_blood != NULL)
+        {
+            SceneAddGameObject(scene, earth_blood);
+            AddAnimatedSpriteComponent(pd_ptr, earth_blood, "images/widgets/blood", 72, 12, 5, 0.0f, 1);
+        }
 
+        moon_blood = CreateEntity(ENTITY_MOON_BLOOD, scene->world, (Vec2){ 0.1f, 0.3f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
+        if (moon_blood != NULL)
+        {
+            SceneAddGameObject(scene, moon_blood);
+            AddAnimatedSpriteComponent(pd_ptr, moon_blood, "images/widgets/blood", 72, 12, 5, 0.0f, 1);
+        }
+    }
     { // earth
         Entity* earth = NULL;
-        earth = CreateEntity(scene->world, (Vec2){ 2.5f, 1.5f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
+        earth = CreateEntity(ENTITY_EARTH, scene->world, (Vec2){ 2.5f, 1.5f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
         if (earth != NULL)
         {
             SceneAddGameObject(scene, earth);
@@ -24,10 +41,11 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
             AddSpriteComponent(pd_ptr, earth, "images/earth", false, 0.5f, 1);
             AddCircleColliderComponent(pd_ptr, tree, earth, (Vec2) { 0.0f, 0.0f }, 0.3f, EVT_GAME_EARTH_COLLIDED);
             AddHealthComponent(pd_ptr, earth, 100, EVT_GAME_EARTH_DEAD);
+            AddBindingComponent(pd_ptr, earth, earth_blood, EVT_GAME_EARTH_HIT);
         }
 
         { // moon
-            Entity* moon = CreateEntity(scene->world, (Vec2) { 2.0f, 1.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
+            Entity* moon = CreateEntity(ENTITY_MOON, scene->world, (Vec2) { 2.0f, 1.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
             if (moon != NULL)
             {
                 SceneAddGameObject(scene, moon);
@@ -40,10 +58,11 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
                 AddSpriteComponent(pd_ptr, moon, "images/moon", false, 0.5f, 1);
                 AddCircleColliderComponent(pd_ptr, tree, moon, (Vec2) { 0.0f, 0.0f }, 0.15f, EVT_GAME_MOON_COLLIDED);
                 AddHealthComponent(pd_ptr, moon, 40, EVT_GAME_MOON_DEAD);
+                AddBindingComponent(pd_ptr, moon, moon_blood, EVT_GAME_MOON_HIT);
             }
         }
         { // enemy
-            Entity* enemy = CreateEntity(scene->world, (Vec2) { 0.0f, 0.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
+            Entity* enemy = CreateEntity(ENTITY_ENEMY, scene->world, (Vec2) { 0.0f, 0.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
             if (enemy != NULL)
             {
                 SceneAddGameObject(scene, enemy);
@@ -56,7 +75,7 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
                 AddAnimatedSpriteComponent(pd_ptr, enemy, "images/enemy", 12, 12, 8, 0.5f, 1);
                 AddCircleColliderComponent(pd_ptr, tree, enemy, (Vec2) { 0.0f, 0.0f }, (float)(4.0f / 80.0f), EVT_GAME_ENEMY_COLLIDED);
                 AddHealthComponent(pd_ptr, enemy, 10, EVT_GAME_ENEMY_DEAD);
-                AddStrengthComponent(pd_ptr, enemy, 100.0f);
+                AddStrengthComponent(pd_ptr, enemy, 20.0f);
             }
         }
     }
@@ -78,6 +97,7 @@ void GameSceneUpdate(void* pd_ptr, Scene *scene, float dt)
         UpdateCollider(entity, tree);
         UpdateSprite(entity, tick);
         UpdateAnimateSprite(entity, tick);
+        UpdateBinding(scene, entity);
     }
     for (size_t i = 0; i < scene->entites->size; i++)
     {
