@@ -61,6 +61,7 @@ typedef struct {
 	const char* source;
 	void* (*bitmaps);
 	void* _ptr; // sprite pointer
+    bool running;
 } AnimatedSprite;
 
 typedef struct {
