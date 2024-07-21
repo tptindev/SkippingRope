@@ -20,7 +20,7 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
         if (earth_blood != NULL)
         {
             SceneAddGameObject(scene, earth_blood);
-            AddAnimatedSpriteComponent(pd_ptr, earth_blood, "images/widgets/blood", 72, 12, 5, 0.0f, false, 1);
+            AddAnimatedSpriteComponent(pd_ptr, earth_blood, "images/widgets/blood", 72, 12, 5, 0.0f, false, 2);
         }
     }
     { // earth
@@ -52,7 +52,7 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
             }
         }
         { // enemy
-            Entity* enemy = CreateEntity(ENTITY_ENEMY, scene->world, (Vec2) { 0.0f, 0.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
+            Entity* enemy = CreateEntity(ENTITY_ENEMY, scene->world, (Vec2) { 1.0f, 0.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
             if (enemy != NULL)
             {
                 SceneAddGameObject(scene, enemy);
@@ -68,6 +68,24 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
                 AddStrengthComponent(pd_ptr, enemy, 20.0f);
             }
         }
+        {
+            Entity* side_bar = CreateEntity(ENTITY_SIDE_BAR, scene->world, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
+            if (side_bar != NULL)
+            {
+                SceneAddGameObject(scene, side_bar);
+                // Add Components
+                AddSpriteComponent(pd_ptr, side_bar, "images/side_bar/side_bar_bg", false, 0.0f, 1);
+            }
+        }
+        {
+            Entity* arrow_mini_map = CreateEntity(ENTITY_ARROW_MINI_MAP, scene->world, (Vec2) {0.5625f, 2.3f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
+            if (arrow_mini_map != NULL)
+            {
+                SceneAddGameObject(scene, arrow_mini_map);
+                // Add Components
+                AddSpriteComponent(pd_ptr, arrow_mini_map, "images/widgets/arrow/arrow", false, 0.5f, 3);
+            }
+        }
     }
 }
 
@@ -76,7 +94,6 @@ void GameSceneUpdate(void* pd_ptr, Scene *scene, float dt)
     if (scene == NULL || pd_ptr == NULL) return;
     QuadTreeClear(tree);
     unsigned int tick = ((PlaydateAPI*)pd_ptr)->system->getCurrentTimeMilliseconds();
-    UpdateSpawnEntity(pd_ptr,  scene, NULL, tree, 10);
     Entity* entity = NULL;
     for (size_t i = 0; i < scene->entites->size; i++)
     {
