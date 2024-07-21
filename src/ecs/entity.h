@@ -21,7 +21,7 @@ void AddSpriteComponent(void* pd_ptr, Entity* entity, const char* source, bool f
 void AddKeyInputComponent(void* pd_ptr, Entity* entity, bool left, bool right, bool up, bool down, bool a, bool b, bool crank);
 void AddCircleColliderComponent(void* pd_ptr, struct QuadTree* tree, Entity* entity, Vec2 offset, float radius, int event_id);
 void AddHealthComponent(void* pd_ptr, Entity* entity, float max, int event_id);
-void AddButtonImageComponent(void* pd_ptr, Entity* entity, BtnStatus status, int event_id, const char* imgdir, float offset, int16_t z_order);
+void AddButtonImageComponent(void* pd_ptr, Entity* entity, BtnState state, int event_id, const char* imgdir, float offset, int16_t z_order);
 void AddStrengthComponent(void* pd_ptr, Entity* entity, float damage);
 void AddBindingComponent(void* pd_ptr, Entity* entity, void* other, int event_id);
 #endif // __ENTITY_H__

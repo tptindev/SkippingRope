@@ -203,7 +203,8 @@ void UpdateRenderer(void* pd_ptr, Entity* entity)
     else if (entity->components.button_img != NULL)
     {
         sprite = entity->components.button_img->sprite;
-        bitmap = entity->components.button_img->bitmaps[entity->components.button_img->status];
+        if (entity->components.button_img->bitmaps_cnt <= entity->components.button_img->state) return;
+        bitmap = entity->components.button_img->bitmaps[entity->components.button_img->state];
         z_order = entity->components.button_img->order_in_layer;
         if (sprite != NULL && bitmap != NULL)
         {
@@ -224,20 +225,23 @@ void UpdateScale(Entity* entity, float scale)
     if (entity == NULL) return;
 }
 
-void UpdateButtonImage(Entity* entity, void* userdata)
+void UpdateButtonImage(void* pd_ptr, Entity* entity, void* userdata)
 {
-    if (entity == NULL) return;
+    if (entity == NULL && pd_ptr == NULL) return;
+    PlaydateAPI* api = pd_ptr;
     if (entity->components.button_img != NULL)
     {
-        if (entity->components.button_img->state == PUSHED)
+        if (entity->components.button_img->state == RELEASE)
         {
-            entity->components.button_img->state = RELEASE;
             for (size_t i = 0; i < (sizeof(MenuSceneEvents)/sizeof(Event)); i++)
             {
                 if (MenuSceneEvents[i].id == entity->components.button_img->event_id)
                 {
                     if (GameSceneEvents[i].transition != NULL)
                     {
+                        for(int i = 0; i <= 50; i++) {
+                            api->system->logToConsole("%d", i);
+                        }
                         MenuSceneEvents[i].transition(userdata);
                     }
                     break;

@@ -50,7 +50,7 @@ void MenuSceneUpdate(void* pd_ptr, Scene *scene, float dt)
             UpdateRotation(entity);
             UpdateSprite(entity, tick);
             UpdateAnimateSprite(entity, tick);
-            UpdateButtonImage(entity, scene->manager);
+            UpdateButtonImage(pd_ptr, entity, scene->manager);
         }
     }
 }
@@ -85,14 +85,14 @@ void MenuSceneEvent(void *pd_ptr, Scene *scene, void* manager)
             {
                 if (entity->components.button_img != NULL)
                 {
-                    entity->components.button_img->status = ACTIVE;
+                    entity->components.button_img->state = ACTIVE;
                 }
             }
             else
             {
                 if (entity->components.button_img != NULL)
                 {
-                    entity->components.button_img->status = NORMAL;
+                    entity->components.button_img->state = NORMAL;
                 }
             }
             entity = NULL;

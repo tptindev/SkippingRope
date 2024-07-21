@@ -17,13 +17,9 @@ typedef enum
 {
 	NORMAL,
     ACTIVE,
-    DISABLE,
-} BtnStatus;
-
-typedef enum
-{
     PUSHED,
     RELEASE,
+    DISABLE,
 } BtnState;
 
 typedef struct {
@@ -93,10 +89,10 @@ typedef struct {
 typedef struct {
     int event_id; // Event { id, fn }
 	int16_t order_in_layer;
-    BtnStatus status;
     BtnState state;
     const char* imgdir;
     void* (*bitmaps);
+    char bitmaps_cnt;
     void* sprite;
 } ButtonImage;
 

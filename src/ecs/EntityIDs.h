@@ -12,5 +12,6 @@ typedef enum
     ENTITY_BG_MENU,
     ENTITY_BG_GAME_OVER,
     ENTITY_ENEMY,
+    ENTITY_SIDE_BAR
 } EntityID;
 #endif // ENTITYIDS_H

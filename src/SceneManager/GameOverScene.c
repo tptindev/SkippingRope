@@ -36,7 +36,7 @@ void GameOverSceneUpdate(void *pd_ptr, Scene *scene, float dt)
             UpdateRotation(entity);
             UpdateSprite(entity, tick);
             UpdateAnimateSprite(entity, tick);
-            UpdateButtonImage(entity, scene->manager);
+            UpdateButtonImage(pd_ptr, entity, scene->manager);
         }
     }
 }

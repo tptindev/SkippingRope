@@ -264,7 +264,7 @@ void AddHealthComponent(void* pd_ptr, Entity* entity, float max, int event_id)
 }
 
 
-void AddButtonImageComponent(void *pd_ptr, Entity *entity, BtnStatus status, int event_id, const char* imgdir, float offset, int16_t z_order)
+void AddButtonImageComponent(void *pd_ptr, Entity *entity, BtnState state, int event_id, const char* imgdir, float offset, int16_t z_order)
 {
     if (pd_ptr == NULL || entity == NULL) return;
     PlaydateAPI* api = pd_ptr;
@@ -272,13 +272,12 @@ void AddButtonImageComponent(void *pd_ptr, Entity *entity, BtnStatus status, int
     if (entity->components.button_img != NULL)
     {
 		entity->components.button_img->order_in_layer = z_order;
-        entity->components.button_img->state = RELEASE;
-        entity->components.button_img->status = status;
+        entity->components.button_img->state = state;
         entity->components.button_img->imgdir = imgdir;
 		entity->components.button_img->bitmaps = malloc(sizeof(void*) * 3);
+        entity->components.button_img->bitmaps_cnt = 3;
         entity->components.button_img->event_id = event_id;
-
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < entity->components.button_img->bitmaps_cnt; i++)
         {
 			entity->components.button_img->bitmaps[i] = NULL;
             char path_buffer[32];
@@ -299,7 +298,7 @@ void AddButtonImageComponent(void *pd_ptr, Entity *entity, BtnStatus status, int
         if (sprite_ptr != NULL)
         {
             entity->components.button_img->sprite = sprite_ptr;
-            api->sprite->setImage(sprite_ptr, entity->components.button_img->bitmaps[(int)status], kBitmapUnflipped);
+            api->sprite->setImage(sprite_ptr, entity->components.button_img->bitmaps[(int)state], kBitmapUnflipped);
             api->sprite->setZIndex(sprite_ptr, z_order);
             api->sprite->setCenter(sprite_ptr, offset, offset);
             api->sprite->moveTo(

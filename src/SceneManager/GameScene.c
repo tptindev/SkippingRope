@@ -15,25 +15,17 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
     tree = CreateQuadTreeNode(NULL, scene->world->w, scene->world->h, 0);
 
     Entity* earth_blood = NULL;
-    Entity* moon_blood = NULL;
     { // widgets
-        earth_blood = CreateEntity(ENTITY_EARTH_BLOOD, scene->world, (Vec2){ 0.1f, 0.1f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
+        earth_blood = CreateEntity(ENTITY_EARTH_BLOOD, scene->world, (Vec2){ 0.1f, 0.05f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
         if (earth_blood != NULL)
         {
             SceneAddGameObject(scene, earth_blood);
-            AddAnimatedSpriteComponent(pd_ptr, earth_blood, "images/widgets/blood", 72, 12, 5, 0.0f, 1);
-        }
-
-        moon_blood = CreateEntity(ENTITY_MOON_BLOOD, scene->world, (Vec2){ 0.1f, 0.3f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
-        if (moon_blood != NULL)
-        {
-            SceneAddGameObject(scene, moon_blood);
-            AddAnimatedSpriteComponent(pd_ptr, moon_blood, "images/widgets/blood", 72, 12, 5, 0.0f, 1);
+            AddAnimatedSpriteComponent(pd_ptr, earth_blood, "images/widgets/blood", 72, 12, 5, 0.0f, 2);
         }
     }
     { // earth
         Entity* earth = NULL;
-        earth = CreateEntity(ENTITY_EARTH, scene->world, (Vec2){ 2.5f, 1.5f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
+        earth = CreateEntity(ENTITY_EARTH, scene->world, (Vec2){ 3.0f, 1.5f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
         if (earth != NULL)
         {
             SceneAddGameObject(scene, earth);
@@ -57,8 +49,6 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
                 AddKeyInputComponent(pd_ptr, moon, false, false, false, false, false, false, true);
                 AddSpriteComponent(pd_ptr, moon, "images/moon", false, 0.5f, 1);
                 AddCircleColliderComponent(pd_ptr, tree, moon, (Vec2) { 0.0f, 0.0f }, 0.15f, EVT_GAME_MOON_COLLIDED);
-                AddHealthComponent(pd_ptr, moon, 40, EVT_GAME_MOON_DEAD);
-                AddBindingComponent(pd_ptr, moon, moon_blood, EVT_GAME_MOON_HIT);
             }
         }
         { // enemy
@@ -77,6 +67,15 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
                 AddHealthComponent(pd_ptr, enemy, 10, EVT_GAME_ENEMY_DEAD);
                 AddStrengthComponent(pd_ptr, enemy, 20.0f);
             }
+        }
+    }
+    {
+        Entity* side_bar = CreateEntity(ENTITY_SIDE_BAR, scene->world, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
+        if (side_bar != NULL)
+        {
+            SceneAddGameObject(scene, side_bar);
+            // Add Components
+            AddSpriteComponent(pd_ptr, side_bar, "images/side_bar/side_bar_bg", false, 0.0f, 1);
         }
     }
 }
