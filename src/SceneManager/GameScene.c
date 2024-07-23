@@ -98,6 +98,8 @@ void GameSceneUpdate(void* pd_ptr, Scene *scene, float dt)
     if (scene == NULL || pd_ptr == NULL) return;
     QuadTreeClear(tree);
     unsigned int tick = ((PlaydateAPI*)pd_ptr)->system->getCurrentTimeMilliseconds();
+
+    UpdateSpawn(scene);
     Entity* entity = NULL;
     for (size_t i = 0; i < scene->entites->size; i++)
     {

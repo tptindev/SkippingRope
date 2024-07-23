@@ -4,6 +4,8 @@
 #include "../Physics2D/Collision.h"
 #include "pd_api.h"
 #include "../SceneManager/Events/EventDefines.h"
+#include "../Physics2D/Utils.h"
+#include "../ecs/EntityIDs.h"
 void UpdateRotation(Entity* entity)
 {
     if (entity == NULL) return;
@@ -272,6 +274,25 @@ void UpdateBinding(void* scene_ptr, Entity *entity)
                     }
                     break;
                 }
+            }
+        }
+    }
+}
+
+void UpdateSpawn(void* scene_ptr)
+{
+    if (scene_ptr != NULL)
+    {
+        Scene* scene = scene_ptr;
+        int id = randInt(ENTITY_ENEMY, ENTITY_ENEMY_MAX);
+        for (size_t i = 0; i < Array1DTotalSize(scene->entites); i++)
+        {
+            Entity* entity = Array1DItemAtIndex(scene->entites, i);
+            entity->active = (entity->id == id);
+            if (entity->active)
+            {
+                float x = randReal(0.0f, 5.0f);
+                float y = randReal(0.0f, 3.0f);
             }
         }
     }

@@ -41,8 +41,9 @@ void EVT_GAME_EARTH_DEAD_FUNC(SceneManager* manager)
 
 void EVT_GAME_ENEMY_DEAD_FUNC(SceneManager* manager, Entity* entity)
 {
-    SceneRemoveGameObject(manager->current_scene, entity->id);
-    DestroyEntity(manager->pd, entity);
+    entity->active = false;
+//    SceneRemoveGameObject(manager->current_scene, entity->id);
+//    DestroyEntity(manager->pd, entity);
 }
 
 void EVT_GAME_EARTH_HIT_FUNC(SceneManager* manager, Entity *entity, Entity* other)
