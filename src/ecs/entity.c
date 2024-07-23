@@ -11,6 +11,7 @@ Entity* CreateEntity(unsigned int id, World2D* world, Vec2 position, Vec2 rotati
 	if (entity != NULL) {
         entity->id = id;
         entity->world = world;
+        entity->active = true;
 		entity->components.transform = malloc(sizeof(Transform));
 		if (entity->components.transform != NULL)
 		{
@@ -248,6 +249,7 @@ void AddCircleColliderComponent(void* pd_ptr, struct QuadTree* tree, Entity* ent
 			Vec2Add(entity->components.transform->position, offset),
 			radius
 		);
+        if (entity->active == false) return;
 		GetCircleBoundary(&entity->components.collider->shape.box, entity->components.collider->shape.define);
 		QuadtreeInsert(tree, entity, &entity->components.collider->shape.box);
 	}
@@ -334,4 +336,9 @@ void AddBindingComponent(void *pd_ptr, Entity *entity, void *other, int event_id
     }
 
     Array1DPush(entity->components.binding->others, other);
+}
+
+void RemoveComponent(Entity *entity, void *component)
+{
+
 }

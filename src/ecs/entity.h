@@ -10,6 +10,7 @@ typedef struct entity {
 	unsigned int id;
     void* world;
 	Components components;
+    bool active;
 } Entity;
 
 Entity* CreateEntity(unsigned int id, World2D* world, Vec2 position, Vec2 rotation, Vec2 scale);
@@ -24,4 +25,6 @@ void AddHealthComponent(void* pd_ptr, Entity* entity, float max, int event_id);
 void AddButtonImageComponent(void* pd_ptr, Entity* entity, BtnState state, int event_id, const char* imgdir, float offset, int16_t z_order);
 void AddStrengthComponent(void* pd_ptr, Entity* entity, float damage);
 void AddBindingComponent(void* pd_ptr, Entity* entity, void* other, int event_id);
+
+void RemoveComponent(Entity* entity, void* component);
 #endif // __ENTITY_H__

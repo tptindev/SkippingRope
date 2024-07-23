@@ -51,21 +51,25 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
                 AddCircleColliderComponent(pd_ptr, tree, moon, (Vec2) { 0.0f, 0.0f }, 0.15f, EVT_GAME_MOON_COLLIDED);
             }
         }
-        { // enemy
-            Entity* enemy = CreateEntity(ENTITY_ENEMY, scene->world, (Vec2) { 1.0f, 0.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
-            if (enemy != NULL)
+        { // enemies
+            for (int i = 0; i < (int)ENTITY_ENEMY_MAX; ++i)
             {
-                SceneAddGameObject(scene, enemy);
-                // Add components
-                if (earth != NULL)
+                Entity* enemy = CreateEntity(ENTITY_ENEMY + i, scene->world, (Vec2) { 1.0f, 0.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
+                if (enemy != NULL)
                 {
-                    enemy->components.motion->acceleration = scene->world->gravity;
-                    enemy->components.motion->direction = Vec2Normalize(Vec2Subtract(earth->components.transform->position, enemy->components.transform->position));
+                    enemy->active = false;
+                    SceneAddGameObject(scene, enemy);
+                    // Add components
+                    if (earth != NULL)
+                    {
+                        enemy->components.motion->acceleration = scene->world->gravity;
+                        enemy->components.motion->direction = Vec2Normalize(Vec2Subtract(earth->components.transform->position, enemy->components.transform->position));
+                    }
+                    AddAnimatedSpriteComponent(pd_ptr, enemy, "images/enemy", 12, 12, 8, 0.5f, true, 1);
+                    AddCircleColliderComponent(pd_ptr, tree, enemy, (Vec2) { 0.0f, 0.0f }, (float)(4.0f / 80.0f), EVT_GAME_ENEMY_COLLIDED);
+                    AddHealthComponent(pd_ptr, enemy, 10, EVT_GAME_ENEMY_DEAD);
+                    AddStrengthComponent(pd_ptr, enemy, 20.0f);
                 }
-                AddAnimatedSpriteComponent(pd_ptr, enemy, "images/enemy", 12, 12, 8, 0.5f, true, 1);
-                AddCircleColliderComponent(pd_ptr, tree, enemy, (Vec2) { 0.0f, 0.0f }, (float)(4.0f / 80.0f), EVT_GAME_ENEMY_COLLIDED);
-                AddHealthComponent(pd_ptr, enemy, 10, EVT_GAME_ENEMY_DEAD);
-                AddStrengthComponent(pd_ptr, enemy, 20.0f);
             }
         }
         {
@@ -98,6 +102,7 @@ void GameSceneUpdate(void* pd_ptr, Scene *scene, float dt)
     for (size_t i = 0; i < scene->entites->size; i++)
     {
         entity = Array1DItemAtIndex(scene->entites, i);
+        if (entity->active == false) continue;
         UpdateScale(entity, 1);
         UpdateRotation(entity);
         UpdateMovement(entity, dt);
@@ -109,11 +114,13 @@ void GameSceneUpdate(void* pd_ptr, Scene *scene, float dt)
     for (size_t i = 0; i < scene->entites->size; i++)
     {
         entity = Array1DItemAtIndex(scene->entites, i);
+        if (entity->active == false) continue;
         UpdateCollisionDetection(entity, tree);
     }
     for (size_t i = 0; i < scene->entites->size; i++)
     {
         entity = Array1DItemAtIndex(scene->entites, i);
+        if (entity->active == false) continue;
         UpdateHealth(pd_ptr, scene, entity);
     }
 }
@@ -125,6 +132,8 @@ void GameSceneRender(void* pd_ptr, Scene *scene)
     for (size_t i = 0; i < scene->entites->size; i++)
     {
         entity = Array1DItemAtIndex(scene->entites, i);
+        if (entity->active == false) continue;
+        UpdateScale(entity, 1);
         if (entity != NULL)
         {
             UpdateRenderer(pd_ptr, entity);
@@ -140,6 +149,8 @@ void GameSceneEvent(void *pd_ptr, Scene *scene, void *manager)
     for (size_t i = 0; i < scene->entites->size; i++)
     {
         entity = Array1DItemAtIndex(scene->entites, i);
+        if (entity->active == false) continue;
+        UpdateScale(entity, 1);
         if (entity != NULL)
         {
             if (entity->components.transform != NULL)

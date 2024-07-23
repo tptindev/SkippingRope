@@ -4,7 +4,6 @@
 #include "../Physics2D/Collision.h"
 #include "pd_api.h"
 #include "../SceneManager/Events/EventDefines.h"
-#include "../ecs/EntityIDs.h"
 void UpdateRotation(Entity* entity)
 {
     if (entity == NULL) return;
@@ -46,6 +45,7 @@ void UpdatePosition(Entity* entity, Vec2 buffer, float dt)
 void UpdateCollider(Entity* entity, struct QuadTree* tree)
 {
     if (entity == NULL) return;
+    if (entity->active == false) return;
     if (entity->components.collider != NULL && entity->components.transform != NULL)
     {
         // Update Collider
@@ -64,6 +64,7 @@ void UpdateCollider(Entity* entity, struct QuadTree* tree)
 void UpdateCollisionDetection(Entity* entity, struct QuadTree* tree)
 {
     if (entity == NULL || tree == NULL) return;
+    if (entity->active == false) return;
     if (entity->components.collider == NULL) return;
     Array1D* nodes = CreateArray1D();
     QuadTreeSearch(tree, nodes, &entity->components.collider->shape.box);
