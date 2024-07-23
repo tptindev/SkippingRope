@@ -141,6 +141,7 @@ void UpdateAnimateSprite(Entity* entity, unsigned int tick)
     if (entity == NULL) return;
     if (entity->components.animated_sprite != NULL)
     {
+        if (entity->components.animated_sprite->running != true) return;
         int frame_count = entity->components.animated_sprite->frame_count;
         entity->components.animated_sprite->frame_index = (tick % frame_count);
     }
@@ -272,26 +273,5 @@ void UpdateBinding(void* scene_ptr, Entity *entity)
                 }
             }
         }
-    }
-}
-
-void UpdateSpawnEntity(void *pd_ptr, void* scene_ptr, Entity* earth, void* tree,  size_t N)
-{
-    if (earth == NULL || scene_ptr == NULL || pd_ptr == NULL || tree == NULL) return;
-    Scene* scene = scene_ptr;
-    Entity* enemy = CreateEntity(ENTITY_ENEMY, scene->world, (Vec2) { 1.1f, 0.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
-    if (enemy != NULL)
-    {
-        SceneAddGameObject(scene, enemy);
-        // Add components
-        if (earth != NULL)
-        {
-            enemy->components.motion->acceleration = scene->world->gravity;
-            enemy->components.motion->direction = Vec2Normalize(Vec2Subtract(earth->components.transform->position, enemy->components.transform->position));
-        }
-        AddAnimatedSpriteComponent(pd_ptr, enemy, "images/enemy", 12, 12, 8, 0.5f, 1);
-        AddCircleColliderComponent(pd_ptr, tree, enemy, (Vec2) { 0.0f, 0.0f }, (float)(4.0f / 80.0f), EVT_GAME_ENEMY_COLLIDED);
-        AddHealthComponent(pd_ptr, enemy, 10, EVT_GAME_ENEMY_DEAD);
-        AddStrengthComponent(pd_ptr, enemy, 20.0f);
     }
 }

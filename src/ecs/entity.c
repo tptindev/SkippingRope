@@ -125,7 +125,7 @@ void FreeEntity(void *api, Entity* entity)
     freeObjPtr(entity);
 }
 
-void AddAnimatedSpriteComponent(void* pd_ptr, Entity* entity, const char* source, int frame_width, int frame_height, int frame_count, float offset, int16_t z_order)
+void AddAnimatedSpriteComponent(void* pd_ptr, Entity* entity, const char* source, int frame_width, int frame_height, int frame_count, float offset, bool running, int16_t z_order)
 {
     PlaydateAPI* api = pd_ptr;
 	entity->components.animated_sprite = malloc(sizeof(AnimatedSprite));
@@ -139,6 +139,7 @@ void AddAnimatedSpriteComponent(void* pd_ptr, Entity* entity, const char* source
 		entity->components.animated_sprite->order_in_layer = z_order;
 		entity->components.animated_sprite->bitmaps = NULL;
 		entity->components.animated_sprite->_ptr = NULL;
+        entity->components.animated_sprite->running = running;
 
 		void* (*bitmaps) = malloc(sizeof(void*) * frame_count);
 		if (bitmaps != NULL)
@@ -196,8 +197,8 @@ void AddSpriteComponent(void* pd_ptr, Entity* entity, const char* source, bool f
 			api->system->logToConsole("Error: %s", outerr);
 			api->graphics->freeBitmap(bitmap_ptr);
 			return;
-		}
-		entity->components.sprite->bitmap = bitmap_ptr;
+        }
+        entity->components.sprite->bitmap = bitmap_ptr;
 		LCDSprite* sprite_ptr = api->sprite->newSprite();
 		if (sprite_ptr != NULL)
 		{
@@ -205,7 +206,7 @@ void AddSpriteComponent(void* pd_ptr, Entity* entity, const char* source, bool f
 			api->sprite->setImage(sprite_ptr, bitmap_ptr, kBitmapUnflipped);
             api->sprite->setZIndex(sprite_ptr, z_order);
             api->sprite->setCenter(sprite_ptr, offset, offset);
-			api->sprite->moveTo(
+            api->sprite->moveTo(
 				sprite_ptr,
 				entity->components.transform->position.x * 80.0f,
 				entity->components.transform->position.y * 80.0f

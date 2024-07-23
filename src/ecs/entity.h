@@ -16,7 +16,7 @@ Entity* CreateEntity(unsigned int id, World2D* world, Vec2 position, Vec2 rotati
 void DestroyEntity(void* api, Entity* entity);
 void FreeEntity(void *api, Entity* entity);
 
-void AddAnimatedSpriteComponent(void* pd_ptr, Entity* entity, const char* source, int frame_width, int frame_height, int frame_count, float offset, int16_t z_order);
+void AddAnimatedSpriteComponent(void* pd_ptr, Entity* entity, const char* source, int frame_width, int frame_height, int frame_count, float offset, bool running, int16_t z_order);
 void AddSpriteComponent(void* pd_ptr, Entity* entity, const char* source, bool flip, float offset, int16_t z_order);
 void AddKeyInputComponent(void* pd_ptr, Entity* entity, bool left, bool right, bool up, bool down, bool a, bool b, bool crank);
 void AddCircleColliderComponent(void* pd_ptr, struct QuadTree* tree, Entity* entity, Vec2 offset, float radius, int event_id);

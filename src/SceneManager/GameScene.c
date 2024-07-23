@@ -20,7 +20,7 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
         if (earth_blood != NULL)
         {
             SceneAddGameObject(scene, earth_blood);
-            AddAnimatedSpriteComponent(pd_ptr, earth_blood, "images/widgets/blood", 72, 12, 5, 0.0f, 2);
+            AddAnimatedSpriteComponent(pd_ptr, earth_blood, "images/widgets/blood", 72, 12, 5, 0.0f, false, 2);
         }
     }
     { // earth
@@ -51,23 +51,40 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
                 AddCircleColliderComponent(pd_ptr, tree, moon, (Vec2) { 0.0f, 0.0f }, 0.15f, EVT_GAME_MOON_COLLIDED);
             }
         }
-    }
-    {
-        Entity* side_bar = CreateEntity(ENTITY_SIDE_BAR, scene->world, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
-        if (side_bar != NULL)
-        {
-            SceneAddGameObject(scene, side_bar);
-            // Add Components
-            AddSpriteComponent(pd_ptr, side_bar, "images/side_bar/side_bar_bg", false, 0.0f, 1);
+        { // enemy
+            Entity* enemy = CreateEntity(ENTITY_ENEMY, scene->world, (Vec2) { 1.0f, 0.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
+            if (enemy != NULL)
+            {
+                SceneAddGameObject(scene, enemy);
+                // Add components
+                if (earth != NULL)
+                {
+                    enemy->components.motion->acceleration = scene->world->gravity;
+                    enemy->components.motion->direction = Vec2Normalize(Vec2Subtract(earth->components.transform->position, enemy->components.transform->position));
+                }
+                AddAnimatedSpriteComponent(pd_ptr, enemy, "images/enemy", 12, 12, 8, 0.5f, true, 1);
+                AddCircleColliderComponent(pd_ptr, tree, enemy, (Vec2) { 0.0f, 0.0f }, (float)(4.0f / 80.0f), EVT_GAME_ENEMY_COLLIDED);
+                AddHealthComponent(pd_ptr, enemy, 10, EVT_GAME_ENEMY_DEAD);
+                AddStrengthComponent(pd_ptr, enemy, 20.0f);
+            }
         }
-    }
-    {
-        Entity* arrow_mini_map = CreateEntity(ENTITY_ARROW_MINI_MAP, scene->world, (Vec2) {0.5625f, 2.3f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
-        if (arrow_mini_map != NULL)
         {
-            SceneAddGameObject(scene, arrow_mini_map);
-            // Add Components
-            AddSpriteComponent(pd_ptr, arrow_mini_map, "images/widgets/arrow/arrow", false, 0.5f, 2);
+            Entity* side_bar = CreateEntity(ENTITY_SIDE_BAR, scene->world, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
+            if (side_bar != NULL)
+            {
+                SceneAddGameObject(scene, side_bar);
+                // Add Components
+                AddSpriteComponent(pd_ptr, side_bar, "images/side_bar/side_bar_bg", false, 0.0f, 1);
+            }
+        }
+        {
+            Entity* arrow_mini_map = CreateEntity(ENTITY_ARROW_MINI_MAP, scene->world, (Vec2) {0.5625f, 2.3f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
+            if (arrow_mini_map != NULL)
+            {
+                SceneAddGameObject(scene, arrow_mini_map);
+                // Add Components
+                AddSpriteComponent(pd_ptr, arrow_mini_map, "images/widgets/arrow/arrow", false, 0.5f, 3);
+            }
         }
     }
 }
@@ -77,7 +94,6 @@ void GameSceneUpdate(void* pd_ptr, Scene *scene, float dt)
     if (scene == NULL || pd_ptr == NULL) return;
     QuadTreeClear(tree);
     unsigned int tick = ((PlaydateAPI*)pd_ptr)->system->getCurrentTimeMilliseconds();
-    UpdateSpawnEntity(pd_ptr,  scene, NULL, tree, 10);
     Entity* entity = NULL;
     for (size_t i = 0; i < scene->entites->size; i++)
     {
