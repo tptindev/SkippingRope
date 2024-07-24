@@ -59,6 +59,7 @@ void EVT_GAME_EARTH_HIT_FUNC(SceneManager* manager, Entity *entity, Entity* bloo
             {
                 float current = entity->components.health->current;
                 float max = entity->components.health->max;
+                if (current == max) break;
                 if (blood->components.animated_sprite != NULL)
                 {
                     if (blood->components.animated_sprite->_ptr != NULL)
