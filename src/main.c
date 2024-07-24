@@ -1,5 +1,6 @@
 #include "pd_api.h"
 #include "game.h"
+#include <time.h>
 
 
 static unsigned int last_time;
@@ -15,6 +16,7 @@ int eventHandler(PlaydateAPI* pd, PDSystemEvent event, uint32_t arg)
 
 	if ( event == kEventInit )
 	{
+        srand(time(0));
 		last_time = pd->system->getCurrentTimeMilliseconds();
 		game_initialize(pd);
 		// Note: If you set an update callback in the kEventInit handler, the system assumes the game is pure C and doesn't run any Lua code in the game

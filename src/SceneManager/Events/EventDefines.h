@@ -12,6 +12,7 @@ Event MenuSceneEvents[2 ] = {
     {EVT_MENU_EXIT,  EVT_MENU_EXIT_FUNC, NULL},
 };
 
+// Trans, Collision, Dead, Trigger
 Event GameSceneEvents[9] = {
     {EVT_GAME_BACK_MENU, EVT_GAME_BACK_MENU_FUNC, NULL, NULL, NULL},
     {EVT_GAME_EARTH_DEAD, EVT_GAME_EARTH_DEAD_FUNC, NULL, NULL, NULL},

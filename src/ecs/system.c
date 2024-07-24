@@ -9,6 +9,7 @@
 void UpdateRotation(Entity* entity)
 {
     if (entity == NULL) return;
+    if (entity->active == false) return;
     if (entity->components.transform != NULL && entity->components.motion != NULL)
     {
         if (entity->components.transform->rotation.x == 0.0f && entity->components.transform->rotation.y == 0.0f) return;
@@ -20,6 +21,7 @@ void UpdateRotation(Entity* entity)
 void UpdateMovement(Entity* entity, float dt)
 {
     if (entity == NULL) return;
+    if (entity->active == false) return;
     if (entity->components.transform != NULL && entity->components.motion != NULL)
     {
         if (entity->components.motion->acceleration.x != 0.0f || entity->components.motion->acceleration.y != 0.0f)
@@ -37,6 +39,7 @@ void UpdateMovement(Entity* entity, float dt)
 void UpdatePosition(Entity* entity, Vec2 buffer, float dt)
 {
     if (entity == NULL) return;
+    if (entity->active == false) return;
     if (entity->components.transform != NULL)
     {
         entity->components.transform->position.x += buffer.x;
@@ -134,6 +137,7 @@ void UpdateCollisionDetection(Entity* entity, struct QuadTree* tree)
 void UpdateSprite(Entity* entity, unsigned int tick)
 {
     if (entity == NULL) return;
+    if (entity->active == false) return;
     if (entity->components.sprite != NULL)
     {
     }
@@ -142,6 +146,7 @@ void UpdateSprite(Entity* entity, unsigned int tick)
 void UpdateAnimateSprite(Entity* entity, unsigned int tick)
 {
     if (entity == NULL) return;
+    if (entity->active == false) return;
     if (entity->components.animated_sprite != NULL)
     {
         if (entity->components.animated_sprite->running != true) return;
@@ -153,6 +158,7 @@ void UpdateAnimateSprite(Entity* entity, unsigned int tick)
 void UpdateHealth(void* pd_ptr, void* scene_ptr, Entity* entity)
 {
     if (entity == NULL || pd_ptr == NULL || scene_ptr == NULL) return;
+    if (entity->active == false) return;
     Scene* scene = scene_ptr;
     if (entity->components.health != NULL)
     {
@@ -184,6 +190,7 @@ void UpdateHealth(void* pd_ptr, void* scene_ptr, Entity* entity)
 void UpdateRenderer(void* pd_ptr, Entity* entity)
 {
     if (entity == NULL || pd_ptr == NULL) return;
+    if (entity->active == false) return;
     PlaydateAPI* api = pd_ptr;
     LCDSprite* sprite = NULL;
     LCDBitmap* bitmap = NULL;
@@ -227,11 +234,13 @@ void UpdateRenderer(void* pd_ptr, Entity* entity)
 void UpdateScale(Entity* entity, float scale)
 {
     if (entity == NULL) return;
+    if (entity->active == false) return;
 }
 
 void UpdateButtonImage(void* pd_ptr, Entity* entity, void* userdata)
 {
-    if (entity == NULL && pd_ptr == NULL) return;
+    if (entity == NULL || pd_ptr == NULL) return;
+    if (entity->active == false) return;
     PlaydateAPI* api = pd_ptr;
     if (entity->components.button_img != NULL)
     {
@@ -258,6 +267,7 @@ void UpdateButtonImage(void* pd_ptr, Entity* entity, void* userdata)
 void UpdateBinding(void* scene_ptr, Entity *entity)
 {
     if (entity == NULL || scene_ptr == NULL) return;
+    if (entity->active == false) return;
     Scene* scene = scene_ptr;
     if (entity->components.binding != NULL)
     {
@@ -279,20 +289,36 @@ void UpdateBinding(void* scene_ptr, Entity *entity)
     }
 }
 
-void UpdateSpawn(void* scene_ptr)
+void UpdateSpawn(void* pd_ptr, void* scene_ptr)
 {
-    if (scene_ptr != NULL)
+    if (scene_ptr != NULL && pd_ptr != NULL)
     {
-        Scene* scene = scene_ptr;
-        int id = randInt(ENTITY_ENEMY, ENTITY_ENEMY_MAX);
-        for (size_t i = 0; i < Array1DTotalSize(scene->entites); i++)
+        PlaydateAPI* api = pd_ptr;
+        unsigned int ms = api->system->getCurrentTimeMilliseconds();
+        if (((ms % 1000) % 1000) < 20)
         {
-            Entity* entity = Array1DItemAtIndex(scene->entites, i);
-            entity->active = (entity->id == id);
-            if (entity->active)
+            int id = randIntIn(ENTITY_ENEMY, ENTITY_ENEMY_MAX);
+            Vec2 positions[2] = {
+                {randRealIn(1, 5), 0},
+                {1.0f, randRealIn(0, 3)}
+            };
+
+            int idx = randIntIn(0, 1);
+
+            api->system->logToConsole("%u %d %f %f", ms, id, positions[idx].x, positions[idx].y);
+            Scene* scene = scene_ptr;
+            for (size_t i = 0; i < Array1DTotalSize(scene->entities); i++)
             {
-                float x = randReal(0.0f, 5.0f);
-                float y = randReal(0.0f, 3.0f);
+                Entity* entity = Array1DItemAtIndex(scene->entities, i);
+                if (entity->active == true) continue;
+                if (entity->id == id)
+                {
+                    entity->active = true;
+                    entity->components.transform->position.x = positions[idx].x;
+                    entity->components.transform->position.y = positions[idx].y;
+                    Array1DPush(scene->entities_active, entity);
+                    return;
+                }
             }
         }
     }

@@ -13,7 +13,7 @@ static SceneManager* scene_manager = NULL;
 
 
 void game_initialize(void* pd_ptr)
-{	
+{
     api = pd_ptr;
 	world = CreateWorld((Vec2) { 10.0f, 10.0f }, 5.0f, 3.0f);
 

@@ -7,7 +7,8 @@ Scene *CreateScene(int id, World2D* world)
     if (scene != NULL)
     {
         scene->id = id;
-        scene->entites = CreateArray1D();
+        scene->entities = CreateArray1D();
+        scene->entities_active = CreateArray1D();
         scene->world = world;
         scene->z = 0;
         scene->active = false;
@@ -22,7 +23,11 @@ void SceneAddGameObject(Scene* scene, Entity *entity)
     {
         if (entity != NULL)
         {
-            Array1DPush(scene->entites, entity);
+            if (entity->active == true)
+            {
+                Array1DPush(scene->entities_active, entity);
+            }
+            Array1DPush(scene->entities, entity);
         }
     }
 }
@@ -31,14 +36,18 @@ void SceneRemoveGameObject(Scene *scene, unsigned int id)
 {
     if (scene != NULL)
     {
-        for (size_t i = 0; i < scene->entites->size; i++)
+        for (size_t i = 0; i < scene->entities->size; i++)
         {
-            Entity* entity = Array1DItemAtIndex(scene->entites, i);
+            Entity* entity = Array1DItemAtIndex(scene->entities, i);
             if (entity != NULL)
             {
                 if (entity->id == id)
                 {
-                    Array1DDelete(scene->entites, i);
+                    if (entity->active == true)
+                    {
+                        Array1DDelete(scene->entities_active, i);
+                    }
+                    Array1DDelete(scene->entities, i);
                 }
             }
         }
@@ -50,15 +59,16 @@ void FreeScene(void *api, Scene *scene)
     if (scene != NULL)
     {
         Entity* entity = NULL;
-        for (size_t i = 0; i < scene->entites->size; i++)
+        for (size_t i = 0; i < scene->entities->size; i++)
         {
-            entity = Array1DItemAtIndex(scene->entites, i);
+            entity = Array1DItemAtIndex(scene->entities, i);
             if (entity != NULL)
             {
                 FreeEntity(api, entity);
             }
         }
-        FreeArray1D(scene->entites);
+        FreeArray1D(scene->entities);
+        FreeArray1D(scene->entities_active);
         free(scene);
         scene = NULL;
     }

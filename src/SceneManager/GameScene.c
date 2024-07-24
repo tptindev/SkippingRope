@@ -54,7 +54,7 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
         { // enemies
             for (int i = 0; i < (int)ENTITY_ENEMY_MAX; ++i)
             {
-                Entity* enemy = CreateEntity(ENTITY_ENEMY + i, scene->world, (Vec2) { 1.0f, 0.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
+                Entity* enemy = CreateEntity(ENTITY_ENEMY + i, scene->world, (Vec2) { 0.0f, 0.0f }, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
                 if (enemy != NULL)
                 {
                     enemy->active = false;
@@ -99,12 +99,11 @@ void GameSceneUpdate(void* pd_ptr, Scene *scene, float dt)
     QuadTreeClear(tree);
     unsigned int tick = ((PlaydateAPI*)pd_ptr)->system->getCurrentTimeMilliseconds();
 
-    UpdateSpawn(scene);
+    UpdateSpawn(pd_ptr, scene);
     Entity* entity = NULL;
-    for (size_t i = 0; i < scene->entites->size; i++)
+    for (size_t i = 0; i < scene->entities_active->size; i++)
     {
-        entity = Array1DItemAtIndex(scene->entites, i);
-        if (entity->active == false) continue;
+        entity = Array1DItemAtIndex(scene->entities_active, i);
         UpdateScale(entity, 1);
         UpdateRotation(entity);
         UpdateMovement(entity, dt);
@@ -113,16 +112,14 @@ void GameSceneUpdate(void* pd_ptr, Scene *scene, float dt)
         UpdateAnimateSprite(entity, tick);
         UpdateBinding(scene, entity);
     }
-    for (size_t i = 0; i < scene->entites->size; i++)
+    for (size_t i = 0; i < scene->entities_active->size; i++)
     {
-        entity = Array1DItemAtIndex(scene->entites, i);
-        if (entity->active == false) continue;
+        entity = Array1DItemAtIndex(scene->entities_active, i);
         UpdateCollisionDetection(entity, tree);
     }
-    for (size_t i = 0; i < scene->entites->size; i++)
+    for (size_t i = 0; i < scene->entities_active->size; i++)
     {
-        entity = Array1DItemAtIndex(scene->entites, i);
-        if (entity->active == false) continue;
+        entity = Array1DItemAtIndex(scene->entities_active, i);
         UpdateHealth(pd_ptr, scene, entity);
     }
 }
@@ -131,11 +128,9 @@ void GameSceneRender(void* pd_ptr, Scene *scene)
 {
     if (scene == NULL || pd_ptr == NULL) return;
     Entity* entity = NULL;
-    for (size_t i = 0; i < scene->entites->size; i++)
+    for (size_t i = 0; i < scene->entities_active->size; i++)
     {
-        entity = Array1DItemAtIndex(scene->entites, i);
-        if (entity->active == false) continue;
-        UpdateScale(entity, 1);
+        entity = Array1DItemAtIndex(scene->entities_active, i);
         if (entity != NULL)
         {
             UpdateRenderer(pd_ptr, entity);
@@ -148,11 +143,10 @@ void GameSceneEvent(void *pd_ptr, Scene *scene, void *manager)
     if (scene == NULL || pd_ptr == NULL) return;
     PlaydateAPI* api = pd_ptr;
     Entity* entity = NULL;
-    for (size_t i = 0; i < scene->entites->size; i++)
+    for (size_t i = 0; i < scene->entities_active->size; i++)
     {
-        entity = Array1DItemAtIndex(scene->entites, i);
+        entity = Array1DItemAtIndex(scene->entities_active, i);
         if (entity->active == false) continue;
-        UpdateScale(entity, 1);
         if (entity != NULL)
         {
             if (entity->components.transform != NULL)

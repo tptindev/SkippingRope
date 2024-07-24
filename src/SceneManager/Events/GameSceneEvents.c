@@ -46,24 +46,26 @@ void EVT_GAME_ENEMY_DEAD_FUNC(SceneManager* manager, Entity* entity)
 //    DestroyEntity(manager->pd, entity);
 }
 
-void EVT_GAME_EARTH_HIT_FUNC(SceneManager* manager, Entity *entity, Entity* other)
+void EVT_GAME_EARTH_HIT_FUNC(SceneManager* manager, Entity *entity, Entity* blood)
 {
-    if (other != NULL && manager != NULL && other != NULL)
+    if (entity != NULL && manager != NULL && blood != NULL)
     {
-//        PlaydateAPI* api = manager->pd;
-        switch (other->id) {
+        PlaydateAPI* api = manager->pd;
+        (void)api;
+        switch (blood->id) {
         case ENTITY_EARTH_BLOOD:
         {
             if (entity->components.health != NULL)
             {
                 float current = entity->components.health->current;
                 float max = entity->components.health->max;
-                if (other->components.animated_sprite != NULL)
+                if (blood->components.animated_sprite != NULL)
                 {
-                    if (other->components.animated_sprite->_ptr != NULL)
+                    if (blood->components.animated_sprite->_ptr != NULL)
                     {
-                        int frame_count = other->components.animated_sprite->frame_count - 1;
-                        other->components.animated_sprite->frame_index = (int)((current / max) * frame_count);
+                        int frame_count = blood->components.animated_sprite->frame_count - 1;
+                        blood->components.animated_sprite->frame_index = (int)((current / max) * frame_count);
+                        api->system->logToConsole("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
                     }
                 }
             }

@@ -27,9 +27,9 @@ void GameOverSceneUpdate(void *pd_ptr, Scene *scene, float dt)
     unsigned int tick = ((PlaydateAPI*)pd_ptr)->system->getCurrentTimeMilliseconds();
 
     Entity* entity = NULL;
-    for (size_t i = 0; i < scene->entites->size; i++)
+    for (size_t i = 0; i < scene->entities->size; i++)
     {
-        entity = Array1DItemAtIndex(scene->entites, i);
+        entity = Array1DItemAtIndex(scene->entities, i);
         if (entity != NULL)
         {
             UpdateScale(entity, 1);
@@ -45,9 +45,9 @@ void GameOverSceneRender(void *pd_ptr, Scene *scene)
 {
     if (scene == NULL || pd_ptr == NULL) return;
     Entity* entity = NULL;
-    for (size_t i = 0; i < scene->entites->size; i++)
+    for (size_t i = 0; i < scene->entities->size; i++)
     {
-        entity = Array1DItemAtIndex(scene->entites, i);
+        entity = Array1DItemAtIndex(scene->entities, i);
         if (entity != NULL)
         {
             UpdateRenderer(pd_ptr, entity);

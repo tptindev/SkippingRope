@@ -16,5 +16,5 @@ void UpdateButtonImage(void* pd_ptr, Entity* entity, void* userdata);
 void UpdateHealth(void* pd_ptr, void* scene_ptr, Entity* entity);
 void UpdateBinding(void* scene_ptr, Entity* entity);
 void UpdateRenderer(void* pd_ptr, Entity* entity);
-void UpdateSpawn(void* scene_ptr);
+void UpdateSpawn(void* pd_ptr, void* scene_ptr);
 #endif // __SYSTEM_H__

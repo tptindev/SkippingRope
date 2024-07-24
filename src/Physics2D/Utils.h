@@ -4,14 +4,28 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-inline int randInt(int min, int max)
+inline int randIntIn(int min, int max)
 {
-    return rand() % (max + 1 - min) * min;
+    return rand() % (max + 1 - min) + min;
 }
 
-inline float randReal(float min, float max)
+inline float randReal()
 {
-    return ((max - min) * ((float)rand() / (float)RAND_MAX)) + min;
+    return (float)(rand()) / (float)(RAND_MAX);
+}
+
+inline float randRealIn(int min, int max)
+{
+    int r = randIntIn(min, max);
+    if (r == max)
+    {
+        r = max;
+    }
+    else if (r == min)
+    {
+        r = min;
+    }
+    return (float)r + randReal();
 }
 
 inline bool randBit()

@@ -9,7 +9,8 @@
 typedef struct
 {
     int id;
-    Array1D* entites;
+    Array1D* entities;
+    Array1D* entities_active;
     World2D* world;
     void* manager;
     int16_t z;
