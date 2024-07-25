@@ -41,6 +41,8 @@ void EVT_GAME_EARTH_DEAD_FUNC(SceneManager* manager)
 
 void EVT_GAME_ENEMY_DEAD_FUNC(SceneManager* manager, Entity* enemy)
 {
+    PlaydateAPI* api = manager->pd;
+    (void)api;
     enemy->active = false;
     if (manager->current_scene != NULL)
     {

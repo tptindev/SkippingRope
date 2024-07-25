@@ -43,8 +43,18 @@ void SceneRemoveGameObject(Scene *scene, unsigned int id)
             {
                 if (entity->id == id)
                 {
-                    Array1DDelete(scene->entities_active, i);
                     Array1DDelete(scene->entities, i);
+                }
+            }
+        }
+        for (size_t i = 0; i < scene->entities_active->size; i++)
+        {
+            Entity* entity = Array1DItemAtIndex(scene->entities, i);
+            if (entity != NULL)
+            {
+                if (entity->id == id)
+                {
+                    Array1DDelete(scene->entities_active, i);
                 }
             }
         }

@@ -119,7 +119,7 @@ void FreeEntity(void *api, Entity* entity)
     }
     if (entity->components.binding != NULL)
     {
-        Array1DClear(entity->components.binding->others);
+        FreeArray1D(entity->components.binding->others);
         freeObjPtr(entity->components.binding);
     }
 

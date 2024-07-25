@@ -68,12 +68,14 @@ void UpdateCollider(Entity* entity, struct QuadTree* tree)
 
 void UpdateCollisionDetection(void *scene_ptr, Entity* entity, struct QuadTree* tree)
 {
-    if (entity == NULL || tree == NULL || scene_ptr) return;
+    if (entity == NULL || tree == NULL || scene_ptr == NULL) return;
     if (entity->active == false) return;
     if (entity->components.collider == NULL) return;
     Scene* scene = scene_ptr;
+    SceneManager* manager = scene->manager;
+    PlaydateAPI* api = manager->pd;
     (void)scene;
-
+    (void)api;
     Array1D* nodes = CreateArray1D();
     QuadTreeSearch(tree, nodes, &entity->components.collider->shape.box);
     Circle* c0 = entity->components.collider->shape.define;
@@ -87,6 +89,7 @@ void UpdateCollisionDetection(void *scene_ptr, Entity* entity, struct QuadTree* 
         {
             Entity* other = Array1DItemAtIndex(_objs, j);
             if (other == NULL) continue;
+            if (other->active == false) continue;
             if (entity->id != other->id)
             {
                 Circle* cx = other->components.collider->shape.define;
@@ -135,6 +138,7 @@ void UpdateCollisionDetection(void *scene_ptr, Entity* entity, struct QuadTree* 
             }
         }
     }
+    FreeArray1D(nodes);
 }
 
 void UpdateSprite(Entity* entity, unsigned int tick)
@@ -162,6 +166,8 @@ void UpdateHealth(void* pd_ptr, void* scene_ptr, Entity* entity)
 {
     if (entity == NULL || pd_ptr == NULL || scene_ptr == NULL) return;
     if (entity->active == false) return;
+    PlaydateAPI* api = pd_ptr;
+    (void)api;
     Scene* scene = scene_ptr;
     if (entity->components.health != NULL)
     {
@@ -320,7 +326,7 @@ void UpdateSpawn(void* pd_ptr, void* scene_ptr)
     {
         PlaydateAPI* api = pd_ptr;
         unsigned int ms = api->system->getCurrentTimeMilliseconds();
-        if (((ms % 1000) % 1000) < 16)
+        if (((ms % 1000) % 1000) < 30)
         {
             int id = randIntIn(ENTITY_ENEMY, ENTITY_ENEMY_MAX);
             Vec2 positions[2] = {
