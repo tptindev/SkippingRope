@@ -66,11 +66,14 @@ void UpdateCollider(Entity* entity, struct QuadTree* tree)
     }
 }
 
-void UpdateCollisionDetection(Entity* entity, struct QuadTree* tree)
+void UpdateCollisionDetection(void *scene_ptr, Entity* entity, struct QuadTree* tree)
 {
-    if (entity == NULL || tree == NULL) return;
+    if (entity == NULL || tree == NULL || scene_ptr) return;
     if (entity->active == false) return;
     if (entity->components.collider == NULL) return;
+    Scene* scene = scene_ptr;
+    (void)scene;
+
     Array1D* nodes = CreateArray1D();
     QuadTreeSearch(tree, nodes, &entity->components.collider->shape.box);
     Circle* c0 = entity->components.collider->shape.define;
@@ -181,6 +184,28 @@ void UpdateHealth(void* pd_ptr, void* scene_ptr, Entity* entity)
                         GameSceneEvents[i].dead(scene->manager, entity);
                     }
                     break;
+                }
+            }
+        }
+        else
+        {
+            if (entity->id >= ENTITY_ENEMY && entity->id <= ENTITY_ENEMY_MAX)
+            {
+                bool validX = (entity->components.transform->position.x < 1.0f || entity->components.transform->position.x > 5.0f);
+                bool validY = (entity->components.transform->position.y < 0.0f || entity->components.transform->position.y > 3.0f);
+                if (validX  && validY)
+                {
+                    for (size_t i = 0; i < (sizeof(GameSceneEvents)/sizeof(Event)); i++)
+                    {
+                        if (GameSceneEvents[i].id == entity->components.health->event_id)
+                        {
+                            if (GameSceneEvents[i].dead != NULL)
+                            {
+                                GameSceneEvents[i].dead(scene->manager, entity);
+                            }
+                            return;
+                        }
+                    }
                 }
             }
         }
@@ -295,7 +320,7 @@ void UpdateSpawn(void* pd_ptr, void* scene_ptr)
     {
         PlaydateAPI* api = pd_ptr;
         unsigned int ms = api->system->getCurrentTimeMilliseconds();
-        if (((ms % 1000) % 1000) < 20)
+        if ((ms % 1000) < 5000)
         {
             int id = randIntIn(ENTITY_ENEMY, ENTITY_ENEMY_MAX);
             Vec2 positions[2] = {
@@ -305,8 +330,18 @@ void UpdateSpawn(void* pd_ptr, void* scene_ptr)
 
             int idx = randIntIn(0, 1);
 
-            api->system->logToConsole("%u %d %f %f", ms, id, positions[idx].x, positions[idx].y);
             Scene* scene = scene_ptr;
+            if (Array1DTotalSize(scene->entities_active) > 50) return;
+            Entity* earth = NULL;
+            for (size_t i = 0; i < Array1DTotalSize(scene->entities_active); i++)
+            {
+                Entity* entity = Array1DItemAtIndex(scene->entities_active, i);
+                if (entity->id == ENTITY_EARTH)
+                {
+                    earth = entity;
+                    break;
+                }
+            }
             for (size_t i = 0; i < Array1DTotalSize(scene->entities); i++)
             {
                 Entity* entity = Array1DItemAtIndex(scene->entities, i);
@@ -316,6 +351,12 @@ void UpdateSpawn(void* pd_ptr, void* scene_ptr)
                     entity->active = true;
                     entity->components.transform->position.x = positions[idx].x;
                     entity->components.transform->position.y = positions[idx].y;
+                    if (earth != NULL)
+                    {
+                        entity->components.motion->acceleration = scene->world->gravity;
+                        entity->components.motion->direction = Vec2Normalize(Vec2Subtract(earth->components.transform->position, entity->components.transform->position));
+                        api->system->logToConsole("%u %d %f %f | %f %f", ms, id, positions[idx].x, positions[idx].y, earth->components.transform->position.x, earth->components.transform->position.y);
+                    }
                     Array1DPush(scene->entities_active, entity);
                     return;
                 }

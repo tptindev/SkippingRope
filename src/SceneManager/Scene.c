@@ -43,10 +43,7 @@ void SceneRemoveGameObject(Scene *scene, unsigned int id)
             {
                 if (entity->id == id)
                 {
-                    if (entity->active == true)
-                    {
-                        Array1DDelete(scene->entities_active, i);
-                    }
+                    Array1DDelete(scene->entities_active, i);
                     Array1DDelete(scene->entities, i);
                 }
             }

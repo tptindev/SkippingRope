@@ -39,9 +39,26 @@ void EVT_GAME_EARTH_DEAD_FUNC(SceneManager* manager)
     SceneManagerTransition(manager, GAME_OVER_SCENE);
 }
 
-void EVT_GAME_ENEMY_DEAD_FUNC(SceneManager* manager, Entity* entity)
+void EVT_GAME_ENEMY_DEAD_FUNC(SceneManager* manager, Entity* enemy)
 {
-    entity->active = false;
+    enemy->active = false;
+    if (manager->current_scene != NULL)
+    {
+        for (size_t i = 0; i < manager->current_scene->entities_active->size; i++)
+        {
+            Entity* entity = Array1DItemAtIndex(manager->current_scene->entities_active, i);
+            if (entity != NULL)
+            {
+                if (entity->id == enemy->id)
+                {
+                    if (entity->active == false)
+                    {
+                        Array1DDelete(manager->current_scene->entities_active, i);
+                    }
+                }
+            }
+        }
+    }
 //    SceneRemoveGameObject(manager->current_scene, entity->id);
 //    DestroyEntity(manager->pd, entity);
 }
@@ -59,14 +76,12 @@ void EVT_GAME_EARTH_HIT_FUNC(SceneManager* manager, Entity *entity, Entity* bloo
             {
                 float current = entity->components.health->current;
                 float max = entity->components.health->max;
-                if (current == max) break;
                 if (blood->components.animated_sprite != NULL)
                 {
                     if (blood->components.animated_sprite->_ptr != NULL)
                     {
                         int frame_count = blood->components.animated_sprite->frame_count - 1;
                         blood->components.animated_sprite->frame_index = (int)((current / max) * frame_count);
-                        api->system->logToConsole("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
                     }
                 }
             }

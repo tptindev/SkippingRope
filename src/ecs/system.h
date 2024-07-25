@@ -9,7 +9,7 @@ void UpdateRotation(Entity* entity);
 void UpdateMovement(Entity* entity, float dt);
 void UpdatePosition(Entity* entity, Vec2 buffer, float dt);
 void UpdateCollider(Entity* entity, struct QuadTree* tree);
-void UpdateCollisionDetection(Entity* entity, struct QuadTree* tree);
+void UpdateCollisionDetection(void *scene_ptr, Entity* entity, struct QuadTree* tree);
 void UpdateSprite(Entity* entity, unsigned int tick);
 void UpdateAnimateSprite(Entity* entity, unsigned int tick);
 void UpdateButtonImage(void* pd_ptr, Entity* entity, void* userdata);
