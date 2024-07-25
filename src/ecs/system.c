@@ -177,14 +177,6 @@ void UpdateHealth(void* pd_ptr, void* scene_ptr, Entity* entity)
             {
                 if (GameSceneEvents[i].id == entity->components.health->event_id)
                 {
-                    if (GameSceneEvents[i].transition != NULL)
-                    {
-                        GameSceneEvents[i].transition(scene->manager);
-                    }
-                    if (GameSceneEvents[i].collision != NULL)
-                    {
-                        GameSceneEvents[i].collision(entity, NULL);
-                    }
                     if (GameSceneEvents[i].dead != NULL)
                     {
                         GameSceneEvents[i].dead(scene->manager, entity);
