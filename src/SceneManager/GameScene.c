@@ -60,7 +60,7 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
                     enemy->active = false;
                     SceneAddGameObject(scene, enemy);
                     // Add components
-                    AddAnimatedSpriteComponent(pd_ptr, enemy, "images/enemy", 12, 12, 8, 0.5f, true, 1);
+                    AddAnimatedSpriteComponent(pd_ptr, enemy, "images/enemy", 12, 12, 8, 0.5f, true, 0);
                     AddCircleColliderComponent(pd_ptr, tree, enemy, (Vec2) { 0.0f, 0.0f }, (float)(4.0f / 80.0f), EVT_GAME_ENEMY_COLLIDED);
                     AddHealthComponent(pd_ptr, enemy, 10, EVT_GAME_ENEMY_DEAD);
                     AddStrengthComponent(pd_ptr, enemy, 20.0f);

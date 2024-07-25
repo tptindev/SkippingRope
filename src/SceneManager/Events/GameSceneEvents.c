@@ -51,10 +51,7 @@ void EVT_GAME_ENEMY_DEAD_FUNC(SceneManager* manager, Entity* enemy)
             {
                 if (entity->id == enemy->id)
                 {
-                    if (entity->active == false)
-                    {
-                        Array1DDelete(manager->current_scene->entities_active, i);
-                    }
+                    Array1DDelete(manager->current_scene->entities_active, i);
                 }
             }
         }

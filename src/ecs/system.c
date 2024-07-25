@@ -320,12 +320,12 @@ void UpdateSpawn(void* pd_ptr, void* scene_ptr)
     {
         PlaydateAPI* api = pd_ptr;
         unsigned int ms = api->system->getCurrentTimeMilliseconds();
-        if ((ms % 1000) < 5000)
+        if (((ms % 1000) % 1000) < 24)
         {
             int id = randIntIn(ENTITY_ENEMY, ENTITY_ENEMY_MAX);
             Vec2 positions[2] = {
                 {randRealIn(1, 5), 0},
-                {1.0f, randRealIn(0, 3)}
+                {1.1f, randRealIn(0, 3)}
             };
 
             int idx = randIntIn(0, 1);
@@ -351,6 +351,8 @@ void UpdateSpawn(void* pd_ptr, void* scene_ptr)
                     entity->active = true;
                     entity->components.transform->position.x = positions[idx].x;
                     entity->components.transform->position.y = positions[idx].y;
+                    entity->components.motion->last_position.x = entity->components.transform->position.x;
+                    entity->components.motion->last_position.y = entity->components.transform->position.y;
                     if (earth != NULL)
                     {
                         entity->components.motion->acceleration = scene->world->gravity;
