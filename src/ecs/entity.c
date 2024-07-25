@@ -248,11 +248,10 @@ void AddCircleColliderComponent(void* pd_ptr, struct QuadTree* tree, Entity* ent
 		entity->components.collider->shape.define = CreateCircle(
 			Vec2Add(entity->components.transform->position, offset),
 			radius
-		);
+        );
         if (entity->active == false) return;
-		GetCircleBoundary(&entity->components.collider->shape.box, entity->components.collider->shape.define);
-		QuadtreeInsert(tree, entity, &entity->components.collider->shape.box);
-	}
+        GetCircleBoundary(&entity->components.collider->shape.box, entity->components.collider->shape.define);
+    }
 }
 
 void AddHealthComponent(void* pd_ptr, Entity* entity, float max, int event_id)

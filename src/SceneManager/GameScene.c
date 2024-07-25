@@ -134,7 +134,6 @@ void GameSceneEvent(void *pd_ptr, Scene *scene, void *manager)
 {
     if (scene == NULL || pd_ptr == NULL) return;
     PlaydateAPI* api = pd_ptr;
-    api->system->logToConsole("ddddddddd %u", Array1DTotalSize(scene->entities_active));
     Entity* entity = NULL;
     for (size_t i = 0; i < scene->entities_active->size; i++)
     {

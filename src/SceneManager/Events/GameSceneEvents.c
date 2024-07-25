@@ -10,7 +10,7 @@ void EVT_GAME_BACK_MENU_FUNC(SceneManager* manager)
 
 void EVT_GAME_EARTH_COLLIDED_FUNC(Entity* entity, Entity* other)
 {
-    if (entity != NULL)
+    if (entity != NULL && other != NULL)
     {
         if (entity->components.health != NULL && other->components.strength != NULL)
         {

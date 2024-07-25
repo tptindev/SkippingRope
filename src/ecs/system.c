@@ -49,7 +49,7 @@ void UpdatePosition(Entity* entity, Vec2 buffer, float dt)
 
 void UpdateCollider(Entity* entity, struct QuadTree* tree)
 {
-    if (entity == NULL) return;
+    if (entity == NULL || tree == NULL) return;
     if (entity->active == false) return;
     if (entity->components.collider != NULL && entity->components.transform != NULL)
     {
@@ -61,7 +61,6 @@ void UpdateCollider(Entity* entity, struct QuadTree* tree)
             entity->components.collider->shape.box.x = entity->components.collider->offset.x + entity->components.transform->position.x - circle->radius;
             entity->components.collider->shape.box.y = entity->components.collider->offset.y + entity->components.transform->position.y - circle->radius;
         }
-
         QuadtreeInsert(tree, entity, &entity->components.collider->shape.box);
     }
 }
@@ -128,6 +127,7 @@ void UpdateCollisionDetection(void *scene_ptr, Entity* entity, struct QuadTree* 
                     {
                         if (GameSceneEvents[i].id == entity->components.collider->event_id)
                         {
+                            api->system->logToConsole("%d", GameSceneEvents[i].id);
                             if (GameSceneEvents[i].collision != NULL)
                             {
                                 GameSceneEvents[i].collision(entity, other);
