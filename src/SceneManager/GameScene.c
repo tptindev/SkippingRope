@@ -54,7 +54,7 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
         { // enemies
             for (int i = 0; i < (int)ENTITY_ENEMY_MAX; ++i)
             {
-                Entity* enemy = CreateEntity(ENTITY_ENEMY + i, scene->world, (Vec2){1.0f, 0.0f}, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
+                Entity* enemy = CreateEntity(ENTITY_ENEMY + i, scene->world, (Vec2){0.0f, 0.0f}, (Vec2) { 0.0f, 0.0f }, (Vec2) { 1.0f, 1.0f });
                 if (enemy != NULL)
                 {
                     enemy->active = false;
@@ -91,6 +91,8 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
 void GameSceneUpdate(void* pd_ptr, Scene *scene, float dt)
 {
     if (scene == NULL || pd_ptr == NULL) return;
+    PlaydateAPI* api = pd_ptr;
+    (void)api;
     QuadTreeClear(tree);
     unsigned int tick = ((PlaydateAPI*)pd_ptr)->system->getCurrentTimeMilliseconds();
 
@@ -102,8 +104,8 @@ void GameSceneUpdate(void* pd_ptr, Scene *scene, float dt)
         UpdateScale(entity, 1);
         UpdateRotation(entity);
         UpdateMovement(entity, dt);
-        UpdateCollider(entity, tree);
         UpdateSprite(entity, tick);
+        UpdateCollider(entity, tree);
         UpdateAnimateSprite(entity, tick);
     }
     for (size_t i = 0; i < scene->entities_active->size; i++)

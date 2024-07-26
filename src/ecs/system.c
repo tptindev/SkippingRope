@@ -82,11 +82,11 @@ void UpdateCollisionDetection(void *scene_ptr, Entity* entity, struct QuadTree* 
 
     for (int i = 0; i < nodes->size; i++)
     {
-        struct QuadTree* _node = Array1DItemAtIndex(nodes, i);
-        Array1D* _objs = _node->objects;
-        for (int j = 0; j < _node->objects->size; ++j)
+        struct QuadTree* node = Array1DItemAtIndex(nodes, i);
+        Array1D* objs = node->objects;
+        for (int j = 0; j < node->objects->size; j++)
         {
-            Entity* other = Array1DItemAtIndex(_objs, j);
+            Entity* other = Array1DItemAtIndex(objs, j);
             if (other == NULL) continue;
             if (other->active == false) continue;
             if (entity->id != other->id)
@@ -127,10 +127,16 @@ void UpdateCollisionDetection(void *scene_ptr, Entity* entity, struct QuadTree* 
                     {
                         if (GameSceneEvents[i].id == entity->components.collider->event_id)
                         {
-                            api->system->logToConsole("%d", GameSceneEvents[i].id);
                             if (GameSceneEvents[i].collision != NULL)
                             {
                                 GameSceneEvents[i].collision(entity, other);
+                            }
+                        }
+                        if (GameSceneEvents[i].id == other->components.collider->event_id)
+                        {
+                            if (GameSceneEvents[i].collision != NULL)
+                            {
+                                GameSceneEvents[i].collision(other, entity);
                             }
                         }
                     }
@@ -273,7 +279,7 @@ void UpdateButtonImage(void* pd_ptr, Entity* entity, void* userdata)
             {
                 if (MenuSceneEvents[i].id == entity->components.button_img->event_id)
                 {
-                    if (GameSceneEvents[i].transition != NULL)
+                    if (MenuSceneEvents[i].transition != NULL)
                     {
                         for(int i = 0; i <= 50; i++) {
                             api->system->logToConsole("%d", i);
