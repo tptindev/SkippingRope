@@ -66,12 +66,9 @@ void game_draw()
     {
         MenuSceneRender(api, scene_manager->current_scene);
     }
-    else if (scene_manager->current_scene->id == GAME_SCENE)
+    else
     {
         GameSceneRender(api, scene_manager->current_scene);
-    }
-    else if (scene_manager->current_scene->id == GAME_OVER_SCENE)
-    {
         GameOverSceneRender(api, scene_manager->current_scene);
     }
     api->sprite->drawSprites();

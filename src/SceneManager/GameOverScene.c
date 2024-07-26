@@ -44,6 +44,7 @@ void GameOverSceneUpdate(void *pd_ptr, Scene *scene, float dt)
 void GameOverSceneRender(void *pd_ptr, Scene *scene)
 {
     if (scene == NULL || pd_ptr == NULL) return;
+    if (scene->active == false) return;
     Entity* entity = NULL;
     for (size_t i = 0; i < scene->entities->size; i++)
     {
