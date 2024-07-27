@@ -4,8 +4,8 @@
 #include "../Physics2D/Collision.h"
 #include "pd_api.h"
 #include "../SceneManager/Events/EventDefines.h"
-#include "../Physics2D/Utils.h"
 #include "../ecs/EntityIDs.h"
+#include "../XUtils.h"
 void UpdateRotation(Entity* entity)
 {
     if (entity == NULL) return;
@@ -335,7 +335,7 @@ void UpdateSpawn(void* pd_ptr, void* scene_ptr, void (*cb)(void* scene_ptr, Enti
             int idx = randIntIn(0, 1);
 
             Scene* scene = scene_ptr;
-            if (Array1DTotalSize(scene->entities_active) > 50) return;
+//            if (Array1DTotalSize(scene->entities_active) > 50) return;
             Entity* earth = NULL;
             for (size_t i = 0; i < Array1DTotalSize(scene->entities_active); i++)
             {

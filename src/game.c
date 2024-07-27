@@ -57,7 +57,7 @@ void game_update(float dt)
     }
 }
 
-void game_draw()
+void game_draw(void)
 {
     api->graphics->clear(kColorWhite);
     api->graphics->setBackgroundColor(kColorWhite);
@@ -74,7 +74,7 @@ void game_draw()
     api->sprite->drawSprites();
 }
 
-void game_destroy()
+void game_destroy(void)
 {
     FreeSceneManager(api, scene_manager);
 	DestroyWorld(world);

@@ -20,7 +20,7 @@ struct List
     size_t size;
 };
 
-struct List* CreateList();
+struct List* CreateList(void);
 void ListPushBack(struct List* list, void* data);
 void ListPushFront(struct List* list, void* data);
 void* ListElementAt(struct List* list, size_t index);

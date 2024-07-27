@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-Array1D *CreateArray1D()
+Array1D *CreateArray1D(void)
 {
     Array1D* arr = (Array1D*)malloc(sizeof(Array1D));
     if (arr != NULL)
@@ -97,3 +97,5 @@ void *Array1DItemAtIndex(Array1D *arr, size_t index)
     }
     return NULL;
 }
+
+size_t Array1DTotalSize(Array1D *arr) { return arr->size; }

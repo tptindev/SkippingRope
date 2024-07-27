@@ -3,6 +3,7 @@
 
 typedef enum
 {
+    ENTITY_SCORE_BOARD,
     ENTITY_EARTH,
     ENTITY_MOON,
     ENTITY_EARTH_BLOOD,

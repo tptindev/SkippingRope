@@ -97,14 +97,7 @@ void EVT_GAME_MOON_HIT_FUNC(SceneManager* manager, Entity *entity, Entity* other
 {
     if (other != NULL && manager != NULL && other != NULL)
     {
-        //        PlaydateAPI* api = manager->pd;
-        switch (other->id) {
-        case ENTITY_MOON_BLOOD:
-        {
-            break;
-        }
-        default:
-            break;
-        }
+        PlaydateAPI* api = manager->pd;
+        (void)api;
     }
 }

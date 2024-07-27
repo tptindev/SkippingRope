@@ -1,6 +1,6 @@
 #include "List.h"
 
-struct List *CreateList()
+struct List *CreateList(void)
 {
     struct List* list = (struct List*)malloc(sizeof(struct List));
     list->head = NULL;

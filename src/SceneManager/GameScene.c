@@ -30,8 +30,15 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
     if (scene == NULL || pd_ptr == NULL) return;
     tree = CreateQuadTreeNode(NULL, scene->world->w, scene->world->h, 0);
 
+    Entity* score_board = NULL;
     Entity* earth_blood = NULL;
     { // widgets
+        score_board = CreateEntity(ENTITY_EARTH_BLOOD, scene->world, (Vec2){ 0.5f, 1.3f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
+        if (score_board != NULL)
+        {
+            SceneAddGameObject(scene, score_board);
+            AddAnimatedSpriteComponent(pd_ptr, score_board, "images/numbers", 9, 9, 10, 0.0f, false, 2);
+        }
         earth_blood = CreateEntity(ENTITY_EARTH_BLOOD, scene->world, (Vec2){ 0.1f, 0.05f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
         if (earth_blood != NULL)
         {
@@ -65,6 +72,7 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
                 AddKeyInputComponent(pd_ptr, moon, false, false, false, false, false, false, true);
                 AddSpriteComponent(pd_ptr, moon, "images/moon", false, 0.5f, 1);
                 AddCircleColliderComponent(pd_ptr, tree, moon, (Vec2) { 0.0f, 0.0f }, 0.15f, EVT_GAME_MOON_COLLIDED);
+                AddBindingComponent(pd_ptr, earth, earth_blood, EVT_GAME_MOON_HIT);
             }
         }
         { // enemies
@@ -79,27 +87,27 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
                     AddAnimatedSpriteComponent(pd_ptr, enemy, "images/enemy", 12, 12, 8, 0.5f, true, 1);
                     AddCircleColliderComponent(pd_ptr, tree, enemy, (Vec2) { 0.0f, 0.0f }, (float)(4.0f / 80.0f), EVT_GAME_ENEMY_COLLIDED);
                     AddHealthComponent(pd_ptr, enemy, 10, EVT_GAME_ENEMY_DEAD);
-                    AddStrengthComponent(pd_ptr, enemy, 20.0f);
+                    AddStrengthComponent(pd_ptr, enemy, 12.0f);
                 }
             }
         }
+    }
+    {
+        Entity* side_bar = CreateEntity(ENTITY_SIDE_BAR, scene->world, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
+        if (side_bar != NULL)
         {
-            Entity* side_bar = CreateEntity(ENTITY_SIDE_BAR, scene->world, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
-            if (side_bar != NULL)
-            {
-                SceneAddGameObject(scene, side_bar);
-                // Add Components
-                AddSpriteComponent(pd_ptr, side_bar, "images/side_bar/side_bar_bg", false, 0.0f, 1);
-            }
+            SceneAddGameObject(scene, side_bar);
+            // Add Components
+            AddSpriteComponent(pd_ptr, side_bar, "images/side_bar/side_bar_bg", false, 0.0f, 1);
         }
+    }
+    {
+        Entity* arrow_mini_map = CreateEntity(ENTITY_ARROW_MINI_MAP, scene->world, (Vec2) {0.5625f, 2.3f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
+        if (arrow_mini_map != NULL)
         {
-            Entity* arrow_mini_map = CreateEntity(ENTITY_ARROW_MINI_MAP, scene->world, (Vec2) {0.5625f, 2.3f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
-            if (arrow_mini_map != NULL)
-            {
-                SceneAddGameObject(scene, arrow_mini_map);
-                // Add Components
-                AddSpriteComponent(pd_ptr, arrow_mini_map, "images/widgets/arrow/arrow", false, 0.5f, 3);
-            }
+            SceneAddGameObject(scene, arrow_mini_map);
+            // Add Components
+            AddSpriteComponent(pd_ptr, arrow_mini_map, "images/widgets/arrow/arrow", false, 0.5f, 3);
         }
     }
 }
@@ -171,9 +179,9 @@ void GameSceneEvent(void *pd_ptr, Scene *scene, void *manager)
                 {
                     if (entity->components.input->crank == true)
                     {
-                        double angle_rad = api->system->getCrankAngle() * (3.14159265358979323846f / 180.0f);
-                        entity->components.transform->rotation.x = (float)(0.5f * cos(angle_rad));
-                        entity->components.transform->rotation.y = (float)(0.5f * sin(angle_rad));
+                        float angle_rad = api->system->getCrankAngle() * (3.14159265358979323846f / 180.0f);
+                        entity->components.transform->rotation.x = 0.5f * (float)(cos((double)angle_rad));
+                        entity->components.transform->rotation.y = 0.5f * (float)(sin((double)angle_rad));
                     }
                     // ...
                 }
