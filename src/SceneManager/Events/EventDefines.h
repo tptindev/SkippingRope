@@ -7,6 +7,7 @@
 #include "MenuSceneEvents.h"
 #include "GameSceneEvents.h"
 
+// Trans, Collision, Dead, Trigger
 Event MenuSceneEvents[2 ] = {
     {EVT_MENU_START, EVT_MENU_START_FUNC, NULL, NULL, NULL},
     {EVT_MENU_EXIT,  EVT_MENU_EXIT_FUNC, NULL, NULL, NULL},
