@@ -33,11 +33,11 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
     Entity* score_board = NULL;
     Entity* earth_blood = NULL;
     { // widgets
-        score_board = CreateEntity(ENTITY_EARTH_BLOOD, scene->world, (Vec2){ 0.5f, 1.3f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
+        score_board = CreateEntity(ENTITY_SCORE_BOARD, scene->world, (Vec2){ 0.5f, 1.3f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
         if (score_board != NULL)
         {
             SceneAddGameObject(scene, score_board);
-            AddAnimatedSpriteComponent(pd_ptr, score_board, "images/numbers", 9, 9, 10, 0.0f, false, 2);
+            AddAnimatedSpriteComponent(pd_ptr, score_board, "images/numbers", 9, 9, 10, 0.0f, false, 3);
         }
         earth_blood = CreateEntity(ENTITY_EARTH_BLOOD, scene->world, (Vec2){ 0.1f, 0.05f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
         if (earth_blood != NULL)
@@ -72,7 +72,7 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
                 AddKeyInputComponent(pd_ptr, moon, false, false, false, false, false, false, true);
                 AddSpriteComponent(pd_ptr, moon, "images/moon", false, 0.5f, 1);
                 AddCircleColliderComponent(pd_ptr, tree, moon, (Vec2) { 0.0f, 0.0f }, 0.15f, EVT_GAME_MOON_COLLIDED);
-                AddBindingComponent(pd_ptr, earth, earth_blood, EVT_GAME_MOON_HIT);
+                AddBindingComponent(pd_ptr, moon, score_board, EVT_GAME_MOON_HIT);
             }
         }
         { // enemies
