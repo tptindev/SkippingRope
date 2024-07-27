@@ -9,6 +9,19 @@
 
 static struct QuadTree* tree = NULL;
 
+static void UpdateArrowDirection(void* scene_ptr, Vec2 position)
+{
+    Scene* scene = scene_ptr;
+    for (size_t i = 0; i < scene->entities_active->size; ++i)
+    {
+        Entity* entity = Array1DItemAtIndex(scene->entities_active, i);
+        if (entity->id == ENTITY_ARROW_MINI_MAP)
+        {
+
+        }
+    }
+}
+
 void GameSceneInit(void* pd_ptr, Scene *scene)
 {
     if (scene == NULL || pd_ptr == NULL) return;
@@ -96,7 +109,7 @@ void GameSceneUpdate(void* pd_ptr, Scene *scene, float dt)
     QuadTreeClear(tree);
     unsigned int tick = ((PlaydateAPI*)pd_ptr)->system->getCurrentTimeMilliseconds();
 
-    UpdateSpawn(pd_ptr, scene);
+    UpdateSpawn(pd_ptr, scene, UpdateArrowDirection);
     Entity* entity = NULL;
     for (size_t i = 0; i < scene->entities_active->size; i++)
     {

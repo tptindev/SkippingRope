@@ -318,7 +318,7 @@ void UpdateBinding(void* scene_ptr, Entity *entity)
     }
 }
 
-void UpdateSpawn(void* pd_ptr, void* scene_ptr)
+void UpdateSpawn(void* pd_ptr, void* scene_ptr, void (*cb)(void* scene_ptr, Vec2 position))
 {
     if (scene_ptr != NULL && pd_ptr != NULL)
     {
@@ -333,6 +333,8 @@ void UpdateSpawn(void* pd_ptr, void* scene_ptr)
             };
 
             int idx = randIntIn(0, 1);
+
+            cb(scene_ptr, positions[idx]);
 
             Scene* scene = scene_ptr;
             if (Array1DTotalSize(scene->entities_active) > 50) return;
