@@ -318,7 +318,7 @@ void UpdateBinding(void* scene_ptr, Entity *entity)
     }
 }
 
-void UpdateSpawn(void* pd_ptr, void* scene_ptr, void (*cb)(void* scene_ptr, Vec2 position))
+void UpdateSpawn(void* pd_ptr, void* scene_ptr, void (*cb)(void* scene_ptr, Entity* enemy))
 {
     if (scene_ptr != NULL && pd_ptr != NULL)
     {
@@ -333,8 +333,6 @@ void UpdateSpawn(void* pd_ptr, void* scene_ptr, void (*cb)(void* scene_ptr, Vec2
             };
 
             int idx = randIntIn(0, 1);
-
-            cb(scene_ptr, positions[idx]);
 
             Scene* scene = scene_ptr;
             if (Array1DTotalSize(scene->entities_active) > 50) return;
@@ -365,6 +363,7 @@ void UpdateSpawn(void* pd_ptr, void* scene_ptr, void (*cb)(void* scene_ptr, Vec2
                         entity->components.motion->direction = Vec2Normalize(Vec2Subtract(earth->components.transform->position, entity->components.transform->position));
                     }
                     Array1DPush(scene->entities_active, entity);
+                    cb(scene_ptr, entity);
                     return;
                 }
             }

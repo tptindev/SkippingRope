@@ -9,15 +9,18 @@
 
 static struct QuadTree* tree = NULL;
 
-static void UpdateArrowDirection(void* scene_ptr, Vec2 position)
+static void UpdateArrowDirection(void* scene_ptr, Entity* enemy)
 {
     Scene* scene = scene_ptr;
+    if (scene == NULL) return;
     for (size_t i = 0; i < scene->entities_active->size; ++i)
     {
         Entity* entity = Array1DItemAtIndex(scene->entities_active, i);
         if (entity->id == ENTITY_ARROW_MINI_MAP)
         {
-
+            entity->components.transform->rotation.x = 0.0f;
+            entity->components.transform->rotation.y = 0.0f;
+            break;
         }
     }
 }
