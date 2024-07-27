@@ -160,6 +160,7 @@ void AddAnimatedSpriteComponent(void* pd_ptr, Entity* entity, const char* source
                     {
                         freeBitmap(api, bitmaps[i]);
                     }
+                    freeObjPtr(bitmaps);
 					return;
 				}
 			}
