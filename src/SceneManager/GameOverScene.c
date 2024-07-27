@@ -12,15 +12,15 @@ void GameOverSceneInit(void *pd_ptr, Scene *scene)
         if (new_game_btn != NULL) {
             SceneAddGameObject(scene, new_game_btn);
             // Add components
-            AddButtonImageComponent(pd_ptr, new_game_btn, ACTIVE, EVT_GAME_NEW_GAME, "image/gameover/buttons/new_game", 0.0f, 2);
+            AddButtonImageComponent(pd_ptr, new_game_btn, ACTIVE, EVT_GAME_NEW_GAME, "images/gameover/buttons/new_game", 0.0f, 2);
         }
     }
     {
-        Entity* quit_game_btn = CreateEntity(ENTITY_BTN_NEW_GAME, scene->world, (Vec2) {3.1f, 2.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
+        Entity* quit_game_btn = CreateEntity(ENTITY_BTN_QUIT_GAME, scene->world, (Vec2) {3.1f, 2.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
         if (quit_game_btn != NULL) {
             SceneAddGameObject(scene, quit_game_btn);
             // Add components
-            AddButtonImageComponent(pd_ptr, quit_game_btn, NORMAL, EVT_GAME_QUIT_GAME, "image/gameover/buttons/quit_game", 0.0f, 2);
+            AddButtonImageComponent(pd_ptr, quit_game_btn, NORMAL, EVT_GAME_QUIT_GAME, "images/gameover/buttons/quit_game", 0.0f, 2);
         }
     }
     {

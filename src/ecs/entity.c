@@ -282,7 +282,7 @@ void AddButtonImageComponent(void *pd_ptr, Entity *entity, BtnState state, int e
         for (int i = 0; i < entity->components.button_img->bitmaps_cnt; i++)
         {
 			entity->components.button_img->bitmaps[i] = NULL;
-            char path_buffer[32];
+            char path_buffer[128];
             snprintf(path_buffer, sizeof(path_buffer), "%s/%d", imgdir, i);
 			api->system->logToConsole("%s", path_buffer);
 			const char* outerr = NULL;
