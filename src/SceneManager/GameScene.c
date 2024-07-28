@@ -16,6 +16,7 @@ static void UpdateArrowDirection(void* scene_ptr, Entity* enemy)
     SceneManager* manager = scene->manager;
     PlaydateAPI* api = manager->pd;
     if (scene == NULL) return;
+
     for (size_t i = 0; i < scene->entities_active->size; ++i)
     {
         Entity* entity = Array1DItemAtIndex(scene->entities_active, i);
