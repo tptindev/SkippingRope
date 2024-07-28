@@ -26,7 +26,8 @@ static void UpdateArrowDirection(void* scene_ptr, Entity* enemy)
             {
                 if (entity->components.sprite->bitmap != NULL)
                 {
-                    double radian = atan(enemy->components.motion->direction.y / enemy->components.motion->direction.x);
+                    Vec2 normal = Vec2Normalize((Vec2){enemy->components.motion->direction.x, enemy->components.motion->direction.y});
+                    double radian = atan(normal.y / normal.x);
                     float angle = (float)radian * (180.0f / 3.14f) * -1;
                     api->graphics->freeBitmap(entity->components.sprite->bitmap);
                     const char* outerr = NULL;

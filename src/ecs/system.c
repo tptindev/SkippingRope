@@ -268,16 +268,16 @@ void UpdateButtonImage(void* pd_ptr, Entity* entity, void* userdata)
     {
         if (entity->components.button_img->state == RELEASE)
         {
-            for (size_t i = 0; i < (sizeof(MenuSceneEvents)/sizeof(Event)); i++)
+            for (size_t i = 0; i < (sizeof(ButtonEvents)/sizeof(Event)); i++)
             {
-                if (MenuSceneEvents[i].id == entity->components.button_img->event_id)
+                if (ButtonEvents[i].id == entity->components.button_img->event_id)
                 {
-                    if (MenuSceneEvents[i].transition != NULL)
+                    if (ButtonEvents[i].transition != NULL)
                     {
                         for(int i = 0; i <= 50; i++) {
                             api->system->logToConsole("%d", i);
                         }
-                        MenuSceneEvents[i].transition(userdata);
+                        ButtonEvents[i].transition(userdata);
                     }
                     break;
                 }
@@ -317,7 +317,7 @@ void UpdateSpawn(void* pd_ptr, void* scene_ptr, void (*cb)(void* scene_ptr, Enti
     {
         PlaydateAPI* api = pd_ptr;
         unsigned int ms = api->system->getCurrentTimeMilliseconds();
-        if (((ms % 1000) % 1000) < 10)
+        if (((ms % 1000) % 1000) < 166)
         {
             int id = randIntIn(ENTITY_ENEMY, ENTITY_ENEMY_MAX);
             Vec2 positions[2] = {

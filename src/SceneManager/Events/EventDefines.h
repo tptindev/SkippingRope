@@ -6,11 +6,14 @@
 #include "EventIDs.h"
 #include "MenuSceneEvents.h"
 #include "GameSceneEvents.h"
+#include "GameOverSceneEvents.h"
 
 // Trans, Collision, Dead, Trigger
-Event MenuSceneEvents[2 ] = {
+Event ButtonEvents[4] = {
     {EVT_MENU_START, EVT_MENU_START_FUNC, NULL, NULL, NULL},
     {EVT_MENU_EXIT,  EVT_MENU_EXIT_FUNC, NULL, NULL, NULL},
+    {EVT_GAME_NEW_GAME, EVT_NEW_GAME_FUNC, NULL, NULL, NULL},
+    {EVT_GAME_QUIT_GAME,  EVT_QUIT_GAME_FUNC, NULL, NULL, NULL},
 };
 
 // Trans, Collision, Dead, Trigger
