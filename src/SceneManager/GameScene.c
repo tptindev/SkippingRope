@@ -1,5 +1,6 @@
 #include "GameScene.h"
 #include "pd_api.h"
+#include <math.h>
 #include "../Physics2D/DataStructs/QuadTree.h"
 #include "../ecs/system.h"
 #include "SceneManager.h"
@@ -12,14 +13,23 @@ static struct QuadTree* tree = NULL;
 static void UpdateArrowDirection(void* scene_ptr, Entity* enemy)
 {
     Scene* scene = scene_ptr;
+    SceneManager* manager = scene->manager;
+    PlaydateAPI* api = manager->pd;
     if (scene == NULL) return;
     for (size_t i = 0; i < scene->entities_active->size; ++i)
     {
         Entity* entity = Array1DItemAtIndex(scene->entities_active, i);
         if (entity->id == ENTITY_ARROW_MINI_MAP)
         {
-            entity->components.transform->rotation.x = 0.0f;
-            entity->components.transform->rotation.y = 0.0f;
+            if (entity->components.sprite != NULL)
+            {
+                if (entity->components.sprite->bitmap != NULL)
+                {
+                    double radian = atan(enemy->components.motion->direction.y / enemy->components.motion->direction.x);
+                    float angle = (float)radian * (180.0f / 3.14f) * -1;
+                    entity->components.sprite->bitmap = api->graphics->rotatedBitmap(entity->components.sprite->bitmap, angle, 1, 1, NULL);
+                }
+            }
             break;
         }
     }
@@ -37,7 +47,7 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
         if (score_board != NULL)
         {
             SceneAddGameObject(scene, score_board);
-            AddAnimatedSpriteComponent(pd_ptr, score_board, "images/numbers", 9, 9, 10, 0.0f, false, 3);
+            AddAnimatedSpriteComponent(pd_ptr, score_board, "images/numbers/black", 9, 9, 10, 0.0f, false, 3);
         }
         earth_blood = CreateEntity(ENTITY_EARTH_BLOOD, scene->world, (Vec2){ 0.1f, 0.05f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
         if (earth_blood != NULL)

@@ -235,10 +235,6 @@ void UpdateRenderer(void* pd_ptr, Entity* entity)
         sprite = entity->components.animated_sprite->_ptr;
         z_order = entity->components.animated_sprite->order_in_layer;
         bitmap = entity->components.animated_sprite->bitmaps[entity->components.animated_sprite->frame_index];
-        if (sprite != NULL)
-        {
-            api->sprite->setImage(sprite, bitmap, kBitmapUnflipped);
-        }
     }
     else if (entity->components.button_img != NULL)
     {
@@ -246,14 +242,11 @@ void UpdateRenderer(void* pd_ptr, Entity* entity)
         if (entity->components.button_img->bitmaps_cnt <= entity->components.button_img->state) return;
         bitmap = entity->components.button_img->bitmaps[entity->components.button_img->state];
         z_order = entity->components.button_img->order_in_layer;
-        if (sprite != NULL && bitmap != NULL)
-        {
-            api->sprite->setImage(sprite, bitmap, kBitmapUnflipped);
-        }
     }
 
     if (sprite != NULL && bitmap != NULL && entity->components.transform != NULL)
     {
+        api->sprite->setImage(sprite, bitmap, kBitmapUnflipped);
         api->sprite->setZIndex(sprite, z_order);
         api->sprite->moveTo(sprite, entity->components.transform->position.x * 80.0f, entity->components.transform->position.y * 80.0f);
         api->sprite->addSprite(sprite);
@@ -324,7 +317,7 @@ void UpdateSpawn(void* pd_ptr, void* scene_ptr, void (*cb)(void* scene_ptr, Enti
     {
         PlaydateAPI* api = pd_ptr;
         unsigned int ms = api->system->getCurrentTimeMilliseconds();
-        if (((ms % 1000) % 1000) < 30)
+        if (((ms % 1000) % 1000) < 10)
         {
             int id = randIntIn(ENTITY_ENEMY, ENTITY_ENEMY_MAX);
             Vec2 positions[2] = {
@@ -353,8 +346,8 @@ void UpdateSpawn(void* pd_ptr, void* scene_ptr, void (*cb)(void* scene_ptr, Enti
                 if (entity->id == id)
                 {
                     entity->active = true;
-                    entity->components.transform->position.x = positions[idx].x;
-                    entity->components.transform->position.y = positions[idx].y;
+                    entity->components.transform->position.x = 1.1f;
+                    entity->components.transform->position.y = 0;
                     entity->components.motion->last_position.x = entity->components.transform->position.x;
                     entity->components.motion->last_position.y = entity->components.transform->position.y;
                     if (earth != NULL)
