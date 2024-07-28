@@ -28,7 +28,17 @@ static void UpdateArrowDirection(void* scene_ptr, Entity* enemy)
                 {
                     double radian = atan(enemy->components.motion->direction.y / enemy->components.motion->direction.x);
                     float angle = (float)radian * (180.0f / 3.14f) * -1;
-                    entity->components.sprite->bitmap = api->graphics->rotatedBitmap(entity->components.sprite->bitmap, angle, 1, 1, NULL);
+                    api->graphics->freeBitmap(entity->components.sprite->bitmap);
+                    const char* outerr = NULL;
+                    LCDBitmap* bitmap_ptr = api->graphics->loadBitmap("images/widgets/arrow/arrow", &outerr);
+                    if (outerr != NULL)
+                    {
+                        api->system->logToConsole("Error: %s", outerr);
+                        api->graphics->freeBitmap(bitmap_ptr);
+                        return;
+                    }
+                    bitmap_ptr = api->graphics->rotatedBitmap(entity->components.sprite->bitmap, angle, 1, 1, NULL);
+                    entity->components.sprite->bitmap = bitmap_ptr;
                 }
             }
             break;

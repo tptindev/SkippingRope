@@ -346,8 +346,8 @@ void UpdateSpawn(void* pd_ptr, void* scene_ptr, void (*cb)(void* scene_ptr, Enti
                 if (entity->id == id)
                 {
                     entity->active = true;
-                    entity->components.transform->position.x = 1.1f;
-                    entity->components.transform->position.y = 0;
+                    entity->components.transform->position.x = positions[idx].x;
+                    entity->components.transform->position.y = positions[idx].y;
                     entity->components.motion->last_position.x = entity->components.transform->position.x;
                     entity->components.motion->last_position.y = entity->components.transform->position.y;
                     if (earth != NULL)
