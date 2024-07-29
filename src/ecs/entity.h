@@ -25,6 +25,7 @@ void AddHealthComponent(void* pd_ptr, Entity* entity, float max, int event_id);
 void AddButtonImageComponent(void* pd_ptr, Entity* entity, BtnState state, int event_id, const char* imgdir, float offset, int16_t z_order);
 void AddStrengthComponent(void* pd_ptr, Entity* entity, float damage);
 void AddBindingComponent(void* pd_ptr, Entity* entity, void* other, int event_id);
-
+void AddScoreBoardComponent(void* pd_ptr, Entity* entity);
+void AddScoreBoardVisualComponent(void* pd_ptr, Entity* entity, const char* source, int16_t z_order);
 void RemoveComponent(Entity* entity, void* component);
 #endif // __ENTITY_H__

@@ -79,7 +79,7 @@ void UpdateCollisionDetection(void *scene_ptr, Entity* entity, struct QuadTree* 
     QuadTreeSearch(tree, nodes, &entity->components.collider->shape.box);
     Circle* c0 = entity->components.collider->shape.define;
     float y = entity->components.collider->shape.box.y;
-
+    entity->components.collider->collided = false;
     for (int i = 0; i < nodes->size; i++)
     {
         struct QuadTree* node = Array1DItemAtIndex(nodes, i);
@@ -317,7 +317,7 @@ void UpdateSpawn(void* pd_ptr, void* scene_ptr, void (*cb)(void* scene_ptr, Enti
     {
         PlaydateAPI* api = pd_ptr;
         unsigned int ms = api->system->getCurrentTimeMilliseconds();
-        if (((ms % 1000) % 1000) < 166)
+        if (((ms % 1000) % 1000) < 24)
         {
             int id = randIntIn(ENTITY_ENEMY, ENTITY_ENEMY_MAX);
             Vec2 positions[2] = {
@@ -328,7 +328,6 @@ void UpdateSpawn(void* pd_ptr, void* scene_ptr, void (*cb)(void* scene_ptr, Enti
             int idx = randIntIn(0, 1);
 
             Scene* scene = scene_ptr;
-//            if (Array1DTotalSize(scene->entities_active) > 50) return;
             Entity* earth = NULL;
             for (size_t i = 0; i < Array1DTotalSize(scene->entities_active); i++)
             {
@@ -362,4 +361,36 @@ void UpdateSpawn(void* pd_ptr, void* scene_ptr, void (*cb)(void* scene_ptr, Enti
             }
         }
     }
+}
+
+void UpdateScoreBoardVisual(void *pd_ptr, Entity *entity)
+{
+    if (entity == NULL || pd_ptr == NULL) return;
+    if (entity->active == false) return;
+    PlaydateAPI* api = pd_ptr;
+    if (entity->components.score_board != NULL && entity->components.score_board_visual != NULL)
+    {
+        int score = entity->components.score_board->current;
+        int idx = 0;
+        for (int i = 5; i > -1; i--)
+        {
+            idx = score % 10;
+            LCDSprite* sprite = entity->components.score_board_visual->sprites[i];
+            if (sprite != NULL)
+            {
+                if (score > 0)
+                {
+                    LCDBitmap* bitmap = entity->components.score_board_visual->bitmaps[idx];
+                    api->sprite->setImage(sprite, bitmap, kBitmapUnflipped);
+                }
+                api->sprite->addSprite(sprite);
+            }
+            score /= 10;
+        }
+    }
+}
+
+void UpdateScoreBoard(void *pd_ptr, Entity *entity)
+{
+
 }

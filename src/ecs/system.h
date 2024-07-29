@@ -15,6 +15,8 @@ void UpdateAnimateSprite(Entity* entity, unsigned int tick);
 void UpdateButtonImage(void* pd_ptr, Entity* entity, void* userdata);
 void UpdateHealth(void* pd_ptr, void* scene_ptr, Entity* entity);
 void UpdateBinding(void* scene_ptr, Entity* entity);
+void UpdateScoreBoard(void* pd_ptr, Entity* entity);
+void UpdateScoreBoardVisual(void* pd_ptr, Entity* entity);
 void UpdateRenderer(void* pd_ptr, Entity* entity);
 void UpdateSpawn(void* pd_ptr, void* scene_ptr, void (*cb)(void* scene_ptr, Entity* enemy));
 #endif // __SYSTEM_H__

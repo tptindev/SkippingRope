@@ -103,6 +103,18 @@ typedef struct {
 } Binding;
 
 typedef struct {
+    int current;
+    int high;
+} ScoreBoard;
+
+typedef struct {
+    int length;
+    int16_t order_in_layer;
+    void* bitmaps[10];
+    void* sprites[6];
+} ScoreBoardVisual;
+
+typedef struct {
 	Transform* transform;
 	KeyInput* input;
 	Collider* collider;
@@ -113,6 +125,8 @@ typedef struct {
     ButtonImage* button_img;
     Strength* strength;
     Binding* binding;
+    ScoreBoard* score_board;
+    ScoreBoardVisual* score_board_visual;
 } Components;
 
 #endif // __COMPONENT_H__

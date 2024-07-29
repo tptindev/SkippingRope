@@ -58,8 +58,6 @@ void EVT_GAME_ENEMY_DEAD_FUNC(SceneManager* manager, Entity* enemy)
             }
         }
     }
-    //    SceneRemoveGameObject(manager->current_scene, entity->id);
-    //    DestroyEntity(manager->pd, entity);
 }
 
 void EVT_GAME_EARTH_HIT_FUNC(SceneManager* manager, Entity *entity, Entity* other)
@@ -97,23 +95,23 @@ void EVT_GAME_MOON_HIT_FUNC(SceneManager* manager, Entity *entity, Entity* other
 {
     if (other != NULL && manager != NULL && other != NULL)
     {
-        PlaydateAPI* api = manager->pd;
-        (void)api;
-        switch (other->id) {
-        case ENTITY_SCORE_BOARD:
+        if (entity->components.collider == NULL) return;
+        if (entity->components.collider->collided)
         {
-            if (other->components.animated_sprite != NULL)
+            PlaydateAPI* api = manager->pd;
+            (void)api;
+            switch (other->id) {
+            case ENTITY_SCORE_BOARD:
             {
-                if (other->components.animated_sprite->_ptr != NULL)
+                if (other->components.score_board != NULL)
                 {
-                    int frame_count = other->components.animated_sprite->frame_count - 1;
-                    other->components.animated_sprite->frame_index = 9;
+                    other->components.score_board->current++;
                 }
+                break;
             }
-            break;
-        }
-        default:
-            break;
+            default:
+                break;
+            }
         }
     }
 }

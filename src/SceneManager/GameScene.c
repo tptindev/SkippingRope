@@ -55,11 +55,12 @@ void GameSceneInit(void* pd_ptr, Scene *scene)
     Entity* score_board = NULL;
     Entity* earth_blood = NULL;
     { // widgets
-        score_board = CreateEntity(ENTITY_SCORE_BOARD, scene->world, (Vec2){ 0.5f, 1.3f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
+        score_board = CreateEntity(ENTITY_SCORE_BOARD, scene->world, (Vec2){ 0.29f, 1.36f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
         if (score_board != NULL)
         {
             SceneAddGameObject(scene, score_board);
-            AddAnimatedSpriteComponent(pd_ptr, score_board, "images/numbers/black", 9, 9, 10, 0.0f, false, 3);
+            AddScoreBoardComponent(pd_ptr, score_board);
+            AddScoreBoardVisualComponent(pd_ptr, score_board, "images/numbers/black", 2);
         }
         earth_blood = CreateEntity(ENTITY_EARTH_BLOOD, scene->world, (Vec2){ 0.1f, 0.05f }, (Vec2){ 0.0f, 0.0f }, (Vec2){ 1.0f, 1.0f });
         if (earth_blood != NULL)
@@ -176,6 +177,7 @@ void GameSceneRender(void* pd_ptr, Scene *scene)
     {
         entity = Array1DItemAtIndex(scene->entities_active, i);
         UpdateRenderer(pd_ptr, entity);
+        UpdateScoreBoardVisual(pd_ptr, entity);
     }
 }
 

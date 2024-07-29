@@ -50,6 +50,8 @@ Entity* CreateEntity(unsigned int id, World2D* world, Vec2 position, Vec2 rotati
         entity->components.button_img = NULL;
         entity->components.strength = NULL;
         entity->components.binding = NULL;
+        entity->components.score_board = NULL;
+        entity->components.score_board_visual = NULL;
 	}
 	return entity;
 }
@@ -123,7 +125,22 @@ void FreeEntity(void *api, Entity* entity)
         FreeArray1D(entity->components.binding->others);
         freeObjPtr(entity->components.binding);
     }
-
+    if (entity->components.score_board != NULL)
+    {
+        freeObjPtr(entity->components.score_board);
+    }
+    if (entity->components.score_board_visual != NULL)
+    {
+        for (size_t i = 0; i < (sizeof(entity->components.score_board_visual->bitmaps)/sizeof(void*)); i++)
+        {
+            if (i < 6)
+            {
+                freeSprite(api, entity->components.score_board_visual->sprites[i]);
+            }
+            freeBitmap(api, entity->components.score_board_visual->bitmaps[i]);
+        }
+        freeObjPtr(entity->components.score_board_visual);
+    }
     freeObjPtr(entity);
 }
 
@@ -342,4 +359,54 @@ void AddBindingComponent(void *pd_ptr, Entity *entity, void *other, int event_id
 void RemoveComponent(Entity *entity, void *component)
 {
 
+}
+
+void AddScoreBoardComponent(void *pd_ptr, Entity *entity)
+{
+    entity->components.score_board = malloc(sizeof(ScoreBoard));
+    if (entity->components.score_board != NULL)
+    {
+        entity->components.score_board->current = 0;
+        entity->components.score_board->high = 0;
+    }
+}
+
+void AddScoreBoardVisualComponent(void *pd_ptr, Entity *entity, const char *source, int16_t z_order)
+{
+    if (pd_ptr == NULL || entity == NULL) return;
+    PlaydateAPI* api = pd_ptr;
+    entity->components.score_board_visual = malloc(sizeof(ScoreBoardVisual));
+    if (entity->components.score_board_visual != NULL)
+    {
+        for (size_t i = 0; i < (sizeof(entity->components.score_board_visual->bitmaps)/sizeof(void*)); i++)
+        {
+            char path_buffer[128];
+            snprintf(path_buffer, sizeof(path_buffer), "%s/%d", source, (int)i);
+            api->system->logToConsole("%s", path_buffer);
+            const char* outerr = NULL;
+            LCDBitmap* bitmap_ptr = api->graphics->loadBitmap(path_buffer, &outerr);
+            if (outerr != NULL)
+            {
+                api->system->logToConsole("Error: %s", outerr);
+                bitmap_ptr = NULL;
+            }
+            entity->components.score_board_visual->bitmaps[i] = bitmap_ptr;
+            if (i < 6)
+            {
+                LCDSprite* sprite_ptr = api->sprite->newSprite();
+                if (sprite_ptr != NULL)
+                {
+                    api->sprite->setImage(sprite_ptr, entity->components.score_board_visual->bitmaps[0], kBitmapUnflipped);
+                    api->sprite->setZIndex(sprite_ptr, z_order);
+                    api->sprite->setCenter(sprite_ptr, 0.5f, 0.5f);
+                    api->sprite->moveTo(
+                        sprite_ptr,
+                        entity->components.transform->position.x * 80.0f + (i * 9),
+                        entity->components.transform->position.y * 80.0f
+                        );
+                    entity->components.score_board_visual->sprites[i] = sprite_ptr;
+                }
+            }
+        }
+    }
 }
