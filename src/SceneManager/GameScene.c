@@ -38,8 +38,7 @@ static void UpdateArrowDirection(void* scene_ptr, Entity* enemy)
                         api->graphics->freeBitmap(bitmap_ptr);
                         return;
                     }
-                    bitmap_ptr = api->graphics->rotatedBitmap(entity->components.sprite->bitmap, angle, 1, 1, NULL);
-                    entity->components.sprite->bitmap = bitmap_ptr;
+                    entity->components.sprite->bitmap = api->graphics->rotatedBitmap(bitmap_ptr, angle, 1, 1, NULL);
                 }
             }
             break;
