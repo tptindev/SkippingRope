@@ -36,6 +36,22 @@ void EVT_GAME_ENEMY_COLLIDED_FUNC(Entity* entity, Entity* other)
 
 void EVT_GAME_EARTH_DEAD_FUNC(SceneManager* manager, Entity* enemy)
 {
+    PlaydateAPI* api = manager->pd;
+    if (manager->current_scene != NULL)
+    {
+        for (size_t i = 0; i < manager->current_scene->entities_active->size; i++)
+        {
+            Entity* entity = Array1DItemAtIndex(manager->current_scene->entities_active, i);
+            if (entity != NULL)
+            {
+                if (entity->id == ENTITY_SCORE_BOARD)
+                {
+//                    if (entity->components.score_board == NULL) return;
+//                    api->scoreboards->addScore("Score", entity->components.score_board->current, NULL);
+                }
+            }
+        }
+    }
     SceneManagerTransition(manager, GAME_OVER_SCENE);
 }
 
