@@ -38,11 +38,12 @@ file(GLOB RESOURCES
 )
 file(GLOB_RECURSE SOURCE_FILES "src/*.h" "src/*.c")
 
+include_directories(${CMAKE_SOURCE_DIR}/src/cJson)
+
 if (TOOLCHAIN STREQUAL "armgcc")
     add_executable(${PLAYDATE_GAME_DEVICE} "${SDK}/C_API/buildsupport/setup.c" "${SOURCE_FILES} ${RESOURCES}")
 else()
     add_library(${PLAYDATE_GAME_NAME} SHARED ${SOURCE_FILES} ${RESOURCES})
 endif()
-
 
 include(${SDK}/C_API/buildsupport/playdate_game.cmake)

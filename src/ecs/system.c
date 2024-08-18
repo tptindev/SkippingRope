@@ -7,6 +7,7 @@
 #include "../ecs/EntityIDs.h"
 #include "../XUtils.h"
 #include <stdio.h>
+#include <cJSON.h>
 
 void UpdateRotation(Entity* entity)
 {
@@ -396,10 +397,10 @@ void UpdateScoreBoard(void *pd_ptr, Entity *entity)
 {
     if (entity == NULL || pd_ptr == NULL) return;
     if (entity->active == false) return;
-
+    PlaydateAPI* api = pd_ptr;
     errno_t err;
     FILE* filePtr = NULL;
-    err = fopen_s(&filePtr, "D:\\Projects\\O\\PlaydateProjects\\Defend\\Defend.pdx\\userdata.txt", "r");
+    err = fopen_s(&filePtr, "userdata.txt", "r");
     if (err == 0)
     {
         char ch;
@@ -415,10 +416,23 @@ void UpdateScoreBoard(void *pd_ptr, Entity *entity)
                 snprintf(buffer, sizeof(buffer), "%s%c", buffer, ch);
             }
         }
-        if (entity->components.score_board != NULL)
+
+        cJSON* jsonObj = cJSON_Parse(buffer);
+        if (jsonObj != NULL)
         {
-            entity->components.score_board->current = atoi(buffer);
+
+            cJSON* scoreObj = cJSON_GetObjectItem(jsonObj, "score");
+            if (cJSON_IsNumber(scoreObj))
+            {
+                int score = cJSON_GetNumberValue(scoreObj);
+                if (entity->components.score_board != NULL)
+                {
+                    entity->components.score_board->current = score;
+                }
+            }
         }
+
+        cJSON_Delete(jsonObj);
     }
 
     fclose(filePtr);

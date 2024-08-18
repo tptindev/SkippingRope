@@ -4,13 +4,7 @@
 #include "pd_api.h"
 #include <stdio.h>
 #include <fcntl.h>
-#ifdef _WIN32
-#include <io.h>
-#define access _access
-
-#else
-#include <unistd.h>
-#endif
+#include <cJSON.h>
 
 
 void EVT_GAME_BACK_MENU_FUNC(SceneManager* manager)
@@ -131,19 +125,30 @@ void EVT_GAME_MOON_HIT_FUNC(SceneManager* manager, Entity *entity, Entity* other
                 if (other->components.score_board != NULL)
                 {
                     other->components.score_board->current++;
+
+                    cJSON *jsonObj = cJSON_CreateObject();
+                    if (jsonObj != NULL)
+                    {
+                        cJSON_AddBoolToObject(jsonObj, "game_over", false);
+                        cJSON_AddNumberToObject(jsonObj, "score", other->components.score_board->current);
+                    }
+
+                    char *str = cJSON_Print(jsonObj);
+
                     errno_t err;
                     FILE* filePtr = NULL;
 
-                    err = fopen_s(&filePtr, "D:\\Projects\\O\\PlaydateProjects\\Defend\\Defend.pdx\\userdata.txt", "w");
+                    err = fopen_s(&filePtr, "userdata.txt", "w");
                     if (err == 0)
                     {
                         if (filePtr != NULL)
                         {
-                            fprintf(filePtr, "%d", other->components.score_board->current);
+                            fprintf(filePtr, "%s", str);
                         }
                     }
 
                     fclose(filePtr);
+                    cJSON_Delete(jsonObj);
                 }
                 break;
             }
