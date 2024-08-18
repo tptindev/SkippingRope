@@ -6,6 +6,8 @@
 #include "../SceneManager/Events/EventDefines.h"
 #include "../ecs/EntityIDs.h"
 #include "../XUtils.h"
+#include <stdio.h>
+
 void UpdateRotation(Entity* entity)
 {
     if (entity == NULL) return;
@@ -275,7 +277,7 @@ void UpdateButtonImage(void* pd_ptr, Entity* entity, void* userdata)
                     if (ButtonEvents[i].transition != NULL)
                     {
                         for(int i = 0; i <= 50; i++) {
-                            api->system->logToConsole("%d", i);
+                            api->system->logToConsole("\0");
                         }
                         ButtonEvents[i].transition(userdata);
                     }
@@ -392,5 +394,32 @@ void UpdateScoreBoardVisual(void *pd_ptr, Entity *entity)
 
 void UpdateScoreBoard(void *pd_ptr, Entity *entity)
 {
+    if (entity == NULL || pd_ptr == NULL) return;
+    if (entity->active == false) return;
 
+    errno_t err;
+    FILE* filePtr = NULL;
+    err = fopen_s(&filePtr, "D:\\Projects\\O\\PlaydateProjects\\Defend\\Defend.pdx\\userdata.txt", "r");
+    if (err == 0)
+    {
+        char ch;
+        char buffer[1024] = {'\0'};
+        // Read and print the contents of the file character by character
+        while ((ch = fgetc(filePtr)) != EOF) {
+            if (strcmp(buffer, "\0") == 0)
+            {
+                snprintf(buffer, sizeof(buffer), "%c", ch);
+            }
+            else
+            {
+                snprintf(buffer, sizeof(buffer), "%s%c", buffer, ch);
+            }
+        }
+        if (entity->components.score_board != NULL)
+        {
+            entity->components.score_board->current = atoi(buffer);
+        }
+    }
+
+    fclose(filePtr);
 }

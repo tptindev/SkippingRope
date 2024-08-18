@@ -2,6 +2,16 @@
 #include "SceneIDs.h"
 #include "../../ecs/EntityIDs.h"
 #include "pd_api.h"
+#include <stdio.h>
+#include <fcntl.h>
+#ifdef _WIN32
+#include <io.h>
+#define access _access
+
+#else
+#include <unistd.h>
+#endif
+
 
 void EVT_GAME_BACK_MENU_FUNC(SceneManager* manager)
 {
@@ -46,8 +56,7 @@ void EVT_GAME_EARTH_DEAD_FUNC(SceneManager* manager, Entity* enemy)
             {
                 if (entity->id == ENTITY_SCORE_BOARD)
                 {
-//                    if (entity->components.score_board == NULL) return;
-//                    api->scoreboards->addScore("Score", entity->components.score_board->current, NULL);
+                    if (entity->components.score_board == NULL) return;
                 }
             }
         }
@@ -122,6 +131,19 @@ void EVT_GAME_MOON_HIT_FUNC(SceneManager* manager, Entity *entity, Entity* other
                 if (other->components.score_board != NULL)
                 {
                     other->components.score_board->current++;
+                    errno_t err;
+                    FILE* filePtr = NULL;
+
+                    err = fopen_s(&filePtr, "D:\\Projects\\O\\PlaydateProjects\\Defend\\Defend.pdx\\userdata.txt", "w");
+                    if (err == 0)
+                    {
+                        if (filePtr != NULL)
+                        {
+                            fprintf(filePtr, "%d", other->components.score_board->current);
+                        }
+                    }
+
+                    fclose(filePtr);
                 }
                 break;
             }

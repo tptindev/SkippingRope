@@ -43,6 +43,6 @@ if (TOOLCHAIN STREQUAL "armgcc")
 else()
     add_library(${PLAYDATE_GAME_NAME} SHARED ${SOURCE_FILES} ${RESOURCES})
 endif()
-	
+
 
 include(${SDK}/C_API/buildsupport/playdate_game.cmake)

@@ -4,9 +4,11 @@
 #include "../ecs/system.h"
 #include "../ecs/EntityIDs.h"
 #include "../SceneManager/Events/EventIDs.h"
+#include <stdio.h>
 
 void GameOverSceneInit(void *pd_ptr, Scene *scene)
 {
+    PlaydateAPI* api = pd_ptr;
     {
         Entity* new_game_btn = CreateEntity(ENTITY_BTN_NEW_GAME, scene->world, (Vec2) {1.1f, 2.0f}, (Vec2) {0.0f, 0.0f}, (Vec2) {0.0f, 0.0f});
         if (new_game_btn != NULL) {
@@ -21,6 +23,16 @@ void GameOverSceneInit(void *pd_ptr, Scene *scene)
             SceneAddGameObject(scene, quit_game_btn);
             // Add components
             AddButtonImageComponent(pd_ptr, quit_game_btn, NORMAL, EVT_GAME_QUIT_GAME, "images/gameover/buttons/quit_game", 0.0f, 2);
+        }
+    }
+    {
+        Entity* score_board = CreateEntity(ENTITY_SCORE_BOARD_VISUAL, scene->world, (Vec2) {2.6f, 1.5f}, (Vec2) {0.0f, 0.0f}, (Vec2) {1.0f, 1.0f});
+        if (score_board != NULL)
+        {
+            SceneAddGameObject(scene, score_board);
+            // Add Components
+            AddScoreBoardComponent(pd_ptr, score_board);
+            AddScoreBoardVisualComponent(pd_ptr, score_board, "images/numbers/white", 2);
         }
     }
     {
@@ -40,7 +52,7 @@ void GameOverSceneEvent(void *pd_ptr, Scene *scene, void *manager)
     PlaydateAPI* api = pd_ptr;
     { // system
         float angle = api->system->getCrankAngle();
-        int current_idx = ((int)angle % 180) / (180 / (int)(scene->entities->size - 1));
+        int current_idx = ((int)angle % 180) / (180 / 2);
         Entity* entity = NULL;
         for (size_t i = 0; i < scene->entities->size; i++)
         {
@@ -114,6 +126,8 @@ void GameOverSceneUpdate(void *pd_ptr, Scene *scene, float dt)
             UpdateSprite(entity, tick);
             UpdateAnimateSprite(entity, tick);
             UpdateButtonImage(pd_ptr, entity, scene->manager);
+            UpdateScoreBoard(pd_ptr, entity);
+            UpdateScoreBoardVisual(pd_ptr, entity);
         }
     }
 }
