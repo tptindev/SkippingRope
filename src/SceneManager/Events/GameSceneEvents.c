@@ -129,11 +129,12 @@ void EVT_GAME_MOON_HIT_FUNC(SceneManager* manager, Entity *entity, Entity* other
                     int file_size = 0;
                     char *buffer = NULL;
                     SDFile* file = NULL;
-                    file = api->file->open("data/userdata.json", kFileRead | kFileWrite | kFileAppend);
+                    file = api->file->open("data/userdata", kFileRead | kFileReadData | kFileWrite | kFileAppend);
                     if (file != NULL)
                     {
                         api->file->seek(file, 0, SEEK_END);
                         file_size = api->file->tell(file);
+                        api->file->seek(file, 0, SEEK_SET);
 
                         buffer = (char *)malloc(sizeof(char) * (file_size + 1));
                         if (api->file->read(file, buffer, file_size) == -1)
@@ -142,7 +143,8 @@ void EVT_GAME_MOON_HIT_FUNC(SceneManager* manager, Entity *entity, Entity* other
                         }
                         else
                         {
-                            api->system->logToConsole("Buffer: %s", buffer);
+                            buffer[file_size] = '\0';
+//                            api->system->logToConsole("Buffer: %s", (char*)buffer);
                             cJSON* jsonObj = NULL;
                             if (*buffer == '\0')
                             {

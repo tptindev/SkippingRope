@@ -183,11 +183,12 @@ void UpdateHealth(void* pd_ptr, void* scene_ptr, Entity* entity)
         int file_size = 0;
         char *buffer = NULL;
         SDFile* file = NULL;
-        file = api->file->open("data/userdata.json", kFileRead | kFileWrite | kFileAppend);
+        file = api->file->open("data/userdata", kFileRead | kFileReadData | kFileWrite | kFileAppend);
         if (file != NULL)
         {
             api->file->seek(file, 0, SEEK_END);
             file_size = api->file->tell(file);
+            api->file->seek(file, 0, SEEK_SET);
 
             buffer = (char *)malloc(sizeof(char) * (file_size + 1));
             if (api->file->read(file, buffer, file_size) == -1)
@@ -196,7 +197,8 @@ void UpdateHealth(void* pd_ptr, void* scene_ptr, Entity* entity)
             }
             else
             {
-                api->system->logToConsole("Buffer: %s", buffer);
+                buffer[file_size] = '\0';
+//                api->system->logToConsole("Buffer: %s", (char*)buffer);
                 cJSON* jsonObj = NULL;
                 if (*buffer == '\0')
                 {
@@ -216,6 +218,10 @@ void UpdateHealth(void* pd_ptr, void* scene_ptr, Entity* entity)
                     if (api->file->write(file, str, file_size) == -1)
                     {
                         api->system->logToConsole("Cant Write File");
+                    }
+                    else
+                    {
+                        api->system->logToConsole("Written File with content: %s", str);
                     }
                 }
                 cJSON_Delete(jsonObj);
@@ -445,11 +451,12 @@ void UpdateScoreBoard(void *pd_ptr, Entity *entity)
     int file_size = 0;
     char *buffer = NULL;
     SDFile* file = NULL;
-    file = api->file->open("data/userdata.json", kFileRead | kFileWrite | kFileAppend);
+    file = api->file->open("data/userdata", kFileReadData);
     if (file != NULL)
     {
         api->file->seek(file, 0, SEEK_END);
         file_size = api->file->tell(file);
+        api->file->seek(file, 0, SEEK_SET);
 
         buffer = (char *)malloc(sizeof(char) * (file_size + 1));
         if (api->file->read(file, buffer, file_size) == -1)
@@ -458,17 +465,17 @@ void UpdateScoreBoard(void *pd_ptr, Entity *entity)
         }
         else
         {
+            buffer[file_size] = '\0';
             if (*buffer != '\0')
             {
-                api->system->logToConsole("Buffer: %s", buffer);
+//                api->system->logToConsole("Buffer: %s", (char*)buffer);
                 cJSON* jsonObj = cJSON_Parse(buffer);
                 if (jsonObj != NULL)
                 {
-
                     cJSON* scoreObj = cJSON_GetObjectItem(jsonObj, "score");
                     if (cJSON_IsNumber(scoreObj))
                     {
-                        int score = cJSON_GetNumberValue(scoreObj);
+                        double score = cJSON_GetNumberValue(scoreObj);
                         if (entity->components.score_board != NULL)
                         {
                             entity->components.score_board->current = score;
