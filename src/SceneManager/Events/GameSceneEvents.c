@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <cJSON.h>
-
+#include "../../XUtils.h"
 
 void EVT_GAME_BACK_MENU_FUNC(SceneManager* manager)
 {
@@ -126,29 +126,52 @@ void EVT_GAME_MOON_HIT_FUNC(SceneManager* manager, Entity *entity, Entity* other
                 {
                     other->components.score_board->current++;
 
-                    cJSON *jsonObj = cJSON_CreateObject();
-                    if (jsonObj != NULL)
+                    int file_size = 0;
+                    char *buffer = NULL;
+                    SDFile* file = NULL;
+                    file = api->file->open("data/userdata.json", kFileRead | kFileWrite | kFileAppend);
+                    if (file != NULL)
                     {
-                        cJSON_AddBoolToObject(jsonObj, "game_over", false);
-                        cJSON_AddNumberToObject(jsonObj, "score", other->components.score_board->current);
-                    }
+                        api->file->seek(file, 0, SEEK_END);
+                        file_size = api->file->tell(file);
 
-                    char *str = cJSON_Print(jsonObj);
-
-                    errno_t err;
-                    FILE* filePtr = NULL;
-
-                    err = fopen_s(&filePtr, "userdata.txt", "w");
-                    if (err == 0)
-                    {
-                        if (filePtr != NULL)
+                        buffer = (char *)malloc(sizeof(char) * (file_size + 1));
+                        if (api->file->read(file, buffer, file_size) == -1)
                         {
-                            fprintf(filePtr, "%s", str);
+                            api->system->logToConsole("Cant Read File");
                         }
-                    }
+                        else
+                        {
+                            api->system->logToConsole("Buffer: %s", buffer);
+                            cJSON* jsonObj = NULL;
+                            if (*buffer == '\0')
+                            {
+                                jsonObj = cJSON_CreateObject();
+                            }
+                            else
+                            {
+                                jsonObj = cJSON_Parse(buffer);
+                            }
 
-                    fclose(filePtr);
-                    cJSON_Delete(jsonObj);
+                            if (jsonObj != NULL)
+                            {
+                                cJSON_AddBoolToObject(jsonObj, "game_over", false);
+                                cJSON_AddNumberToObject(jsonObj, "score", other->components.score_board->current);
+                            }
+
+                            char *str = cJSON_Print(jsonObj);
+
+                            if (api->file->write(file, str, file_size) == -1)
+                            {
+                                api->system->logToConsole("Cant Write File");
+                            }
+
+                            cJSON_Delete(jsonObj);
+                        }
+                        free(buffer);
+                        buffer = NULL;
+                        api->file->close(file);
+                    }
                 }
                 break;
             }

@@ -1,5 +1,6 @@
 #include "XUtils.h"
 #include "pd_api.h"
+#include <stdio.h>
 
 int randIntIn(int min, int max)
 {
@@ -58,4 +59,44 @@ void freeSprite(void* pd_ptr, void* sprite)
         api->sprite->freeSprite(sprite);
     }
     sprite = NULL;
+}
+
+void fsRead(char *buffer, const char *filePath, long file_size)
+{
+    errno_t err;
+    FILE* filePtr = NULL;
+    err = fopen_s(&filePtr, filePath, "r");
+    if (err == 0)
+    {
+        buffer[file_size] = '\0'; // Null-terminate the buffer
+        fgets(buffer, file_size, filePtr);
+        fclose(filePtr);
+    }
+}
+
+void fsWrite(char *buffer, const char *filePath)
+{
+    errno_t err;
+    FILE* filePtr = NULL;
+    err = fopen_s(&filePtr, filePath, "w+");
+    if (err == 0)
+    {
+        fprintf(filePtr, "%s", buffer);
+        fclose(filePtr);
+    }
+}
+
+
+void fsSize(long *size, const char *filePath)
+{
+    errno_t err;
+    FILE* filePtr = NULL;
+    err = fopen_s(&filePtr, filePath, "r");
+    if (err == 0)
+    {
+        fseek(filePtr, 0, SEEK_END);
+        *size = ftell(filePtr);
+        rewind(filePtr);
+        fclose(filePtr);
+    }
 }

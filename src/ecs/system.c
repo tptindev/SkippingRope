@@ -180,6 +180,50 @@ void UpdateHealth(void* pd_ptr, void* scene_ptr, Entity* entity)
     Scene* scene = scene_ptr;
     if (entity->components.health != NULL)
     {
+        int file_size = 0;
+        char *buffer = NULL;
+        SDFile* file = NULL;
+        file = api->file->open("data/userdata.json", kFileRead | kFileWrite | kFileAppend);
+        if (file != NULL)
+        {
+            api->file->seek(file, 0, SEEK_END);
+            file_size = api->file->tell(file);
+
+            buffer = (char *)malloc(sizeof(char) * (file_size + 1));
+            if (api->file->read(file, buffer, file_size) == -1)
+            {
+                api->system->logToConsole("Cant Read File");
+            }
+            else
+            {
+                api->system->logToConsole("Buffer: %s", buffer);
+                cJSON* jsonObj = NULL;
+                if (*buffer == '\0')
+                {
+                    jsonObj = cJSON_CreateObject();
+                }
+                else
+                {
+                    jsonObj = cJSON_Parse(buffer);
+                }
+
+                if (jsonObj != NULL)
+                {
+                    cJSON* earth = cJSON_CreateObject();
+                    cJSON_AddNumberToObject(earth, "current_health", entity->components.health->current);
+                    cJSON_AddItemToObject(jsonObj, "earth", earth);
+                    char *str = cJSON_Print(jsonObj);
+                    if (api->file->write(file, str, file_size) == -1)
+                    {
+                        api->system->logToConsole("Cant Write File");
+                    }
+                }
+                cJSON_Delete(jsonObj);
+            }
+            free(buffer);
+            buffer = NULL;
+            api->file->close(file);
+        }
         if (entity->components.health->current <= 0)
         {
             for (size_t i = 0; i < (sizeof(GameSceneEvents)/sizeof(Event)); i++)
@@ -398,42 +442,44 @@ void UpdateScoreBoard(void *pd_ptr, Entity *entity)
     if (entity == NULL || pd_ptr == NULL) return;
     if (entity->active == false) return;
     PlaydateAPI* api = pd_ptr;
-    errno_t err;
-    FILE* filePtr = NULL;
-    err = fopen_s(&filePtr, "userdata.txt", "r");
-    if (err == 0)
+    int file_size = 0;
+    char *buffer = NULL;
+    SDFile* file = NULL;
+    file = api->file->open("data/userdata.json", kFileRead | kFileWrite | kFileAppend);
+    if (file != NULL)
     {
-        char ch;
-        char buffer[1024] = {'\0'};
-        // Read and print the contents of the file character by character
-        while ((ch = fgetc(filePtr)) != EOF) {
-            if (strcmp(buffer, "\0") == 0)
-            {
-                snprintf(buffer, sizeof(buffer), "%c", ch);
-            }
-            else
-            {
-                snprintf(buffer, sizeof(buffer), "%s%c", buffer, ch);
-            }
-        }
+        api->file->seek(file, 0, SEEK_END);
+        file_size = api->file->tell(file);
 
-        cJSON* jsonObj = cJSON_Parse(buffer);
-        if (jsonObj != NULL)
+        buffer = (char *)malloc(sizeof(char) * (file_size + 1));
+        if (api->file->read(file, buffer, file_size) == -1)
         {
-
-            cJSON* scoreObj = cJSON_GetObjectItem(jsonObj, "score");
-            if (cJSON_IsNumber(scoreObj))
+            api->system->logToConsole("Cant Read File");
+        }
+        else
+        {
+            if (*buffer != '\0')
             {
-                int score = cJSON_GetNumberValue(scoreObj);
-                if (entity->components.score_board != NULL)
+                api->system->logToConsole("Buffer: %s", buffer);
+                cJSON* jsonObj = cJSON_Parse(buffer);
+                if (jsonObj != NULL)
                 {
-                    entity->components.score_board->current = score;
+
+                    cJSON* scoreObj = cJSON_GetObjectItem(jsonObj, "score");
+                    if (cJSON_IsNumber(scoreObj))
+                    {
+                        int score = cJSON_GetNumberValue(scoreObj);
+                        if (entity->components.score_board != NULL)
+                        {
+                            entity->components.score_board->current = score;
+                        }
+                    }
+                    cJSON_Delete(jsonObj);
                 }
             }
         }
-
-        cJSON_Delete(jsonObj);
+        free(buffer);
+        buffer = NULL;
+        api->file->close(file);
     }
-
-    fclose(filePtr);
 }
